@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
         WeightLogEntity::class,
         UserGoalEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -51,6 +51,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "food_tracker_database"
                 )
+                    .fallbackToDestructiveMigration(dropAllTables = true)
                     .addCallback(AppDatabaseCallback(context.applicationContext))
                     .build()
                 INSTANCE = instance

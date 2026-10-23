@@ -14,8 +14,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -51,6 +55,7 @@ fun CalorieGaugeCard(
     fatConsumed: Int,
     fatTarget: Int,
     modifier: Modifier = Modifier,
+    onEditGoalsClick: (() -> Unit)? = null
 ) {
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -76,178 +81,194 @@ fun CalorieGaugeCard(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            // Semi-circle Arc Gauge
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp)
-            ) {
-                Canvas(
-                    modifier = Modifier.size(200.dp, 160.dp)
+        Box(modifier = Modifier.fillMaxWidth()) {
+            if (onEditGoalsClick != null) {
+                IconButton(
+                    onClick = onEditGoalsClick,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
                 ) {
-                    val strokeWidth = 14.dp.toPx()
-                    // Create a perfectly square arc diameter so drawArc renders a true circle (no distortion)
-                    val arcDiameter = size.width - strokeWidth - 8.dp.toPx()
-                    val topLeft = Offset(
-                        x = (size.width - arcDiameter) / 2f,
-                        y = (size.height - arcDiameter) / 2f + 4.dp.toPx()
+                    Icon(
+                        imageVector = Icons.Default.Tune,
+                        contentDescription = "Ziele anpassen",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    val arcSize = Size(arcDiameter, arcDiameter)
+                }
+            }
 
-                    val startAngle = 160f
-                    val totalSweep = 220f
-
-                    // 1. Draw background track arc
-                    drawArc(
-                        color = trackColor,
-                        startAngle = startAngle,
-                        sweepAngle = totalSweep,
-                        useCenter = false,
-                        topLeft = topLeft,
-                        size = arcSize,
-                        style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
-                    )
-
-                    // 2. Draw target range band [calorieMinRange .. calorieMaxRange]
-                    if (calorieMinRange > 0 && calorieMaxRange > calorieMinRange) {
-                        val minFraction = (calorieMinRange.toFloat() / maxScale).coerceIn(0f, 1f)
-                        val maxFraction = (calorieMaxRange.toFloat() / maxScale).coerceIn(0f, 1f)
-                        val rangeStartAngle = startAngle + totalSweep * minFraction
-                        val rangeSweepAngle = totalSweep * (maxFraction - minFraction)
-
-                        drawArc(
-                            color = targetBandColor,
-                            startAngle = rangeStartAngle,
-                            sweepAngle = rangeSweepAngle,
-                            useCenter = false,
-                            topLeft = topLeft,
-                            size = arcSize,
-                            style = Stroke(width = strokeWidth + 4.dp.toPx(), cap = StrokeCap.Butt)
+            Column(
+                modifier = Modifier.padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                // Semi-circle Arc Gauge
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(160.dp)
+                ) {
+                    Canvas(
+                        modifier = Modifier.size(200.dp, 160.dp)
+                    ) {
+                        val strokeWidth = 14.dp.toPx()
+                        val arcDiameter = size.width - strokeWidth - 8.dp.toPx()
+                        val topLeft = Offset(
+                            x = (size.width - arcDiameter) / 2f,
+                            y = (size.height - arcDiameter) / 2f + 4.dp.toPx()
                         )
-                    }
+                        val arcSize = Size(arcDiameter, arcDiameter)
 
-                    // 3. Draw calorie target tick mark
-                    if (calorieTarget > 0) {
-                        val targetFraction = (calorieTarget.toFloat() / maxScale).coerceIn(0f, 1f)
-                        val targetAngle = startAngle + totalSweep * targetFraction
-                        val angleRad = Math.toRadians(targetAngle.toDouble())
+                        val startAngle = 160f
+                        val totalSweep = 220f
 
-                        val radius = arcDiameter / 2f
-                        val centerX = topLeft.x + radius
-                        val centerY = topLeft.y + radius
-
-                        val innerR = radius - strokeWidth / 2 - 4.dp.toPx()
-                        val outerR = radius + strokeWidth / 2 + 4.dp.toPx()
-
-                        val startX = (centerX + innerR * cos(angleRad)).toFloat()
-                        val startY = (centerY + innerR * sin(angleRad)).toFloat()
-                        val endX = (centerX + outerR * cos(angleRad)).toFloat()
-                        val endY = (centerY + outerR * sin(angleRad)).toFloat()
-
-                        drawLine(
-                            color = primaryColor,
-                            start = Offset(startX, startY),
-                            end = Offset(endX, endY),
-                            strokeWidth = 3.dp.toPx(),
-                            cap = StrokeCap.Round
-                        )
-                    }
-
-                    // 4. Draw consumed progress arc
-                    val progressFraction = (calorieConsumed.toFloat() / maxScale).coerceIn(0f, 1f)
-                    val progressSweep = totalSweep * progressFraction
-                    if (progressSweep > 0) {
+                        // 1. Draw background track arc
                         drawArc(
-                            color = progressColor,
+                            color = trackColor,
                             startAngle = startAngle,
-                            sweepAngle = progressSweep,
+                            sweepAngle = totalSweep,
                             useCenter = false,
                             topLeft = topLeft,
                             size = arcSize,
                             style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
                         )
-                    }
-                }
 
-                // Text inside the gauge
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(top = 18.dp)
-                ) {
-                    Text(
-                        text = "$calorieConsumed / $calorieTarget",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "kcal",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .background(
-                                        color = if (isInRange) inRangeColor else Color(0xFF81C784),
-                                        shape = CircleShape
-                                    )
+                        // 2. Draw target range band [calorieMinRange .. calorieMaxRange]
+                        if (calorieMinRange > 0 && calorieMaxRange > calorieMinRange) {
+                            val minFraction = (calorieMinRange.toFloat() / maxScale).coerceIn(0f, 1f)
+                            val maxFraction = (calorieMaxRange.toFloat() / maxScale).coerceIn(0f, 1f)
+                            val rangeStartAngle = startAngle + totalSweep * minFraction
+                            val rangeSweepAngle = totalSweep * (maxFraction - minFraction)
+
+                            drawArc(
+                                color = targetBandColor,
+                                startAngle = rangeStartAngle,
+                                sweepAngle = rangeSweepAngle,
+                                useCenter = false,
+                                topLeft = topLeft,
+                                size = arcSize,
+                                style = Stroke(width = strokeWidth + 4.dp.toPx(), cap = StrokeCap.Butt)
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Ziel: $calorieMinRange - $calorieMaxRange kcal",
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+
+                        // 3. Draw calorie target tick mark
+                        if (calorieTarget > 0) {
+                            val targetFraction = (calorieTarget.toFloat() / maxScale).coerceIn(0f, 1f)
+                            val targetAngle = startAngle + totalSweep * targetFraction
+                            val angleRad = Math.toRadians(targetAngle.toDouble())
+
+                            val radius = arcDiameter / 2f
+                            val centerX = topLeft.x + radius
+                            val centerY = topLeft.y + radius
+
+                            val innerR = radius - strokeWidth / 2 - 4.dp.toPx()
+                            val outerR = radius + strokeWidth / 2 + 4.dp.toPx()
+
+                            val startX = (centerX + innerR * cos(angleRad)).toFloat()
+                            val startY = (centerY + innerR * sin(angleRad)).toFloat()
+                            val endX = (centerX + outerR * cos(angleRad)).toFloat()
+                            val endY = (centerY + outerR * sin(angleRad)).toFloat()
+
+                            drawLine(
+                                color = primaryColor,
+                                start = Offset(startX, startY),
+                                end = Offset(endX, endY),
+                                strokeWidth = 3.dp.toPx(),
+                                cap = StrokeCap.Round
+                            )
+                        }
+
+                        // 4. Draw consumed progress arc
+                        val progressFraction = (calorieConsumed.toFloat() / maxScale).coerceIn(0f, 1f)
+                        val progressSweep = totalSweep * progressFraction
+                        if (progressSweep > 0) {
+                            drawArc(
+                                color = progressColor,
+                                startAngle = startAngle,
+                                sweepAngle = progressSweep,
+                                useCenter = false,
+                                topLeft = topLeft,
+                                size = arcSize,
+                                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
                             )
                         }
                     }
+
+                    // Text inside the gauge
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(top = 18.dp)
+                    ) {
+                        Text(
+                            text = "$calorieConsumed / $calorieTarget",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "kcal",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(8.dp)
+                                        .background(
+                                            color = if (isInRange) inRangeColor else Color(0xFF81C784),
+                                            shape = CircleShape
+                                        )
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "Ziel: $calorieMinRange - $calorieMaxRange kcal",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            // Macro Rows
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                MacroProgressRow(
-                    label = "Proteins >",
-                    consumed = proteinConsumed,
-                    target = proteinTarget,
-                    unit = "g",
-                    color = ProteinColor
-                )
-                MacroProgressRow(
-                    label = "Carbs >",
-                    consumed = carbsConsumed,
-                    target = carbsTarget,
-                    unit = "g",
-                    color = CarbsColor
-                )
-                MacroProgressRow(
-                    label = "Fats >",
-                    consumed = fatConsumed,
-                    target = fatTarget,
-                    unit = "g",
-                    color = FatColor
-                )
+                // Macro Rows
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    MacroProgressRow(
+                        label = "Proteins >",
+                        consumed = proteinConsumed,
+                        target = proteinTarget,
+                        unit = "g",
+                        color = ProteinColor
+                    )
+                    MacroProgressRow(
+                        label = "Carbs >",
+                        consumed = carbsConsumed,
+                        target = carbsTarget,
+                        unit = "g",
+                        color = CarbsColor
+                    )
+                    MacroProgressRow(
+                        label = "Fats >",
+                        consumed = fatConsumed,
+                        target = fatTarget,
+                        unit = "g",
+                        color = FatColor
+                    )
+                }
             }
         }
     }
@@ -310,26 +331,6 @@ fun CalorieGaugeCardPreview() {
             carbsConsumed = 84,
             carbsTarget = 163,
             fatConsumed = 22,
-            fatTarget = 53,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CalorieGaugeCardInRangePreview() {
-    EssmichkiTheme {
-        CalorieGaugeCard(
-            calorieConsumed = 1520,
-            calorieTarget = 1581,
-            calorieMinRange = 1423,
-            calorieMaxRange = 1739,
-            proteinConsumed = 98,
-            proteinTarget = 113,
-            carbsConsumed = 140,
-            carbsTarget = 163,
-            fatConsumed = 45,
             fatTarget = 53,
             modifier = Modifier.padding(16.dp)
         )

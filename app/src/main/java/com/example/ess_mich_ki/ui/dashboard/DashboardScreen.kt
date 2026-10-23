@@ -31,6 +31,7 @@ import com.example.ess_mich_ki.ui.dashboard.components.EditLoggedMealItemDialog
 import com.example.ess_mich_ki.ui.dashboard.components.HeaderBar
 import com.example.ess_mich_ki.ui.dashboard.components.MealCard
 import com.example.ess_mich_ki.ui.dashboard.components.ProfileSettingsSheet
+import com.example.ess_mich_ki.ui.progress.components.NutritionalGoalsDialog
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
 import java.time.LocalDate
 
@@ -61,6 +62,9 @@ fun DashboardScreen(
         onApiKeyChange = viewModel::updateApiKeyInSettings,
         onBaseUrlChange = viewModel::updateBaseUrlInSettings,
         onModelChange = viewModel::updateModelInSettings,
+        onOpenNutritionalGoalsDialog = viewModel::openNutritionalGoalsDialog,
+        onCloseNutritionalGoalsDialog = viewModel::closeNutritionalGoalsDialog,
+        onSaveNutritionalGoals = viewModel::updateNutritionalGoals,
         modifier = modifier
     )
 }
@@ -70,7 +74,7 @@ fun DashboardScreen(
 fun DashboardContent(
     uiState: DashboardUiState,
     onDateSelected: (LocalDate) -> Unit,
-    onToggleCheck: (LoggedMealItemEntity, Boolean) -> Unit,
+    onToggleCheck: (LoggedMealItemEntity, Boolean) -> Unit = { _, _ -> },
     onDeleteItem: (LoggedMealItemEntity) -> Unit,
     onOpenEditItemDialog: (LoggedMealItemEntity) -> Unit = {},
     onCloseEditItemDialog: () -> Unit = {},
@@ -87,6 +91,9 @@ fun DashboardContent(
     onApiKeyChange: (String) -> Unit,
     onBaseUrlChange: (String) -> Unit,
     onModelChange: (String) -> Unit,
+    onOpenNutritionalGoalsDialog: () -> Unit = {},
+    onCloseNutritionalGoalsDialog: () -> Unit = {},
+    onSaveNutritionalGoals: (Int, Int, Int, Int, Boolean) -> Unit = { _, _, _, _, _ -> },
     modifier: Modifier = Modifier
 ) {
     val mealTypes = listOf("Breakfast", "Lunch", "Dinner", "Snack")
@@ -138,7 +145,8 @@ fun DashboardContent(
                         carbsConsumed = uiState.carbsConsumed,
                         carbsTarget = uiState.carbsTarget,
                         fatConsumed = uiState.fatConsumed,
-                        fatTarget = uiState.fatTarget
+                        fatTarget = uiState.fatTarget,
+                        onEditGoalsClick = onOpenNutritionalGoalsDialog
                     )
                 }
 
@@ -161,7 +169,6 @@ fun DashboardContent(
                     MealCard(
                         mealType = mealType,
                         mealWithItems = mealWithItems,
-                        onToggleCheck = onToggleCheck,
                         onDeleteItem = onDeleteItem,
                         onEditItem = onOpenEditItemDialog
                     )
@@ -214,6 +221,19 @@ fun DashboardContent(
                 onBaseUrlChange = onBaseUrlChange,
                 onModelChange = onModelChange,
                 onDismiss = onToggleProfileDrawer
+            )
+        }
+
+        // Nutritional Macro Goals & Fasting Day Dialog
+        if (uiState.isNutritionalGoalsDialogShowing) {
+            NutritionalGoalsDialog(
+                initialKcal = uiState.baseCalorieTarget,
+                initialProtein = uiState.baseProteinTarget,
+                initialCarbs = uiState.baseCarbsTarget,
+                initialFat = uiState.baseFatTarget,
+                initialIsFastingDay = uiState.isFastingDay,
+                onSaveGoals = onSaveNutritionalGoals,
+                onDismiss = onCloseNutritionalGoalsDialog
             )
         }
     }

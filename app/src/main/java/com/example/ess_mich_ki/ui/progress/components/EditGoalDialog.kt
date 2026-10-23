@@ -236,6 +236,10 @@ fun EditGoalDialog(
                             goalWeight = goalW,
                             paceWeeks = paceWeeks,
                             calorieTarget = calculatedCalorieTarget,
+                            proteinTarget = initialUserGoal?.proteinTarget ?: 113,
+                            carbsTarget = initialUserGoal?.carbsTarget ?: 163,
+                            fatTarget = initialUserGoal?.fatTarget ?: 53,
+                            isFastingDay = initialUserGoal?.isFastingDay ?: false,
                             startDateString = initialUserGoal?.startDateString ?: "2026-10-01"
                         )
                         onSaveGoal(updated)

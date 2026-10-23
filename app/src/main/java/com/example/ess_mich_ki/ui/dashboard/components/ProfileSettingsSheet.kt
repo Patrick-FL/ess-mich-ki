@@ -140,32 +140,6 @@ fun ProfileSettingsSheet(
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Navigation Items matching Image 7
-            ProfileMenuItem(
-                icon = Icons.Default.RestaurantMenu,
-                title = "Meal Plans",
-                subtitle = "Browse & customized nutrition plans",
-                onClick = {}
-            )
-            ProfileMenuItem(
-                icon = Icons.Default.ShoppingBag,
-                title = "Shopping List",
-                subtitle = "Ingredients for your planned meals",
-                onClick = {}
-            )
-            ProfileMenuItem(
-                icon = Icons.Default.Timer,
-                title = "Fasting",
-                subtitle = "Intermittent fasting timer & tracking",
-                onClick = {}
-            )
-            ProfileMenuItem(
-                icon = Icons.Default.Info,
-                title = "What's New",
-                subtitle = "Latest features & updates",
-                onClick = {}
-            )
-
             // Settings Section
             Row(
                 modifier = Modifier
@@ -342,55 +316,7 @@ fun ProfileSettingsSheet(
     }
 }
 
-@Composable
-private fun ProfileMenuItem(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .clickable { onClick() }
-            .padding(vertical = 12.dp, horizontal = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f)
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = title,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(14.dp))
-            Column {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
 
-        Icon(
-            imageVector = Icons.Default.ChevronRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)

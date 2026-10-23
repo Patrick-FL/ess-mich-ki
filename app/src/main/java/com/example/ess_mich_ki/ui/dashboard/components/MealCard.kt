@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -27,16 +26,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ess_mich_ki.data.local.entity.LoggedMealItemEntity
 import com.example.ess_mich_ki.data.local.model.MealWithItems
-import com.example.ess_mich_ki.ui.theme.CheckedGreen
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
 import kotlin.math.roundToInt
 
@@ -44,18 +40,16 @@ import kotlin.math.roundToInt
 fun MealCard(
     mealType: String,
     mealWithItems: MealWithItems?,
-    onToggleCheck: (LoggedMealItemEntity, Boolean) -> Unit,
     onDeleteItem: (LoggedMealItemEntity) -> Unit,
     onEditItem: ((LoggedMealItemEntity) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val items = mealWithItems?.items ?: emptyList()
-    val checkedItems = items.filter { it.isChecked }
 
-    val totalKcal = checkedItems.sumOf { it.calories }.roundToInt()
-    val totalP = checkedItems.sumOf { it.protein }.roundToInt()
-    val totalC = checkedItems.sumOf { it.carbs }.roundToInt()
-    val totalF = checkedItems.sumOf { it.fat }.roundToInt()
+    val totalKcal = items.sumOf { it.calories }.roundToInt()
+    val totalP = items.sumOf { it.protein }.roundToInt()
+    val totalC = items.sumOf { it.carbs }.roundToInt()
+    val totalF = items.sumOf { it.fat }.roundToInt()
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -100,7 +94,6 @@ fun MealCard(
                     items.forEach { item ->
                         FoodItemRow(
                             item = item,
-                            onToggleCheck = { isChecked -> onToggleCheck(item, isChecked) },
                             onDelete = { onDeleteItem(item) },
                             onEdit = { onEditItem?.invoke(item) }
                         )
@@ -114,7 +107,6 @@ fun MealCard(
 @Composable
 private fun FoodItemRow(
     item: LoggedMealItemEntity,
-    onToggleCheck: (Boolean) -> Unit,
     onDelete: () -> Unit,
     onEdit: () -> Unit,
     modifier: Modifier = Modifier
@@ -153,13 +145,12 @@ private fun FoodItemRow(
                 text = item.name,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = if (item.isChecked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
-                textDecoration = if (!item.isChecked) TextDecoration.LineThrough else TextDecoration.None,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = "${item.servingName} ✏️",
+                text = "${com.example.ess_mich_ki.util.ServingUnitUtils.formatServingDisplay(item.quantity, item.servingName, item.servingGrams)} ✏️",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.outline
             )
@@ -173,34 +164,6 @@ private fun FoodItemRow(
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(horizontal = 8.dp)
         )
-
-        // Interactive Green Checkmark Button
-        Box(
-            modifier = Modifier
-                .size(32.dp)
-                .clip(CircleShape)
-                .background(
-                    if (item.isChecked) CheckedGreen else Color.Transparent
-                )
-                .clickable { onToggleCheck(!item.isChecked) },
-            contentAlignment = Alignment.Center
-        ) {
-            if (item.isChecked) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Checked",
-                    tint = Color.White,
-                    modifier = Modifier.size(18.dp)
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(22.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.outlineVariant)
-                )
-            }
-        }
 
         // Delete button
         IconButton(
@@ -276,7 +239,7 @@ fun MealCardPreview() {
                 protein = 1.2,
                 carbs = 12.0,
                 fat = 0.6,
-                isChecked = false
+                isChecked = true
             )
         )
     )
@@ -285,7 +248,6 @@ fun MealCardPreview() {
         MealCard(
             mealType = "Breakfast",
             mealWithItems = sampleMeal,
-            onToggleCheck = { _, _ -> },
             onDeleteItem = {},
             modifier = Modifier.padding(16.dp)
         )

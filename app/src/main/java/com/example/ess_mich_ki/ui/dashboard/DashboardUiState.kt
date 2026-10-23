@@ -38,6 +38,12 @@ data class DashboardUiState(
     val editingMealItem: LoggedMealItemEntity? = null,
     val isProfileDrawerOpen: Boolean = false,
     val isApiKeyMissingWarning: Boolean = false,
+    val isNutritionalGoalsDialogShowing: Boolean = false,
+    val isFastingDay: Boolean = false,
+    val baseCalorieTarget: Int = 1581,
+    val baseProteinTarget: Int = 113,
+    val baseCarbsTarget: Int = 163,
+    val baseFatTarget: Int = 53,
     val apiKey: String = "",
     val baseUrl: String = "https://openrouter.ai/api/v1/",
     val model: String = com.example.ess_mich_ki.data.datastore.SettingsDataStore.DEFAULT_MODEL

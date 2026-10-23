@@ -9,6 +9,7 @@ import com.example.ess_mich_ki.data.local.database.AppDatabase
 import com.example.ess_mich_ki.data.local.entity.FoodItemEntity
 import com.example.ess_mich_ki.data.local.entity.LoggedMealEntity
 import com.example.ess_mich_ki.data.local.entity.LoggedMealItemEntity
+import com.example.ess_mich_ki.data.local.entity.UserGoalEntity
 import com.example.ess_mich_ki.data.local.model.MealWithItems
 import com.example.ess_mich_ki.data.network.openrouter.OpenRouterApiClient
 import com.example.ess_mich_ki.data.network.openrouter.ParsedFoodItem
@@ -46,6 +47,7 @@ class DashboardViewModel(
     private val editingMealItemState = MutableStateFlow<LoggedMealItemEntity?>(null)
     private val isProfileDrawerOpenState = MutableStateFlow(false)
     private val isApiKeyMissingWarningState = MutableStateFlow(false)
+    private val isNutritionalGoalsDialogShowingState = MutableStateFlow(false)
 
     private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
 
@@ -75,7 +77,8 @@ class DashboardViewModel(
         aiErrorState,
         editingMealItemState,
         isProfileDrawerOpenState,
-        isApiKeyMissingWarningState
+        isApiKeyMissingWarningState,
+        isNutritionalGoalsDialogShowingState
     ) { arrayOfValues ->
         val selectedDate = arrayOfValues[0] as LocalDate
         @Suppress("UNCHECKED_CAST")
@@ -92,20 +95,29 @@ class DashboardViewModel(
         val editingMealItem = arrayOfValues[11] as LoggedMealItemEntity?
         val isProfileDrawerOpen = arrayOfValues[12] as Boolean
         val isApiKeyMissingWarning = arrayOfValues[13] as Boolean
+        val isNutritionalGoalsDialogShowing = arrayOfValues[14] as Boolean
 
         val weeklyDays = computeWeeklyDays(selectedDate)
 
         val distinctMeals = mealsWithItems.distinctBy { it.meal.mealType.lowercase() }
-        val checkedItems = distinctMeals.flatMap { it.items }.filter { it.isChecked }
-        val consumedCalories = checkedItems.sumOf { it.calories }.roundToInt()
-        val consumedProtein = checkedItems.sumOf { it.protein }.roundToInt()
-        val consumedCarbs = checkedItems.sumOf { it.carbs }.roundToInt()
-        val consumedFat = checkedItems.sumOf { it.fat }.roundToInt()
+        val allLoggedItems = distinctMeals.flatMap { it.items }
+        val consumedCalories = allLoggedItems.sumOf { it.calories }.roundToInt()
+        val consumedProtein = allLoggedItems.sumOf { it.protein }.roundToInt()
+        val consumedCarbs = allLoggedItems.sumOf { it.carbs }.roundToInt()
+        val consumedFat = allLoggedItems.sumOf { it.fat }.roundToInt()
 
-        val calorieTarget = userGoal?.calorieTarget ?: 1581
-        val proteinTarget = 113
-        val carbsTarget = 163
-        val fatTarget = 53
+        val isFasting = userGoal?.isFastingDay == true
+        val factor = if (isFasting) 0.5 else 1.0
+
+        val baseCalorieTarget = userGoal?.calorieTarget ?: 1581
+        val baseProteinTarget = userGoal?.proteinTarget ?: 113
+        val baseCarbsTarget = userGoal?.carbsTarget ?: 163
+        val baseFatTarget = userGoal?.fatTarget ?: 53
+
+        val calorieTarget = (baseCalorieTarget * factor).roundToInt()
+        val proteinTarget = (baseProteinTarget * factor).roundToInt()
+        val carbsTarget = (baseCarbsTarget * factor).roundToInt()
+        val fatTarget = (baseFatTarget * factor).roundToInt()
 
         DashboardUiState(
             selectedDate = selectedDate,
@@ -132,6 +144,12 @@ class DashboardViewModel(
             editingMealItem = editingMealItem,
             isProfileDrawerOpen = isProfileDrawerOpen,
             isApiKeyMissingWarning = isApiKeyMissingWarning,
+            isNutritionalGoalsDialogShowing = isNutritionalGoalsDialogShowing,
+            isFastingDay = isFasting,
+            baseCalorieTarget = baseCalorieTarget,
+            baseProteinTarget = baseProteinTarget,
+            baseCarbsTarget = baseCarbsTarget,
+            baseFatTarget = baseFatTarget,
             apiKey = userSettings.openRouterApiKey,
             baseUrl = userSettings.openRouterBaseUrl,
             model = userSettings.openRouterModel
@@ -220,6 +238,38 @@ class DashboardViewModel(
         isAiLoadingState.value = false
         aiParsedResultState.value = null
         aiErrorState.value = null
+    }
+
+    fun openNutritionalGoalsDialog() {
+        isNutritionalGoalsDialogShowingState.value = true
+    }
+
+    fun closeNutritionalGoalsDialog() {
+        isNutritionalGoalsDialogShowingState.value = false
+    }
+
+    fun updateNutritionalGoals(kcal: Int, protein: Int, carbs: Int, fat: Int, isFastingDay: Boolean) {
+        viewModelScope.launch {
+            val currentGoal = database.userGoalDao().getUserGoalSync() ?: UserGoalEntity(
+                id = 1,
+                goalType = "Fat Loss",
+                initialWeight = 64.2,
+                currentWeight = 63.0,
+                goalWeight = 59.0,
+                startDateString = LocalDate.now().toString()
+            )
+
+            val updated = currentGoal.copy(
+                calorieTarget = kcal,
+                proteinTarget = protein,
+                carbsTarget = carbs,
+                fatTarget = fat,
+                isFastingDay = isFastingDay
+            )
+
+            database.userGoalDao().insertOrUpdateUserGoal(updated)
+            closeNutritionalGoalsDialog()
+        }
     }
 
     fun updateAiInputText(text: String) {
@@ -326,12 +376,13 @@ class DashboardViewModel(
             }
 
             val loggedItems = parsedMeal.items.map { parsed ->
+                val cleanUnit = com.example.ess_mich_ki.util.ServingUnitUtils.sanitizeServingName(parsed.servingName)
                 LoggedMealItemEntity(
                     mealId = mealId,
                     name = parsed.name,
                     quantity = parsed.quantity,
-                    servingName = parsed.servingName,
-                    servingGrams = parsed.servingGrams,
+                    servingName = cleanUnit,
+                    servingGrams = if (parsed.servingGrams > 0.0) parsed.servingGrams else com.example.ess_mich_ki.util.ServingUnitUtils.getStandardGramWeightForUnit(cleanUnit),
                     calories = parsed.calories,
                     protein = parsed.proteinGrams,
                     carbs = parsed.carbsGrams,
@@ -375,12 +426,11 @@ class DashboardViewModel(
         val items = database.loggedMealItemDao().getItemsForMealSync(mealId)
         val meal = database.loggedMealDao().getMealById(mealId) ?: return
 
-        val checkedItems = items.filter { it.isChecked }
         val updatedMeal = meal.copy(
-            totalCalories = checkedItems.sumOf { it.calories },
-            totalProtein = checkedItems.sumOf { it.protein },
-            totalCarbs = checkedItems.sumOf { it.carbs },
-            totalFat = checkedItems.sumOf { it.fat }
+            totalCalories = items.sumOf { it.calories },
+            totalProtein = items.sumOf { it.protein },
+            totalCarbs = items.sumOf { it.carbs },
+            totalFat = items.sumOf { it.fat }
         )
         database.loggedMealDao().updateMeal(updatedMeal)
     }
@@ -477,7 +527,7 @@ class DashboardViewModel(
                 foodItemId = 1,
                 name = "Soy Yogurt",
                 quantity = 1.0,
-                servingName = "1 Cup (200g)",
+                servingName = "cup",
                 servingGrams = 200.0,
                 calories = 108.0,
                 protein = 8.0,
@@ -489,9 +539,9 @@ class DashboardViewModel(
                 mealId = breakfastId,
                 foodItemId = 2,
                 name = "Chocolate Without Sugar",
-                quantity = 0.25,
-                servingName = "25g",
-                servingGrams = 25.0,
+                quantity = 25.0,
+                servingName = "g",
+                servingGrams = 1.0,
                 calories = 120.0,
                 protein = 1.8,
                 carbs = 7.5,
@@ -503,7 +553,7 @@ class DashboardViewModel(
                 foodItemId = 3,
                 name = "Himbeere Raspberry",
                 quantity = 1.0,
-                servingName = "1 Portion (100g)",
+                servingName = "portion",
                 servingGrams = 100.0,
                 calories = 52.0,
                 protein = 1.2,
@@ -520,7 +570,7 @@ class DashboardViewModel(
                 foodItemId = 5,
                 name = "Chicken Breast",
                 quantity = 1.0,
-                servingName = "1 Piece (150g)",
+                servingName = "piece",
                 servingGrams = 150.0,
                 calories = 248.0,
                 protein = 46.5,
@@ -532,9 +582,9 @@ class DashboardViewModel(
                 mealId = lunchId,
                 foodItemId = 4,
                 name = "Oat Milk",
-                quantity = 1.0,
-                servingName = "1 Glass (200ml)",
-                servingGrams = 200.0,
+                quantity = 200.0,
+                servingName = "ml",
+                servingGrams = 1.0,
                 calories = 92.0,
                 protein = 2.0,
                 carbs = 13.0,

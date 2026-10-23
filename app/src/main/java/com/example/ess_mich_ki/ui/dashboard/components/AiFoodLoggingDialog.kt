@@ -352,7 +352,7 @@ private fun ParsedFoodItemRow(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "${item.servingName} • ${item.calories.roundToInt()} kcal",
+                        text = "${com.example.ess_mich_ki.util.ServingUnitUtils.formatServingDisplay(item.quantity, item.servingName, item.servingGrams)} • ${item.calories.roundToInt()} kcal",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

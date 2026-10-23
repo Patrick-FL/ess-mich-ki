@@ -51,11 +51,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.ess_mich_ki.data.local.entity.LoggedMealItemEntity
 import com.example.ess_mich_ki.ui.detail.MacroStatCard
-import com.example.ess_mich_ki.ui.detail.ServingOption
 import com.example.ess_mich_ki.ui.theme.CarbsColor
 import com.example.ess_mich_ki.ui.theme.FatColor
 import com.example.ess_mich_ki.ui.theme.ProteinColor
+import com.example.ess_mich_ki.util.ServingUnitUtils
 import kotlin.math.roundToInt
+
+data class PureUnitOption(
+    val unitKey: String,
+    val displayLabel: String,
+    val gramWeightPerUnit: Double
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,26 +74,34 @@ fun EditLoggedMealItemDialog(
 ) {
     var quantity by remember(item) { mutableDoubleStateOf(item.quantity) }
     var quantityInputText by remember(item) {
-        mutableStateOf(if (item.quantity % 1.0 == 0.0) item.quantity.toInt().toString() else item.quantity.toString())
+        mutableStateOf(ServingUnitUtils.formatQuantity(item.quantity))
     }
 
-    val defaultServing = remember(item) { ServingOption(item.servingName, item.servingGrams) }
-    var selectedServing by remember(item) { mutableStateOf(defaultServing) }
+    val initialCleanUnit = remember(item) { ServingUnitUtils.sanitizeServingName(item.servingName) }
+    val initialGramWeight = remember(item) {
+        if (item.servingGrams > 0.0) item.servingGrams else ServingUnitUtils.getStandardGramWeightForUnit(initialCleanUnit)
+    }
+
+    var selectedUnitKey by remember(item) { mutableStateOf(initialCleanUnit) }
+    var selectedUnitGramWeight by remember(item) { mutableDoubleStateOf(initialGramWeight) }
     var showServingDropdown by remember { mutableStateOf(false) }
 
-    val presetServings = remember(item) {
+    val presetUnits = remember(item) {
         listOf(
-            defaultServing,
-            ServingOption("Gramm (1 g)", 1.0),
-            ServingOption("Portion (100 g)", 100.0),
-            ServingOption("1 EL / Tbsp (15 g)", 15.0),
-            ServingOption("1 Tasse / Cup (200 g)", 200.0)
-        ).distinctBy { it.label }
+            PureUnitOption(initialCleanUnit, initialCleanUnit, initialGramWeight),
+            PureUnitOption("piece", "piece / Stück", 15.0),
+            PureUnitOption("g", "g / Gramm", 1.0),
+            PureUnitOption("ml", "ml / Milliliter", 1.0),
+            PureUnitOption("tsp", "tsp / Teelöffel", 5.0),
+            PureUnitOption("tbsp", "tbsp / Esslöffel", 15.0),
+            PureUnitOption("cup", "cup / Tasse", 200.0),
+            PureUnitOption("portion", "portion / Portion", 100.0)
+        ).distinctBy { it.unitKey }
     }
 
     // Base calculations
-    val oldTotalGrams = (item.quantity * item.servingGrams).coerceAtLeast(1.0)
-    val newTotalGrams = (quantity * selectedServing.grams).coerceAtLeast(0.0)
+    val oldTotalGrams = (item.quantity * item.servingGrams).coerceAtLeast(0.1)
+    val newTotalGrams = (quantity * selectedUnitGramWeight).coerceAtLeast(0.0)
     val scaleFactor = newTotalGrams / oldTotalGrams
 
     val calculatedCalories = (item.calories * scaleFactor).coerceAtLeast(0.0)
@@ -257,7 +271,8 @@ fun EditLoggedMealItemDialog(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text("Unit / Serving: ${selectedServing.label}")
+                                val totalG = (quantity * selectedUnitGramWeight).roundToInt()
+                                Text("Unit: $selectedUnitKey (~${totalG}g total)")
                                 Icon(Icons.Default.ExpandMore, contentDescription = "Select unit")
                             }
                         }
@@ -266,11 +281,12 @@ fun EditLoggedMealItemDialog(
                             expanded = showServingDropdown,
                             onDismissRequest = { showServingDropdown = false }
                         ) {
-                            presetServings.forEach { option ->
+                            presetUnits.forEach { option ->
                                 DropdownMenuItem(
-                                    text = { Text(option.label) },
+                                    text = { Text(option.displayLabel) },
                                     onClick = {
-                                        selectedServing = option
+                                        selectedUnitKey = option.unitKey
+                                        selectedUnitGramWeight = option.gramWeightPerUnit
                                         showServingDropdown = false
                                     }
                                 )
@@ -283,7 +299,7 @@ fun EditLoggedMealItemDialog(
             // Save Changes Button
             Button(
                 onClick = {
-                    onSave(item, quantity, selectedServing.label, selectedServing.grams)
+                    onSave(item, quantity, selectedUnitKey, selectedUnitGramWeight)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

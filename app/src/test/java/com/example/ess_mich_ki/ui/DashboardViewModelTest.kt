@@ -183,6 +183,48 @@ class DashboardViewModelTest {
     }
 
     @Test
+    fun testUnitSwitchingPreservesQuantityNumberAndRecalculatesMacros() = runTest {
+        val viewModel = DashboardViewModel(fakeDatabase, settingsDataStore, openRouterApiClient)
+        advanceUntilIdle()
+
+        val initialState = viewModel.uiState.first { it.meals.isNotEmpty() }
+        val breakfast = initialState.meals.find { it.meal.mealType.equals("Breakfast", true) }!!
+
+        // Insert a strawberry item: 7 pieces (~100g total), 32 kcal
+        val mealId = breakfast.meal.id
+        val strawberryItem = LoggedMealItemEntity(
+            mealId = mealId,
+            name = "Strawberries",
+            quantity = 7.0,
+            servingName = "piece",
+            servingGrams = 14.2857, // 7 * 14.2857 = 100g
+            calories = 32.0,
+            protein = 0.7,
+            carbs = 7.7,
+            fat = 0.3,
+            isChecked = true
+        )
+        val itemId = fakeItemDao.insertItem(strawberryItem)
+
+        // Switch unit from "piece" to "g" while keeping quantity = 7.0
+        // New total grams = 7.0 * 1.0 = 7g
+        // Scale factor = 7g / 100g = 0.07
+        viewModel.updateLoggedMealItem(
+            item = strawberryItem.copy(id = itemId),
+            newQuantity = 7.0,
+            newServingName = "g",
+            newServingGrams = 1.0
+        )
+        advanceUntilIdle()
+
+        val updatedItem = fakeItemDao.getItemById(itemId)!!
+        assertEquals(7.0, updatedItem.quantity, 0.01)
+        assertEquals("g", updatedItem.servingName)
+        assertEquals(1.0, updatedItem.servingGrams, 0.01)
+        assertEquals(2.24, updatedItem.calories, 0.01) // 32.0 * 0.07 = 2.24
+    }
+
+    @Test
     fun testUpdateParsedItemInAiLogger() = runTest {
         val fakeApiClient = object : OpenRouterApiClient() {
             override suspend fun parseFoodText(

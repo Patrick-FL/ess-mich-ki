@@ -13,5 +13,10 @@ data class UserGoalEntity(
     val goalWeight: Double,
     val paceWeeks: Int = 12,
     val calorieTarget: Int = 2000,
+    val proteinTarget: Int = 113,
+    val carbsTarget: Int = 163,
+    val fatTarget: Int = 53,
+    val isFastingDay: Boolean = false,
     val startDateString: String
 )
+
