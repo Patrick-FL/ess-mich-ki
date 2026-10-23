@@ -19,10 +19,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.MonitorWeight
 import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -45,17 +48,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import com.example.ess_mich_ki.data.local.entity.UserGoalEntity
 import com.example.ess_mich_ki.data.local.entity.WeightLogEntity
 import com.example.ess_mich_ki.ui.progress.components.AddWeightDialog
 import com.example.ess_mich_ki.ui.progress.components.EditGoalDialog
+import com.example.ess_mich_ki.ui.progress.components.ManageWeightLogsDialog
 import com.example.ess_mich_ki.ui.theme.CheckedGreen
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
 
@@ -72,8 +84,11 @@ fun ProgressScreen(
         onCloseEditGoal = viewModel::closeEditGoalDialog,
         onOpenAddWeight = viewModel::openAddWeightDialog,
         onCloseAddWeight = viewModel::closeAddWeightDialog,
+        onOpenManageWeight = viewModel::openManageWeightDialog,
+        onCloseManageWeight = viewModel::closeManageWeightDialog,
         onSaveGoal = viewModel::saveGoal,
         onSaveWeight = viewModel::saveWeight,
+        onDeleteWeight = viewModel::deleteWeight,
         modifier = modifier
     )
 }
@@ -86,8 +101,11 @@ fun ProgressContent(
     onCloseEditGoal: () -> Unit,
     onOpenAddWeight: () -> Unit,
     onCloseAddWeight: () -> Unit,
+    onOpenManageWeight: () -> Unit = {},
+    onCloseManageWeight: () -> Unit = {},
     onSaveGoal: (UserGoalEntity) -> Unit,
     onSaveWeight: (Double, String) -> Unit,
+    onDeleteWeight: (WeightLogEntity) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -406,7 +424,7 @@ fun ProgressContent(
                 }
             }
 
-            // Scale Weight Line Graph Chart Card
+            // Scale Weight Line Graph Chart Card (Option B)
             item {
                 Card(
                     shape = RoundedCornerShape(20.dp),
@@ -421,6 +439,8 @@ fun ProgressContent(
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
+                        val logs = uiState.weightLogs
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -428,7 +448,7 @@ fun ProgressContent(
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
-                                    imageVector = Icons.Default.Whatshot,
+                                    imageVector = Icons.Default.MonitorWeight,
                                     contentDescription = "Scale Weight",
                                     tint = MaterialTheme.colorScheme.primary
                                 )
@@ -438,65 +458,275 @@ fun ProgressContent(
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
+
+                                // Net weight change badge
+                                if (logs.size >= 2) {
+                                    val diff = logs.last().weightKg - logs.first().weightKg
+                                    val diffText = if (diff > 0) "+%.1f kg".format(diff) else "%.1f kg".format(diff)
+                                    val isLoss = diff <= 0
+
+                                    Surface(
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = if (isLoss) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
+                                        contentColor = if (isLoss) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                                        modifier = Modifier.padding(start = 8.dp)
+                                    ) {
+                                        Text(
+                                            text = diffText,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                }
                             }
 
-                            Button(
-                                onClick = onOpenAddWeight,
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.primary
-                                ),
-                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Add Weight",
-                                    modifier = Modifier.size(16.dp)
-                                )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                IconButton(
+                                    onClick = onOpenManageWeight,
+                                    modifier = Modifier.size(36.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.FormatListBulleted,
+                                        contentDescription = "Gewichtsverlauf verwalten",
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("Add Weight", style = MaterialTheme.typography.labelMedium)
+
+                                Button(
+                                    onClick = onOpenAddWeight,
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.primary
+                                    ),
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Add Weight",
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text("Add Weight", style = MaterialTheme.typography.labelMedium)
+                                }
                             }
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Line Chart Canvas
-                        val primaryColor = MaterialTheme.colorScheme.primary
-                        Canvas(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(120.dp)
-                        ) {
-                            val logs = uiState.weightLogs
-                            if (logs.size >= 2) {
-                                val minW = (logs.minOf { it.weightKg } - 1.0).coerceAtLeast(40.0)
-                                val maxW = (logs.maxOf { it.weightKg } + 1.0).coerceAtMost(150.0)
-                                val rangeW = (maxW - minW).coerceAtLeast(1.0)
+                        if (logs.size < 2) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(130.dp)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.MonitorWeight,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(
+                                        text = if (logs.isEmpty()) {
+                                            "Noch keine Gewichtseinträge vorhanden."
+                                        } else {
+                                            "Aktuelles Gewicht: ${"%.1f kg".format(logs.first().weightKg)}"
+                                        },
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        text = "Trage mindestens 2 Gewichte ein, um deinen Verlauf zu sehen.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        } else {
+                            // Enhanced Option B Line Chart Canvas
+                            val textMeasurer = rememberTextMeasurer()
+                            val primaryColor = MaterialTheme.colorScheme.primary
+                            val surfaceColor = MaterialTheme.colorScheme.surface
+                            val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+                            val onSurfaceVariantColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            val goalLineColor = MaterialTheme.colorScheme.secondary
 
-                                val points = logs.mapIndexed { index, weightLog ->
-                                    val x = (size.width / (logs.size - 1)) * index
-                                    val y = size.height - ((weightLog.weightKg - minW) / rangeW * size.height).toFloat()
+                            val valueStyle = MaterialTheme.typography.labelMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = onSurfaceColor
+                            )
+                            val dateStyle = MaterialTheme.typography.labelSmall.copy(
+                                color = onSurfaceVariantColor
+                            )
+                            val goalStyle = MaterialTheme.typography.labelSmall.copy(
+                                color = goalLineColor,
+                                fontWeight = FontWeight.Medium
+                            )
+
+                            val targetWeight = uiState.targetWeight
+                            val logWeights = logs.map { it.weightKg }
+                            val minLog = logWeights.minOrNull() ?: 60.0
+                            val maxLog = logWeights.maxOrNull() ?: 70.0
+
+                            val isGoalInRange = targetWeight in (minLog - 5.0)..(maxLog + 5.0)
+                            val minW = if (isGoalInRange) minOf(minLog, targetWeight) - 0.6 else minLog - 0.6
+                            val maxW = if (isGoalInRange) maxOf(maxLog, targetWeight) + 0.6 else maxLog + 0.6
+                            val rangeW = (maxW - minW).coerceAtLeast(0.5)
+
+                            Canvas(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(180.dp)
+                            ) {
+                                val paddingX = 36.dp.toPx()
+                                val paddingTop = 28.dp.toPx()
+                                val paddingBottom = 28.dp.toPx()
+                                val chartWidth = size.width - 2 * paddingX
+                                val chartHeight = size.height - paddingTop - paddingBottom
+
+                                val points = logs.mapIndexed { index, log ->
+                                    val x = paddingX + (chartWidth / (logs.size - 1)) * index
+                                    val y = paddingTop + chartHeight - ((log.weightKg - minW) / rangeW * chartHeight).toFloat()
                                     Offset(x, y)
                                 }
 
-                                val path = Path()
-                                path.moveTo(points.first().x, points.first().y)
-                                for (i in 1 until points.size) {
-                                    path.lineTo(points[i].x, points[i].y)
+                                // 1. Goal reference line (dashed)
+                                if (isGoalInRange) {
+                                    val goalY = paddingTop + chartHeight - ((targetWeight - minW) / rangeW * chartHeight).toFloat()
+                                    if (goalY in (paddingTop - 10f)..(paddingTop + chartHeight + 10f)) {
+                                        drawLine(
+                                            color = goalLineColor.copy(alpha = 0.5f),
+                                            start = Offset(paddingX, goalY),
+                                            end = Offset(size.width - paddingX, goalY),
+                                            strokeWidth = 1.5.dp.toPx(),
+                                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+                                        )
+                                        val goalTextLayout = textMeasurer.measure(
+                                            text = "Ziel: ${"%.1f kg".format(targetWeight)}",
+                                            style = goalStyle
+                                        )
+                                        val gW = goalTextLayout.size.width.toFloat()
+                                        val gH = goalTextLayout.size.height.toFloat()
+                                        drawText(
+                                            textLayoutResult = goalTextLayout,
+                                            topLeft = Offset(
+                                                x = size.width - paddingX - gW,
+                                                y = goalY - gH - 2.dp.toPx()
+                                            )
+                                        )
+                                    }
                                 }
 
+                                // 2. Smooth Bezier Curve Path & Fill
+                                val strokePath = Path()
+                                val fillPath = Path()
+
+                                strokePath.moveTo(points.first().x, points.first().y)
+                                fillPath.moveTo(points.first().x, points.first().y)
+
+                                for (i in 0 until points.size - 1) {
+                                    val p1 = points[i]
+                                    val p2 = points[i + 1]
+                                    val controlX1 = p1.x + (p2.x - p1.x) / 2f
+                                    val controlY1 = p1.y
+                                    val controlX2 = p1.x + (p2.x - p1.x) / 2f
+                                    val controlY2 = p2.y
+
+                                    strokePath.cubicTo(controlX1, controlY1, controlX2, controlY2, p2.x, p2.y)
+                                    fillPath.cubicTo(controlX1, controlY1, controlX2, controlY2, p2.x, p2.y)
+                                }
+
+                                val bottomY = paddingTop + chartHeight
+                                fillPath.lineTo(points.last().x, bottomY)
+                                fillPath.lineTo(points.first().x, bottomY)
+                                fillPath.close()
+
+                                // Draw gradient fill below curve
                                 drawPath(
-                                    path = path,
-                                    color = primaryColor,
-                                    style = Stroke(width = 4.dp.toPx())
+                                    path = fillPath,
+                                    brush = Brush.verticalGradient(
+                                        colors = listOf(
+                                            primaryColor.copy(alpha = 0.25f),
+                                            primaryColor.copy(alpha = 0.01f)
+                                        ),
+                                        startY = paddingTop,
+                                        endY = bottomY
+                                    )
                                 )
 
-                                points.forEach { pt ->
+                                // Draw curve stroke
+                                drawPath(
+                                    path = strokePath,
+                                    color = primaryColor,
+                                    style = Stroke(
+                                        width = 3.dp.toPx(),
+                                        cap = StrokeCap.Round,
+                                        join = StrokeJoin.Round
+                                    )
+                                )
+
+                                // 3. Draw Points, Weight Labels & Date Labels
+                                points.forEachIndexed { i, pt ->
+                                    val log = logs[i]
+
+                                    // Outer colored circle
                                     drawCircle(
                                         color = primaryColor,
                                         radius = 6.dp.toPx(),
                                         center = pt
+                                    )
+                                    // Inner surface circle
+                                    drawCircle(
+                                        color = surfaceColor,
+                                        radius = 3.dp.toPx(),
+                                        center = pt
+                                    )
+
+                                    // Weight label above point
+                                    val weightText = "%.1f kg".format(log.weightKg)
+                                    val weightLayout = textMeasurer.measure(
+                                        text = weightText,
+                                        style = valueStyle
+                                    )
+                                    val wW = weightLayout.size.width.toFloat()
+                                    val wH = weightLayout.size.height.toFloat()
+                                    drawText(
+                                        textLayoutResult = weightLayout,
+                                        topLeft = Offset(
+                                            x = pt.x - wW / 2f,
+                                            y = pt.y - wH - 4.dp.toPx()
+                                        )
+                                    )
+
+                                    // Date label below point
+                                    val dateText = formatWeightDate(log.dateString)
+                                    val dateLayout = textMeasurer.measure(
+                                        text = dateText,
+                                        style = dateStyle
+                                    )
+                                    val dW = dateLayout.size.width.toFloat()
+                                    drawText(
+                                        textLayoutResult = dateLayout,
+                                        topLeft = Offset(
+                                            x = pt.x - dW / 2f,
+                                            y = paddingTop + chartHeight + 6.dp.toPx()
+                                        )
                                     )
                                 }
                             }
@@ -507,6 +737,15 @@ fun ProgressContent(
         }
 
         // Dialogs
+        if (uiState.isManageWeightShowing) {
+            ManageWeightLogsDialog(
+                weightLogs = uiState.weightLogs,
+                onDeleteWeight = onDeleteWeight,
+                onOpenAddWeight = onOpenAddWeight,
+                onDismiss = onCloseManageWeight
+            )
+        }
+
         if (uiState.isEditGoalShowing) {
             EditGoalDialog(
                 initialUserGoal = uiState.userGoal,
@@ -568,3 +807,20 @@ fun ProgressScreenPreview() {
         )
     }
 }
+
+private fun formatWeightDate(dateString: String): String {
+    return try {
+        val date = LocalDate.parse(dateString)
+        val today = LocalDate.now()
+        when {
+            date == today -> "Heute"
+            date == today.minusDays(1) -> "Gestern"
+            else -> date.format(DateTimeFormatter.ofPattern("dd.MM."))
+        }
+    } catch (_: Exception) {
+        dateString
+    }
+}
+
+
+

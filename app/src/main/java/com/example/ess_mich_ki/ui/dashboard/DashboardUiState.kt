@@ -16,7 +16,12 @@ data class DayItem(
 data class DashboardUiState(
     val selectedDate: LocalDate = LocalDate.now(),
     val weeklyDays: List<DayItem> = emptyList(),
-    val streakCount: Int = 1,
+    val streakCount: Int = 0,
+    val currentLoggedStreak: Int = 0,
+    val bestLoggedStreak: Int = 0,
+    val currentPerfectStreak: Int = 0,
+    val bestPerfectStreak: Int = 0,
+    val monthlyCalendarData: com.example.ess_mich_ki.util.MonthlyCalendarData? = null,
     val calorieConsumed: Int = 0,
     val calorieTarget: Int = 1581,
     val calorieMinRange: Int = 1423,

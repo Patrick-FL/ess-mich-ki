@@ -30,6 +30,7 @@ import kotlinx.coroutines.test.setMain
 import okhttp3.OkHttpClient
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -222,6 +223,18 @@ class DashboardViewModelTest {
         assertEquals("g", updatedItem.servingName)
         assertEquals(1.0, updatedItem.servingGrams, 0.01)
         assertEquals(2.24, updatedItem.calories, 0.01) // 32.0 * 0.07 = 2.24
+    }
+
+    @Test
+    fun testStreaksCalculationInDashboardViewModel() = runTest {
+        val viewModel = DashboardViewModel(fakeDatabase, settingsDataStore, openRouterApiClient)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.first { it.meals.isNotEmpty() }
+        // Seeded data logs meals for today, so currentLoggedStreak should be at least 1
+        assertTrue(state.currentLoggedStreak >= 1)
+        assertTrue(state.bestLoggedStreak >= 1)
+        assertTrue(state.monthlyCalendarData != null)
     }
 
     @Test

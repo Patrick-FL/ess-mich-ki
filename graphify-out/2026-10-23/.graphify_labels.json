@@ -1,13 +1,12 @@
 {
-  "0": "FoodSearchViewModel",
+  "0": "UserGoalEntity",
   "1": "FoodItemEntity",
-  "2": "LoggedMealEntity",
-  "3": "UserGoalEntity",
+  "2": "LoggedMealItemEntity",
+  "3": "WeightLogEntity",
   "4": "EssmichkiTheme",
-  "5": "WeightLogEntity",
+  "5": "NutritionalGoalState",
   "6": "DashboardViewModel",
   "7": "FoodDetailViewModel",
-  "8": "LoggedMealItemEntity",
   "9": "OpenRouterApiClient",
   "10": "SettingsDataStore",
   "11": "AppNavigation.kt",
@@ -19,5 +18,6 @@
   "17": "app/build.gradle.kts",
   "18": "Type.kt",
   "19": "build.gradle.kts",
-  "20": "settings.gradle.kts"
+  "20": "settings.gradle.kts",
+  "22": ".calculateMonthlyCalendar"
 }

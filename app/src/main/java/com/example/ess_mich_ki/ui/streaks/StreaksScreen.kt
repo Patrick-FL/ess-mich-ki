@@ -41,18 +41,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ess_mich_ki.ui.theme.CheckedGreen
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
-import java.time.LocalDate
+import com.example.ess_mich_ki.util.MonthlyCalendarData
+import com.example.ess_mich_ki.util.StreakCalculator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StreaksScreen(
-    currentLoggedStreak: Int = 1,
-    bestLoggedStreak: Int = 62,
+    currentLoggedStreak: Int = 0,
+    bestLoggedStreak: Int = 0,
     currentPerfectStreak: Int = 0,
-    bestPerfectStreak: Int = 42,
+    bestPerfectStreak: Int = 0,
+    monthlyCalendarData: MonthlyCalendarData? = null,
     onCloseClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val calendar = monthlyCalendarData ?: StreakCalculator.calculateMonthlyCalendar(
+        dailyCalories = emptyMap(),
+        defaultMinRange = 1400,
+        defaultMaxRange = 1700
+    )
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -115,7 +123,7 @@ fun StreaksScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "October 2026",
+                        text = calendar.monthTitle,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -140,7 +148,7 @@ fun StreaksScreen(
                     Column(
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        // Weekday Labels Row (M, T, W, T, F, S, S | Avg)
+                        // Weekday Labels Row (M, T, W, T, F, S, S | AVG)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -159,16 +167,8 @@ fun StreaksScreen(
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        // Sample October 2026 5-Week Grid
-                        val sampleWeeks = listOf(
-                            listOf(0, 0, 0, 1, 2, 3, 4) to 632,
-                            listOf(5, 6, 7, 8, 9, 10, 11) to 1250,
-                            listOf(12, 13, 14, 15, 16, 17, 18) to 1180,
-                            listOf(19, 20, 21, 22, 23, 24, 25) to 632,
-                            listOf(26, 27, 28, 29, 30, 31, 0) to 0
-                        )
-
-                        sampleWeeks.forEach { (days, avgKcal) ->
+                        // Dynamic Monthly Calendar Weeks
+                        calendar.weeks.forEach { week ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -176,14 +176,15 @@ fun StreaksScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                days.forEach { dayNum ->
+                                week.days.forEach { dayInfo ->
                                     Box(
                                         modifier = Modifier.weight(1f),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        if (dayNum > 0) {
-                                            val isLogged = dayNum <= 22
-                                            val isToday = dayNum == 22
+                                        if (dayInfo.dayOfMonth > 0) {
+                                            val isToday = dayInfo.isToday
+                                            val isPerfect = dayInfo.isPerfect
+                                            val isLogged = dayInfo.isLogged
 
                                             Box(
                                                 modifier = Modifier
@@ -192,25 +193,40 @@ fun StreaksScreen(
                                                     .background(
                                                         when {
                                                             isToday -> MaterialTheme.colorScheme.primary
+                                                            isPerfect -> Color(0xFFFFB300).copy(alpha = 0.25f)
                                                             isLogged -> CheckedGreen.copy(alpha = 0.2f)
                                                             else -> Color.Transparent
                                                         }
                                                     ),
                                                 contentAlignment = Alignment.Center
                                             ) {
-                                                if (isLogged && !isToday) {
+                                                if (isToday) {
+                                                    Text(
+                                                        text = "${dayInfo.dayOfMonth}",
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        color = Color.White,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                } else if (isPerfect) {
                                                     Icon(
                                                         imageVector = Icons.Default.Whatshot,
-                                                        contentDescription = "Logged",
+                                                        contentDescription = "Perfect Day",
+                                                        tint = Color(0xFFFFB300),
+                                                        modifier = Modifier.size(18.dp)
+                                                    )
+                                                } else if (isLogged) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Whatshot,
+                                                        contentDescription = "Logged Day",
                                                         tint = CheckedGreen,
                                                         modifier = Modifier.size(16.dp)
                                                     )
                                                 } else {
                                                     Text(
-                                                        text = "$dayNum",
+                                                        text = "${dayInfo.dayOfMonth}",
                                                         style = MaterialTheme.typography.labelSmall,
-                                                        color = if (isToday) Color.White else MaterialTheme.colorScheme.onSurface,
-                                                        fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal
+                                                        color = MaterialTheme.colorScheme.onSurface,
+                                                        fontWeight = FontWeight.Normal
                                                     )
                                                 }
                                             }
@@ -223,9 +239,9 @@ fun StreaksScreen(
                                     modifier = Modifier.weight(1f),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    if (avgKcal > 0) {
+                                    if (week.avgCalories > 0) {
                                         Text(
-                                            text = "$avgKcal",
+                                            text = "${week.avgCalories}",
                                             style = MaterialTheme.typography.labelSmall,
                                             fontWeight = FontWeight.Bold,
                                             color = MaterialTheme.colorScheme.primary
@@ -328,9 +344,9 @@ fun StreaksScreenPreview() {
     EssmichkiTheme {
         StreaksScreen(
             currentLoggedStreak = 1,
-            bestLoggedStreak = 62,
-            currentPerfectStreak = 0,
-            bestPerfectStreak = 42
+            bestLoggedStreak = 5,
+            currentPerfectStreak = 1,
+            bestPerfectStreak = 3
         )
     }
 }

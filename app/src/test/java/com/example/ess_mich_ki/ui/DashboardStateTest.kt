@@ -57,8 +57,7 @@ class DashboardStateTest {
                 calories = 108.0,
                 protein = 8.0,
                 carbs = 4.2,
-                fat = 4.6,
-                isChecked = true
+                fat = 4.6
             ),
             LoggedMealItemEntity(
                 id = 2,
@@ -67,49 +66,46 @@ class DashboardStateTest {
                 calories = 120.0,
                 protein = 1.8,
                 carbs = 7.5,
-                fat = 9.5,
-                isChecked = true
+                fat = 9.5
             ),
             LoggedMealItemEntity(
                 id = 3,
                 mealId = 1,
-                name = "Unchecked Snack",
+                name = "Snack",
                 calories = 200.0,
                 protein = 10.0,
                 carbs = 20.0,
-                fat = 5.0,
-                isChecked = false
+                fat = 5.0
             )
         )
 
         val mealWithItems = MealWithItems(meal = meal, items = items)
 
-        val checkedItems = mealWithItems.items.filter { it.isChecked }
-        val totalCalories = checkedItems.sumOf { it.calories }
+        val totalCalories = mealWithItems.items.sumOf { it.calories }
 
-        assertEquals(2, checkedItems.size)
-        assertEquals(228.0, totalCalories, 0.01)
+        assertEquals(3, mealWithItems.items.size)
+        assertEquals(428.0, totalCalories, 0.01)
     }
 
     @Test
     fun testDistinctMealsPreventsDuplicateCalorieAccumulation() {
         val meal1 = LoggedMealEntity(id = 1, dateString = "2026-10-22", mealType = "Breakfast")
         val items1 = listOf(
-            LoggedMealItemEntity(id = 1, mealId = 1, name = "Apple", calories = 100.0, isChecked = true)
+            LoggedMealItemEntity(id = 1, mealId = 1, name = "Apple", calories = 100.0)
         )
         val mealWithItems1 = MealWithItems(meal = meal1, items = items1)
 
         val meal2 = LoggedMealEntity(id = 2, dateString = "2026-10-22", mealType = "Breakfast")
         val items2 = listOf(
-            LoggedMealItemEntity(id = 2, mealId = 2, name = "Apple Duplicate", calories = 100.0, isChecked = true)
+            LoggedMealItemEntity(id = 2, mealId = 2, name = "Apple Duplicate", calories = 100.0)
         )
         val mealWithItems2 = MealWithItems(meal = meal2, items = items2)
 
         val rawMeals = listOf(mealWithItems1, mealWithItems2)
         val distinctMeals = rawMeals.distinctBy { it.meal.mealType.lowercase() }
 
-        val checkedItems = distinctMeals.flatMap { it.items }.filter { it.isChecked }
-        val totalCalories = checkedItems.sumOf { it.calories }
+        val allItems = distinctMeals.flatMap { it.items }
+        val totalCalories = allItems.sumOf { it.calories }
 
         assertEquals(1, distinctMeals.size)
         assertEquals(100.0, totalCalories, 0.01)

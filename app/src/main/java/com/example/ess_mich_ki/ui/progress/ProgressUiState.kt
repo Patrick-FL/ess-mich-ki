@@ -17,7 +17,8 @@ data class ProgressUiState(
     val averageWeeklyCalories: Int = 0,
     val weightLogs: List<WeightLogEntity> = emptyList(),
     val isEditGoalShowing: Boolean = false,
-    val isAddWeightShowing: Boolean = false
+    val isAddWeightShowing: Boolean = false,
+    val isManageWeightShowing: Boolean = false
 ) {
     val currentWeight: Double
         get() = weightLogs.lastOrNull()?.weightKg ?: userGoal?.currentWeight ?: 63.0

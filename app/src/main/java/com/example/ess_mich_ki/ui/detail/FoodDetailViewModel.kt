@@ -234,10 +234,10 @@ class FoodDetailViewModel(
                 id = mealId,
                 dateString = todayStr,
                 mealType = mealType,
-                totalCalories = updatedItems.filter { it.isChecked }.sumOf { it.calories },
-                totalProtein = updatedItems.filter { it.isChecked }.sumOf { it.protein },
-                totalCarbs = updatedItems.filter { it.isChecked }.sumOf { it.carbs },
-                totalFat = updatedItems.filter { it.isChecked }.sumOf { it.fat }
+                totalCalories = updatedItems.sumOf { it.calories },
+                totalProtein = updatedItems.sumOf { it.protein },
+                totalCarbs = updatedItems.sumOf { it.carbs },
+                totalFat = updatedItems.sumOf { it.fat }
             )
             database.loggedMealDao().updateMeal(updatedMeal)
 

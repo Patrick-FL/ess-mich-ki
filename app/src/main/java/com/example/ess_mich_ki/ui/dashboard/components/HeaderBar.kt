@@ -53,7 +53,8 @@ fun HeaderBar(
     streakCount: Int,
     onDateSelected: (LocalDate) -> Unit,
     onAvatarClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onStreakClick: () -> Unit = {}
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
 
@@ -103,7 +104,10 @@ fun HeaderBar(
                 Surface(
                     shape = RoundedCornerShape(20.dp),
                     color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    modifier = Modifier.padding(end = 8.dp)
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .clickable { onStreakClick() }
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),

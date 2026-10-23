@@ -6,8 +6,6 @@ import com.example.ess_mich_ki.ui.detail.FoodDetailUiState
 import com.example.ess_mich_ki.ui.detail.ServingOption
 import com.example.ess_mich_ki.ui.progress.DailyCalorieStat
 import com.example.ess_mich_ki.ui.progress.ProgressUiState
-import com.example.ess_mich_ki.ui.search.FoodSearchUiState
-import com.example.ess_mich_ki.ui.search.SearchTab
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Test
@@ -68,18 +66,5 @@ class Task3ViewModelsTest {
         // Lost = 64.2 - 63 = 1.2
         // Progress = 1.2 / 5.2 = 0.2307 (23%)
         assertEquals(0.23f, state.progressPercentage, 0.02f)
-    }
-
-    @Test
-    fun testFoodSearchUiState_TabFiltering() {
-        val state = FoodSearchUiState(
-            searchQuery = "Raspberry",
-            selectedCountryFlag = "🇩🇪",
-            selectedTab = SearchTab.DATABASE
-        )
-
-        assertEquals("Raspberry", state.searchQuery)
-        assertEquals("🇩🇪", state.selectedCountryFlag)
-        assertEquals(SearchTab.DATABASE, state.selectedTab)
     }
 }

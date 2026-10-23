@@ -38,6 +38,7 @@ import java.time.LocalDate
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel,
+    onStreakClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -65,6 +66,7 @@ fun DashboardScreen(
         onOpenNutritionalGoalsDialog = viewModel::openNutritionalGoalsDialog,
         onCloseNutritionalGoalsDialog = viewModel::closeNutritionalGoalsDialog,
         onSaveNutritionalGoals = viewModel::updateNutritionalGoals,
+        onStreakClick = onStreakClick,
         modifier = modifier
     )
 }
@@ -94,6 +96,7 @@ fun DashboardContent(
     onOpenNutritionalGoalsDialog: () -> Unit = {},
     onCloseNutritionalGoalsDialog: () -> Unit = {},
     onSaveNutritionalGoals: (Int, Int, Int, Int, Boolean) -> Unit = { _, _, _, _, _ -> },
+    onStreakClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val mealTypes = listOf("Breakfast", "Lunch", "Dinner", "Snack")
@@ -124,7 +127,8 @@ fun DashboardContent(
                 weeklyDays = uiState.weeklyDays,
                 streakCount = uiState.streakCount,
                 onDateSelected = onDateSelected,
-                onAvatarClick = onToggleProfileDrawer
+                onAvatarClick = onToggleProfileDrawer,
+                onStreakClick = onStreakClick
             )
 
             // Main Scrollable Area

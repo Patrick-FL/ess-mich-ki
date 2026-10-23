@@ -26,6 +26,7 @@ class ProgressViewModel(
 
     private val isEditGoalShowingState = MutableStateFlow(false)
     private val isAddWeightShowingState = MutableStateFlow(false)
+    private val isManageWeightShowingState = MutableStateFlow(false)
 
     init {
         seedInitialProgressData()
@@ -41,7 +42,7 @@ class ProgressViewModel(
                         id = 1,
                         goalType = "Fat Loss",
                         initialWeight = 64.2,
-                        currentWeight = 63.0,
+                        currentWeight = 64.2,
                         goalWeight = 59.0,
                         paceWeeks = 5,
                         calorieTarget = 1284,
@@ -50,29 +51,39 @@ class ProgressViewModel(
                 )
             }
 
-            // Seed Weight Logs if empty
+            // Seed Weight Logs: ensure only 64.2 kg is present (clean up previous dummy logs)
             val existingLogs = database.weightLogDao().getAllWeightLogs().first()
-            if (existingLogs.isEmpty()) {
+            val hasDummyData = existingLogs.any { it.weightKg in listOf(63.8, 63.5, 63.2, 63.0) }
+            if (existingLogs.isEmpty() || hasDummyData) {
+                existingLogs.forEach { database.weightLogDao().deleteWeightLog(it) }
                 val today = LocalDate.now()
-                val sampleLogs = listOf(
-                    WeightLogEntity(dateString = today.minusDays(14).toString(), weightKg = 64.2),
-                    WeightLogEntity(dateString = today.minusDays(10).toString(), weightKg = 63.8),
-                    WeightLogEntity(dateString = today.minusDays(7).toString(), weightKg = 63.5),
-                    WeightLogEntity(dateString = today.minusDays(3).toString(), weightKg = 63.2),
-                    WeightLogEntity(dateString = today.toString(), weightKg = 63.0)
+                database.weightLogDao().insertWeightLog(
+                    WeightLogEntity(dateString = today.toString(), weightKg = 64.2)
                 )
-                sampleLogs.forEach { database.weightLogDao().insertWeightLog(it) }
+                val goal = database.userGoalDao().getUserGoalSync()
+                if (goal != null) {
+                    database.userGoalDao().insertOrUpdateUserGoal(
+                        goal.copy(currentWeight = 64.2)
+                    )
+                }
             }
         }
+    }
+
+    private val dialogsState = combine(
+        isEditGoalShowingState,
+        isAddWeightShowingState,
+        isManageWeightShowingState
+    ) { isEditGoal, isAddWeight, isManageWeight ->
+        Triple(isEditGoal, isAddWeight, isManageWeight)
     }
 
     val uiState: StateFlow<ProgressUiState> = combine(
         database.userGoalDao().getUserGoal(),
         database.weightLogDao().getAllWeightLogs(),
         database.loggedMealDao().getAllMeals(),
-        isEditGoalShowingState,
-        isAddWeightShowingState
-    ) { userGoal, weightLogs, allMeals, isEditGoalShowing, isAddWeightShowing ->
+        dialogsState
+    ) { userGoal, weightLogs, allMeals, (isEditGoal, isAddWeight, isManageWeight) ->
 
         val today = LocalDate.now()
         val monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
@@ -117,8 +128,9 @@ class ProgressViewModel(
             weeklyCalorieStats = weeklyCalorieStats,
             averageWeeklyCalories = avgCalories,
             weightLogs = weightLogs,
-            isEditGoalShowing = isEditGoalShowing,
-            isAddWeightShowing = isAddWeightShowing
+            isEditGoalShowing = isEditGoal,
+            isAddWeightShowing = isAddWeight,
+            isManageWeightShowing = isManageWeight
         )
     }.stateIn(
         scope = viewModelScope,
@@ -142,6 +154,14 @@ class ProgressViewModel(
         isAddWeightShowingState.value = false
     }
 
+    fun openManageWeightDialog() {
+        isManageWeightShowingState.value = true
+    }
+
+    fun closeManageWeightDialog() {
+        isManageWeightShowingState.value = false
+    }
+
     fun saveGoal(userGoal: UserGoalEntity) {
         viewModelScope.launch {
             database.userGoalDao().insertOrUpdateUserGoal(userGoal)
@@ -159,6 +179,21 @@ class ProgressViewModel(
             if (goal != null) {
                 database.userGoalDao().insertOrUpdateUserGoal(
                     goal.copy(currentWeight = weightKg)
+                )
+            }
+        }
+    }
+
+    fun deleteWeight(weightLog: WeightLogEntity) {
+        viewModelScope.launch {
+            database.weightLogDao().deleteWeightLog(weightLog)
+
+            val remainingLogs = database.weightLogDao().getAllWeightLogs().first()
+            val latest = remainingLogs.lastOrNull()?.weightKg ?: 64.2
+            val goal = database.userGoalDao().getUserGoalSync()
+            if (goal != null) {
+                database.userGoalDao().insertOrUpdateUserGoal(
+                    goal.copy(currentWeight = latest)
                 )
             }
         }

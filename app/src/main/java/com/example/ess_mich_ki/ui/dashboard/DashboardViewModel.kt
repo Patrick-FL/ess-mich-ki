@@ -78,7 +78,8 @@ class DashboardViewModel(
         editingMealItemState,
         isProfileDrawerOpenState,
         isApiKeyMissingWarningState,
-        isNutritionalGoalsDialogShowingState
+        isNutritionalGoalsDialogShowingState,
+        database.loggedMealDao().getAllMeals()
     ) { arrayOfValues ->
         val selectedDate = arrayOfValues[0] as LocalDate
         @Suppress("UNCHECKED_CAST")
@@ -96,6 +97,8 @@ class DashboardViewModel(
         val isProfileDrawerOpen = arrayOfValues[12] as Boolean
         val isApiKeyMissingWarning = arrayOfValues[13] as Boolean
         val isNutritionalGoalsDialogShowing = arrayOfValues[14] as Boolean
+        @Suppress("UNCHECKED_CAST")
+        val allMeals = arrayOfValues[15] as List<LoggedMealEntity>
 
         val weeklyDays = computeWeeklyDays(selectedDate)
 
@@ -119,14 +122,47 @@ class DashboardViewModel(
         val carbsTarget = (baseCarbsTarget * factor).roundToInt()
         val fatTarget = (baseFatTarget * factor).roundToInt()
 
+        val calorieMinRange = (calorieTarget * 0.9).roundToInt()
+        val calorieMaxRange = (calorieTarget * 1.1).roundToInt()
+
+        val dailyCalories = allMeals
+            .groupBy { meal ->
+                runCatching { LocalDate.parse(meal.dateString, dateFormatter) }.getOrNull()
+            }
+            .filterKeys { it != null }
+            .mapKeys { it.key!! }
+            .mapValues { (_, meals) -> meals.sumOf { it.totalCalories }.roundToInt() }
+
+        val streakResult = com.example.ess_mich_ki.util.StreakCalculator.calculateStreaks(
+            dailyCalories = dailyCalories,
+            defaultMinRange = calorieMinRange,
+            defaultMaxRange = calorieMaxRange,
+            today = LocalDate.now(),
+            isTodayEnded = isDayEnded
+        )
+
+        val monthlyCalendarData = com.example.ess_mich_ki.util.StreakCalculator.calculateMonthlyCalendar(
+            dailyCalories = dailyCalories,
+            defaultMinRange = calorieMinRange,
+            defaultMaxRange = calorieMaxRange,
+            yearMonth = java.time.YearMonth.from(selectedDate),
+            today = LocalDate.now(),
+            isTodayEnded = isDayEnded
+        )
+
         DashboardUiState(
             selectedDate = selectedDate,
             weeklyDays = weeklyDays,
-            streakCount = 1,
+            streakCount = streakResult.currentLoggedStreak,
+            currentLoggedStreak = streakResult.currentLoggedStreak,
+            bestLoggedStreak = streakResult.bestLoggedStreak,
+            currentPerfectStreak = streakResult.currentPerfectStreak,
+            bestPerfectStreak = streakResult.bestPerfectStreak,
+            monthlyCalendarData = monthlyCalendarData,
             calorieConsumed = consumedCalories,
             calorieTarget = calorieTarget,
-            calorieMinRange = (calorieTarget * 0.9).roundToInt(),
-            calorieMaxRange = (calorieTarget * 1.1).roundToInt(),
+            calorieMinRange = calorieMinRange,
+            calorieMaxRange = calorieMaxRange,
             proteinConsumed = consumedProtein,
             proteinTarget = proteinTarget,
             carbsConsumed = consumedCarbs,
@@ -254,7 +290,7 @@ class DashboardViewModel(
                 id = 1,
                 goalType = "Fat Loss",
                 initialWeight = 64.2,
-                currentWeight = 63.0,
+                currentWeight = 64.2,
                 goalWeight = 59.0,
                 startDateString = LocalDate.now().toString()
             )
