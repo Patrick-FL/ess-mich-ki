@@ -1,0 +1,387 @@
+{
+  "app/build.gradle.kts": {
+    "mtime": 1792641518.185,
+    "ast_hash": "661e4ab419ed83ed5a2d8261fdc08125",
+    "semantic_hash": ""
+  },
+  "app/src/androidTest/java/com/example/ess_mich_ki/ExampleInstrumentedTest.kt": {
+    "mtime": 1792641517.074,
+    "ast_hash": "c9a4b07727eb8927994929813924d19d",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/MainActivity.kt": {
+    "mtime": 1792642305.6,
+    "ast_hash": "39bc785b522a76796f4303233e9459d8",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/datastore/SettingsDataStore.kt": {
+    "mtime": 1792643575.43,
+    "ast_hash": "9c32aa079336978db4cea7a51c8f1c2a",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/local/dao/FoodItemDao.kt": {
+    "mtime": 1792641766.063,
+    "ast_hash": "a52f7cab3cd0544f4b49f1aefc85a391",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/local/dao/LoggedMealDao.kt": {
+    "mtime": 1792645500.483,
+    "ast_hash": "faeb98e38503bf555325471702d7638c",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/local/dao/LoggedMealItemDao.kt": {
+    "mtime": 1792641773.052,
+    "ast_hash": "f67679bf6658d705e095de0bb7b1847b",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/local/dao/UserGoalDao.kt": {
+    "mtime": 1792641778.567,
+    "ast_hash": "2a306f6a313261ad6bf53bb303b2cde5",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/local/dao/WeightLogDao.kt": {
+    "mtime": 1792641776.089,
+    "ast_hash": "9da0524d34f96653f68d7218c401b73f",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/local/database/AppDatabase.kt": {
+    "mtime": 1792641849.016,
+    "ast_hash": "e727b1ed7ebafb0ed857c3855b7f6f44",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/local/database/Converters.kt": {
+    "mtime": 1792641781.082,
+    "ast_hash": "8bfda1b6bf87288c207b2978aca32d95",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/local/entity/FoodItemEntity.kt": {
+    "mtime": 1792641749.92,
+    "ast_hash": "8790b04aadf86484fceb8aa2edba0ce2",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/local/entity/LoggedMealEntity.kt": {
+    "mtime": 1792641752.559,
+    "ast_hash": "213d5fe27cfcfe2cd73f5204edad6d1e",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/local/entity/LoggedMealItemEntity.kt": {
+    "mtime": 1792641755.411,
+    "ast_hash": "10ebf9d12406ca27a2c12915baca1be2",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/local/entity/UserGoalEntity.kt": {
+    "mtime": 1792641759.996,
+    "ast_hash": "9da8947cf4eeec949b7427202394ac0d",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/local/entity/WeightLogEntity.kt": {
+    "mtime": 1792641757.669,
+    "ast_hash": "f852545182d3a8956b6a2182473224fc",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/local/model/MealWithItems.kt": {
+    "mtime": 1792641762.401,
+    "ast_hash": "4a2def210c86230c03ca69d18974e188",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/network/openrouter/OpenRouterApiClient.kt": {
+    "mtime": 1792643585.196,
+    "ast_hash": "4de3db7bddfafdda081950ff2d1d78a2",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/data/network/openrouter/OpenRouterModels.kt": {
+    "mtime": 1792641802.89,
+    "ast_hash": "1c225cee1aff52f7ac95cdb40c983e7b",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardScreen.kt": {
+    "mtime": 1792725905.21,
+    "ast_hash": "72fb42b891ecb1d202801a67639780b1",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardUiState.kt": {
+    "mtime": 1792645505.203,
+    "ast_hash": "c312d75f54af607877a0c711ad630a9f",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardViewModel.kt": {
+    "mtime": 1792645520.598,
+    "ast_hash": "d6537e800428e5a29cd2051b05f83cf8",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt": {
+    "mtime": 1792681406.546,
+    "ast_hash": "3ef7f9fa1e50b6ceefd323c96db939eb",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/CalorieGaugeCard.kt": {
+    "mtime": 1792726162.32,
+    "ast_hash": "e6a35f3dc4cc8ea990514fca3fafdbe7",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/HeaderBar.kt": {
+    "mtime": 1792641958.81,
+    "ast_hash": "595ef2cfc8cb954c2268c8cadd0040e3",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/MealCard.kt": {
+    "mtime": 1792725577.815,
+    "ast_hash": "b6b0242914579805060ee46db7a8bfd4",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/ProfileSettingsSheet.kt": {
+    "mtime": 1792643649.589,
+    "ast_hash": "762bd56627aa932c99fe3b93a0aed51a",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/detail/FoodDetailScreen.kt": {
+    "mtime": 1792642633.577,
+    "ast_hash": "7ebcb54a992ee4ad5c76facbffb6dc7a",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/detail/FoodDetailUiState.kt": {
+    "mtime": 1792643607.232,
+    "ast_hash": "d19e1ca2fc242ce978a5f0f75b7402f8",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/detail/FoodDetailViewModel.kt": {
+    "mtime": 1792643615.408,
+    "ast_hash": "128befe7c907f6fa76e1d032ed5dac31",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/navigation/AppNavigation.kt": {
+    "mtime": 1792642610.699,
+    "ast_hash": "4455620dad0017e97d969052f6653f3e",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/progress/ProgressScreen.kt": {
+    "mtime": 1792642637.699,
+    "ast_hash": "9bd37bd18bc397af6ee303d63f51fd9f",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/progress/ProgressUiState.kt": {
+    "mtime": 1792642237.329,
+    "ast_hash": "a8874bf43fde803e80c124fb9fe03d70",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/progress/ProgressViewModel.kt": {
+    "mtime": 1792642245.387,
+    "ast_hash": "703d25da483a2fa02b0933b59eb7bfdf",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/progress/components/AddWeightDialog.kt": {
+    "mtime": 1792642233.645,
+    "ast_hash": "fab7cced54f3a7f7da9cfdbc0a68f0c5",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/progress/components/EditGoalDialog.kt": {
+    "mtime": 1792642228.377,
+    "ast_hash": "e635c1209bc12e3819121c4327626b35",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/search/FoodSearchScreen.kt": {
+    "mtime": 1792642627.067,
+    "ast_hash": "319f1084f4194d78130535a26104f132",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/search/FoodSearchUiState.kt": {
+    "mtime": 1792643619.81,
+    "ast_hash": "4de30e59933f88b1de298249bd3fdda8",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/search/FoodSearchViewModel.kt": {
+    "mtime": 1792643623.464,
+    "ast_hash": "26ad149c825475fb619d5dd2ef8c320c",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/search/components/BarcodeScannerDialog.kt": {
+    "mtime": 1792642141.664,
+    "ast_hash": "3e25f604b221b372b20629a7146726c3",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/search/components/VoiceLoggingDialog.kt": {
+    "mtime": 1792642148.282,
+    "ast_hash": "3ed3175c6109c3f474a036016335a6c0",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/settings/SettingsViewModel.kt": {
+    "mtime": 1792643580.351,
+    "ast_hash": "9e3fbfa9e1741bdef34603d2ab87d003",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/streaks/StreaksScreen.kt": {
+    "mtime": 1792642642.305,
+    "ast_hash": "55376c39e4abc624bb5a519d0f4db5d3",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/theme/Color.kt": {
+    "mtime": 1792641917.802,
+    "ast_hash": "a36bd7cbe97b4201874ecca0ed570bb2",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/theme/Theme.kt": {
+    "mtime": 1792641518.333,
+    "ast_hash": "af959e30dc6d97786dca66e0bf3ec5d3",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/ui/theme/Type.kt": {
+    "mtime": 1792641517.576,
+    "ast_hash": "b340106442f13355ac33568247efeab1",
+    "semantic_hash": ""
+  },
+  "app/src/test/java/com/example/ess_mich_ki/ExampleUnitTest.kt": {
+    "mtime": 1792641517.049,
+    "ast_hash": "f45466546760e4599e2ede1070fc849b",
+    "semantic_hash": ""
+  },
+  "app/src/test/java/com/example/ess_mich_ki/data/OpenRouterApiClientTest.kt": {
+    "mtime": 1792641830.702,
+    "ast_hash": "96b6215b2679d4dabaf8de5d70f535ef",
+    "semantic_hash": ""
+  },
+  "app/src/test/java/com/example/ess_mich_ki/data/SampleDataTest.kt": {
+    "mtime": 1792641834.157,
+    "ast_hash": "975c8adff68c2ea27be58bc5be662806",
+    "semantic_hash": ""
+  },
+  "app/src/test/java/com/example/ess_mich_ki/ui/DashboardStateTest.kt": {
+    "mtime": 1792645745.899,
+    "ast_hash": "445f587c402ab5594de96010877c9ddb",
+    "semantic_hash": ""
+  },
+  "app/src/test/java/com/example/ess_mich_ki/ui/DashboardViewModelTest.kt": {
+    "mtime": 1792645729.252,
+    "ast_hash": "dcdd4beb2446c88cacf23b4a58cd9848",
+    "semantic_hash": ""
+  },
+  "app/src/test/java/com/example/ess_mich_ki/ui/SettingsViewModelTest.kt": {
+    "mtime": 1792643678.073,
+    "ast_hash": "9a6a883bac6dc916e9d5875de1b65121",
+    "semantic_hash": ""
+  },
+  "app/src/test/java/com/example/ess_mich_ki/ui/Task3ViewModelsTest.kt": {
+    "mtime": 1792642325.3,
+    "ast_hash": "a036885177aee298d073f4c7f8117d58",
+    "semantic_hash": ""
+  },
+  "build.gradle.kts": {
+    "mtime": 1792641517.969,
+    "ast_hash": "6cbf88f9cdec386165ceffb5b6195c6d",
+    "semantic_hash": ""
+  },
+  "gradlew": {
+    "mtime": 1792641516.011,
+    "ast_hash": "266606e78242737ef3da02a80ea0564d",
+    "semantic_hash": ""
+  },
+  "settings.gradle.kts": {
+    "mtime": 1792641516.744,
+    "ast_hash": "2ed1c6619b361f36a1422b9974f318ec",
+    "semantic_hash": ""
+  },
+  ".agent/plan.md": {
+    "mtime": 1792642916.201,
+    "ast_hash": "e15b01fc4d275169bb402b357b938c73",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/drawable/placeholder.png": {
+    "mtime": 1792641517.532,
+    "ast_hash": "0a2835e1e9a9916fe111c464c7070a9b",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-hdpi/ic_launcher.webp": {
+    "mtime": 1792641516.542,
+    "ast_hash": "39d9bb21eb48f128a71c3f01ad3cd427",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-hdpi/ic_launcher_round.webp": {
+    "mtime": 1792641516.546,
+    "ast_hash": "70d6f58af3c76ee221c829b1ce9daa04",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-mdpi/ic_launcher.webp": {
+    "mtime": 1792641516.552,
+    "ast_hash": "d2acce71c7b46e5e9540d23a9f7b2166",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-mdpi/ic_launcher_round.webp": {
+    "mtime": 1792641516.556,
+    "ast_hash": "6376acb48f96a855ee95c113cd7fd616",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-xhdpi/ic_launcher.webp": {
+    "mtime": 1792641516.56,
+    "ast_hash": "bd087d80b70bec05a43c745f29dc3ffc",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp": {
+    "mtime": 1792641516.563,
+    "ast_hash": "7479edd56ab712609f030054bffd7263",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-xxhdpi/ic_launcher.webp": {
+    "mtime": 1792641516.568,
+    "ast_hash": "ea180e8d1a2e8300cc998b987266b736",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp": {
+    "mtime": 1792641516.57,
+    "ast_hash": "947842742b29eeda80ee0805e1600366",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp": {
+    "mtime": 1792641516.575,
+    "ast_hash": "54ab624970c86c2146e76b93f27586f7",
+    "semantic_hash": ""
+  },
+  "app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp": {
+    "mtime": 1792641516.579,
+    "ast_hash": "9ee591be72fb336861a8044086054daa",
+    "semantic_hash": ""
+  },
+  "example_screenshots/Bildschirmfoto vom 2026-10-17 10-06-16.png": {
+    "mtime": 1792224398.9249995,
+    "ast_hash": "5485382751048b2c968aa478d4722bd1",
+    "semantic_hash": ""
+  },
+  "example_screenshots/Bildschirmfoto vom 2026-10-22 05-36-25.png": {
+    "mtime": 1792640205.9667225,
+    "ast_hash": "731bbdfa469ed2d7fb4011633eb5dced",
+    "semantic_hash": ""
+  },
+  "example_screenshots/Bildschirmfoto vom 2026-10-22 05-37-06.png": {
+    "mtime": 1792640231.3377929,
+    "ast_hash": "0949a2ffba0e3485d8c2f83cc935ae3f",
+    "semantic_hash": ""
+  },
+  "example_screenshots/Bildschirmfoto vom 2026-10-22 05-37-27.png": {
+    "mtime": 1792640251.0556226,
+    "ast_hash": "e80e8f7d30fce5df096960a5f7e41478",
+    "semantic_hash": ""
+  },
+  "example_screenshots/Bildschirmfoto vom 2026-10-22 05-37-58.png": {
+    "mtime": 1792640279.4948165,
+    "ast_hash": "4ad833ad6a55c78d45ae02dec5640483",
+    "semantic_hash": ""
+  },
+  "example_screenshots/Bildschirmfoto vom 2026-10-22 05-39-56.png": {
+    "mtime": 1792640400.6558685,
+    "ast_hash": "2d004abb2e5ad4be07db648006de4ad9",
+    "semantic_hash": ""
+  },
+  "example_screenshots/Bildschirmfoto vom 2026-10-22 05-44-08.png": {
+    "mtime": 1792640652.8362427,
+    "ast_hash": "f38cd4ab5aca716c10f9a7957ccd4b7a",
+    "semantic_hash": ""
+  },
+  "example_screenshots/Bildschirmfoto vom 2026-10-22 05-44-25.png": {
+    "mtime": 1792640672.1050293,
+    "ast_hash": "e8afa5681ea01fac12a2317b701cd624",
+    "semantic_hash": ""
+  },
+  "example_screenshots/Bildschirmfoto vom 2026-10-22 05-45-08.png": {
+    "mtime": 1792640712.296668,
+    "ast_hash": "aae9586fe0ba762ba332bc4e9ff722b7",
+    "semantic_hash": ""
+  }
+}

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- LEFT SPROUT LEAF -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,39 C54,30 48,24 38,26 C38,35 44,40 54,39 Z" />
+
+    <!-- MAIN RIGHT DYNAMIC LEAF -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,39 C54,28 62,21 75,21 C75,34 68,42 54,39 Z" />
+
+    <!-- STEM -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M54,41 C53,36 54,31 56,27"
+        android:strokeWidth="2.2"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round" />
+
+    <!-- MAIN APPLE BODY -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,66 C42,66 33,57 33,47 C33,37 41,33 47,35 C51,36.5 52.5,38 54,40 C55.5,38 57,36.5 61,35 C67,33 75,37 75,47 C75,57 66,66 54,66 Z" />
+
+    <!-- BOWL BASE BODY -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M28,58 C28,74 40,82 54,82 C68,82 80,74 80,58 C70,63 38,63 28,58 Z" />
+
+    <!-- AI SCANNER ARC -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M22,54 C36,46 72,46 86,54"
+        android:strokeWidth="2.0"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round" />
+
+    <path android:pathData="M22,54 A2,2 0 1,1 21.99,54 Z" android:fillColor="#FFFFFF" />
+    <path android:pathData="M86,54 A2,2 0 1,1 85.99,54 Z" android:fillColor="#FFFFFF" />
+
+    <!-- AI SPARKS -->
+    <path android:pathData="M77,16 C77,20 79,22 83,22 C79,22 77,24 77,28 C77,24 75,22 71,22 C75,22 77,20 77,16 Z"
+        android:fillColor="#FFFFFF" />
+
+    <path android:pathData="M25,25 C25,28 27,30 30,30 C27,30 25,32 25,35 C25,32 23,30 20,30 C23,30 25,28 25,25 Z"
+        android:fillColor="#FFFFFF" />
+
+    <path android:pathData="M83,40 C83,41.5 84,42.5 85.5,42.5 C84,42.5 83,43.5 83,45 C83,43.5 82,42.5 80.5,42.5 C82,42.5 83,41.5 83,40 Z"
+        android:fillColor="#FFFFFF" />
+
+</vector>
