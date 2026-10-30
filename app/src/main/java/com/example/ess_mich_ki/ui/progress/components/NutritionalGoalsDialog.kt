@@ -1,5 +1,6 @@
 package com.example.ess_mich_ki.ui.progress.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -42,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,27 +53,12 @@ import androidx.compose.ui.window.Dialog
 import com.example.ess_mich_ki.ui.theme.CarbsColor
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
 import com.example.ess_mich_ki.ui.theme.FatColor
+import com.example.ess_mich_ki.ui.theme.NothingRed
 import com.example.ess_mich_ki.ui.theme.ProteinColor
 import com.example.ess_mich_ki.util.NutritionalGoalMath
 import com.example.ess_mich_ki.util.NutritionalGoalMath.NutritionalGoalState
 import kotlin.math.roundToInt
 
-/**
- * Interactive Dialog for dynamically configuring daily nutritional goals.
- *
- * Core Features:
- * 1. 4 Interactive Sliders (Total Kcal, Protein, Carbohydrates, Fats).
- * 2. Locking / Pinning mechanism:
- *    - Adjusting Total Kcal proportionally scales all unlocked macros.
- *    - Adjusting a macro when Total Kcal is LOCKED redistributes the calorie delta across remaining unlocked macros.
- *    - Adjusting a macro when Total Kcal is UNLOCKED recalculates Total Kcal dynamically.
- * 3. Constraint Handling:
- *    - Automatically locks / disables the 3rd macro slider when Total Kcal and 2 macros are locked.
- *    - Guarantees non-negative values.
- * 4. "Heute ist Fastentag" (Fasting Day) Toggle:
- *    - Temporarily reduces effective target values by 50%.
- *    - Restores exact 100% baseline values without rounding drift when deactivated.
- */
 @Composable
 fun NutritionalGoalsDialog(
     initialKcal: Int = 1581,
@@ -95,7 +83,8 @@ fun NutritionalGoalsDialog(
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(28.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
@@ -117,20 +106,40 @@ fun NutritionalGoalsDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .background(NothingRed, CircleShape)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "NÄHRWERTZIELE",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                letterSpacing = 1.2.sp
+                            )
+                        }
                         Text(
-                            text = "Nährwertziele anpassen",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Interaktive Sliders & Sperren",
-                            style = MaterialTheme.typography.bodySmall,
+                            text = "INTERAKTIVE SLIDER & SPERSYSTEM",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FontFamily.Monospace,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
-                    IconButton(onClick = onDismiss) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = "Schließen")
+                    IconButton(
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Schließen",
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
                 }
 
@@ -138,12 +147,13 @@ fun NutritionalGoalsDialog(
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = if (goalState.isFastingDay) {
-                            MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f)
+                            NothingRed.copy(alpha = 0.15f)
                         } else {
-                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                            MaterialTheme.colorScheme.surfaceVariant
                         }
                     ),
-                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, if (goalState.isFastingDay) NothingRed else MaterialTheme.colorScheme.outline),
+                    shape = RoundedCornerShape(20.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
@@ -162,29 +172,30 @@ fun NutritionalGoalsDialog(
                                     .size(38.dp)
                                     .clip(CircleShape)
                                     .background(
-                                        if (goalState.isFastingDay) MaterialTheme.colorScheme.tertiary
-                                        else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+                                        if (goalState.isFastingDay) NothingRed else MaterialTheme.colorScheme.surface
                                     ),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Bolt,
                                     contentDescription = null,
-                                    tint = if (goalState.isFastingDay) MaterialTheme.colorScheme.onTertiary
-                                    else MaterialTheme.colorScheme.onSurface
+                                    tint = if (goalState.isFastingDay) Color.White else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(
-                                    text = "Heute ist Fastentag",
-                                    fontWeight = FontWeight.Bold,
-                                    style = MaterialTheme.typography.titleMedium
+                                    text = "HEUTE IST FASTENTAG",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontWeight = FontWeight.Bold
                                 )
                                 Text(
                                     text = if (goalState.isFastingDay) "Zielwerte temporär um 50% halbiert"
-                                    else "Zielwerte auf 50% reduzieren",
+                                    else "Zielwerte um 50% reduzieren",
                                     style = MaterialTheme.typography.labelSmall,
+                                    fontFamily = FontFamily.Monospace,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -196,14 +207,15 @@ fun NutritionalGoalsDialog(
                                 goalState = NutritionalGoalMath.toggleFastingDay(goalState)
                             },
                             colors = SwitchDefaults.colors(
-                                checkedThumbColor = MaterialTheme.colorScheme.tertiary,
-                                checkedTrackColor = MaterialTheme.colorScheme.tertiaryContainer
+                                checkedThumbColor = Color.White,
+                                checkedTrackColor = NothingRed,
+                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
                             )
                         )
                     }
                 }
 
-                HorizontalDivider()
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
                 // Macro Split Percentage Bar Visualization
                 Column(modifier = Modifier.fillMaxWidth()) {
@@ -213,13 +225,15 @@ fun NutritionalGoalsDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Makronährstoff-Verteilung",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.SemiBold
+                            text = "VERTEILUNG",
+                            style = MaterialTheme.typography.labelSmall,
+                            letterSpacing = 0.8.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = "1g P=4kcal | 1g C=4kcal | 1g F=9kcal",
                             style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FontFamily.Monospace,
                             fontSize = 10.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -231,8 +245,8 @@ fun NutritionalGoalsDialog(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(12.dp)
-                            .clip(RoundedCornerShape(6.dp))
+                            .height(10.dp)
+                            .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         val pPct = goalState.proteinKcalPercentage.coerceAtLeast(0)
@@ -243,7 +257,7 @@ fun NutritionalGoalsDialog(
                             Box(
                                 modifier = Modifier
                                     .weight(pPct.toFloat().coerceAtLeast(0.001f))
-                                    .height(12.dp)
+                                    .height(10.dp)
                                     .background(ProteinColor)
                             )
                         }
@@ -251,7 +265,7 @@ fun NutritionalGoalsDialog(
                             Box(
                                 modifier = Modifier
                                     .weight(cPct.toFloat().coerceAtLeast(0.001f))
-                                    .height(12.dp)
+                                    .height(10.dp)
                                     .background(CarbsColor)
                             )
                         }
@@ -259,7 +273,7 @@ fun NutritionalGoalsDialog(
                             Box(
                                 modifier = Modifier
                                     .weight(fPct.toFloat().coerceAtLeast(0.001f))
-                                    .height(12.dp)
+                                    .height(10.dp)
                                     .background(FatColor)
                             )
                         }
@@ -275,18 +289,21 @@ fun NutritionalGoalsDialog(
                             text = "P: ${goalState.proteinKcalPercentage}%",
                             color = ProteinColor,
                             style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             text = "C: ${goalState.carbsKcalPercentage}%",
                             color = CarbsColor,
                             style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             text = "F: ${goalState.fatKcalPercentage}%",
                             color = FatColor,
                             style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -296,14 +313,14 @@ fun NutritionalGoalsDialog(
 
                 // --- 1. TOTAL CALORIES SLIDER ---
                 MacroSliderItem(
-                    label = "Gesamtkalorien",
-                    displayValue = "${goalState.effectiveKcal} kcal",
+                    label = "GESAMTKALORIEN",
+                    displayValue = "${goalState.effectiveKcal} KCAL",
                     subText = if (goalState.isFastingDay) "(Basis: ${goalState.totalKcal} kcal)" else null,
                     value = goalState.totalKcal.toFloat(),
                     valueRange = 800f..4000f,
-                    accentColor = MaterialTheme.colorScheme.primary,
+                    accentColor = NothingRed,
                     isLocked = goalState.isKcalLocked,
-                    isDisabled = goalState.isFastingDay, // Sliders disabled during Fasting Day
+                    isDisabled = goalState.isFastingDay,
                     onLockToggle = { goalState = NutritionalGoalMath.toggleLockKcal(goalState) },
                     onValueChange = { newKcal ->
                         goalState = NutritionalGoalMath.updateTotalKcal(goalState, newKcal.roundToInt())
@@ -312,8 +329,8 @@ fun NutritionalGoalsDialog(
 
                 // --- 2. PROTEIN SLIDER ---
                 MacroSliderItem(
-                    label = "Proteine",
-                    displayValue = "${goalState.effectiveProteinGrams} g",
+                    label = "PROTEIN",
+                    displayValue = "${goalState.effectiveProteinGrams} G",
                     subText = "${goalState.effectiveProteinGrams * 4} kcal (${goalState.proteinKcalPercentage}%)",
                     value = goalState.proteinGrams.toFloat(),
                     valueRange = 0f..300f,
@@ -328,8 +345,8 @@ fun NutritionalGoalsDialog(
 
                 // --- 3. CARBOHYDRATES SLIDER ---
                 MacroSliderItem(
-                    label = "Kohlenhydrate",
-                    displayValue = "${goalState.effectiveCarbsGrams} g",
+                    label = "CARBS",
+                    displayValue = "${goalState.effectiveCarbsGrams} G",
                     subText = "${goalState.effectiveCarbsGrams * 4} kcal (${goalState.carbsKcalPercentage}%)",
                     value = goalState.carbsGrams.toFloat(),
                     valueRange = 0f..500f,
@@ -344,8 +361,8 @@ fun NutritionalGoalsDialog(
 
                 // --- 4. FATS SLIDER ---
                 MacroSliderItem(
-                    label = "Fette",
-                    displayValue = "${goalState.effectiveFatGrams} g",
+                    label = "FETT",
+                    displayValue = "${goalState.effectiveFatGrams} G",
                     subText = "${goalState.effectiveFatGrams * 9} kcal (${goalState.fatKcalPercentage}%)",
                     value = goalState.fatGrams.toFloat(),
                     valueRange = 0f..200f,
@@ -370,9 +387,10 @@ fun NutritionalGoalsDialog(
                         modifier = Modifier
                             .weight(1f)
                             .height(48.dp),
-                        shape = RoundedCornerShape(12.dp)
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                        shape = CircleShape
                     ) {
-                        Text("Abbrechen")
+                        Text("Abbrechen", color = MaterialTheme.colorScheme.onSurface)
                     }
 
                     Button(
@@ -389,9 +407,13 @@ fun NutritionalGoalsDialog(
                         modifier = Modifier
                             .weight(1f)
                             .height(48.dp),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = NothingRed,
+                            contentColor = Color.White
+                        )
                     ) {
-                        Text("Speichern", fontWeight = FontWeight.Bold)
+                        Text("Speichern", fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -430,8 +452,8 @@ private fun MacroSliderItem(
                     Icon(
                         imageVector = if (isLocked) Icons.Default.Lock else Icons.Default.LockOpen,
                         contentDescription = if (isLocked) "$label entsperren" else "$label sperren",
-                        tint = if (isLocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                        modifier = Modifier.size(20.dp)
+                        tint = if (isLocked) NothingRed else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(18.dp)
                     )
                 }
 
@@ -439,16 +461,18 @@ private fun MacroSliderItem(
 
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    letterSpacing = 0.8.sp
                 )
 
                 if (isLocked) {
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "(Fixiert)",
+                        text = "(FIX)",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
+                        fontFamily = FontFamily.Monospace,
+                        color = NothingRed,
                         fontSize = 10.sp
                     )
                 }
@@ -457,7 +481,8 @@ private fun MacroSliderItem(
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = displayValue,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
                     color = accentColor
                 )
@@ -465,6 +490,7 @@ private fun MacroSliderItem(
                     Text(
                         text = subText,
                         style = MaterialTheme.typography.labelSmall,
+                        fontFamily = FontFamily.Monospace,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -479,7 +505,7 @@ private fun MacroSliderItem(
             colors = SliderDefaults.colors(
                 thumbColor = accentColor,
                 activeTrackColor = accentColor,
-                inactiveTrackColor = accentColor.copy(alpha = 0.24f)
+                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
             ),
             modifier = Modifier.fillMaxWidth()
         )

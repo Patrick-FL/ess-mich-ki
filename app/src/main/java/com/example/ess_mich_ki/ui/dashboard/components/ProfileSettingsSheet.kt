@@ -1,6 +1,7 @@
 package com.example.ess_mich_ki.ui.dashboard.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,37 +14,30 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Fastfood
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.RestaurantMenu
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ShoppingBag
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -56,7 +50,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -65,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ess_mich_ki.data.datastore.SettingsDataStore
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
+import com.example.ess_mich_ki.ui.theme.NothingRed
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,6 +83,7 @@ fun ProfileSettingsSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
     ) {
         Column(
@@ -106,41 +103,54 @@ fun ProfileSettingsSheet(
                         modifier = Modifier
                             .size(52.dp)
                             .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary),
+                            .background(NothingRed),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "S",
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = Color.White,
+                            fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 24.sp
+                            fontSize = 22.sp
                         )
                     }
                     Spacer(modifier = Modifier.width(14.dp))
                     Column {
                         Text(
-                            text = "Szent",
+                            text = "SZENT",
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
+                            color = MaterialTheme.colorScheme.onSurface,
+                            letterSpacing = 1.2.sp
                         )
                         Text(
-                            text = "Free Account",
-                            style = MaterialTheme.typography.labelMedium,
+                            text = "FREE ACCOUNT",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FontFamily.Monospace,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
 
-                IconButton(onClick = onDismiss) {
-                    Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Schließen",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(16.dp)
+                    )
                 }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Settings Section
+            // Settings Section Header
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -151,22 +161,24 @@ fun ProfileSettingsSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = "Settings",
-                        tint = MaterialTheme.colorScheme.primary
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .background(NothingRed, CircleShape)
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Settings",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        text = "EINSTELLUNGEN",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        letterSpacing = 1.sp
                     )
                 }
 
                 Icon(
                     imageVector = if (isSettingsExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                    contentDescription = "Toggle Settings"
+                    contentDescription = "Einstellungen umschalten",
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -174,16 +186,16 @@ fun ProfileSettingsSheet(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 12.dp, top = 8.dp, end = 12.dp, bottom = 12.dp)
+                        .padding(start = 4.dp, top = 8.dp, end = 4.dp, bottom = 12.dp)
                 ) {
                     // OpenRouter API Key Input
                     Text(
-                        text = "OpenRouter API Key",
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        text = "OPENROUTER API KEY",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        letterSpacing = 0.8.sp
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
                     OutlinedTextField(
                         value = apiKeyInput,
                         onValueChange = {
@@ -192,34 +204,45 @@ fun ProfileSettingsSheet(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
-                        placeholder = { Text("sk-or-v1-...") },
+                        placeholder = { Text("sk-or-v1-...", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Key,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
+                                tint = NothingRed,
+                                modifier = Modifier.size(18.dp)
                             )
                         },
                         trailingIcon = {
                             IconButton(onClick = { isApiKeyVisible = !isApiKeyVisible }) {
                                 Icon(
                                     imageVector = if (isApiKeyVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                    contentDescription = "Toggle Visibility"
+                                    contentDescription = "Sichtbarkeit umschalten",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(18.dp)
                                 )
                             }
                         },
                         visualTransformation = if (isApiKeyVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        shape = RoundedCornerShape(12.dp)
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            focusedBorderColor = NothingRed,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        shape = RoundedCornerShape(16.dp)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Base URL Selection
                     Text(
-                        text = "OpenRouter Base URL",
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        text = "BASE URL",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        letterSpacing = 0.8.sp
                     )
                     Spacer(modifier = Modifier.height(6.dp))
 
@@ -234,11 +257,23 @@ fun ProfileSettingsSheet(
                         )
 
                         baseUrls.forEach { (label, url) ->
-                            FilterChip(
-                                selected = baseUrl == url,
-                                onClick = { onBaseUrlChange(url) },
-                                label = { Text(label) }
-                            )
+                            val isSelected = (baseUrl == url)
+                            Surface(
+                                shape = CircleShape,
+                                color = if (isSelected) NothingRed else MaterialTheme.colorScheme.surfaceVariant,
+                                border = BorderStroke(1.dp, if (isSelected) NothingRed else MaterialTheme.colorScheme.outline),
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .clickable { onBaseUrlChange(url) }
+                            ) {
+                                Text(
+                                    text = label.uppercase(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                                )
+                            }
                         }
                     }
 
@@ -246,10 +281,10 @@ fun ProfileSettingsSheet(
 
                     // AI Model Selection / Custom Entry
                     Text(
-                        text = "AI Model",
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        text = "KI-MODELL",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        letterSpacing = 0.8.sp
                     )
                     Spacer(modifier = Modifier.height(6.dp))
 
@@ -265,18 +300,30 @@ fun ProfileSettingsSheet(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         items(commonModels) { (label, modelId) ->
-                            FilterChip(
-                                selected = modelInput == modelId,
-                                onClick = {
-                                    modelInput = modelId
-                                    onModelChange(modelId)
-                                },
-                                label = { Text(label) }
-                            )
+                            val isSelected = (modelInput == modelId)
+                            Surface(
+                                shape = CircleShape,
+                                color = if (isSelected) NothingRed else MaterialTheme.colorScheme.surfaceVariant,
+                                border = BorderStroke(1.dp, if (isSelected) NothingRed else MaterialTheme.colorScheme.outline),
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .clickable {
+                                        modelInput = modelId
+                                        onModelChange(modelId)
+                                    }
+                            ) {
+                                Text(
+                                    text = label.uppercase(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                                )
+                            }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = modelInput,
@@ -286,27 +333,40 @@ fun ProfileSettingsSheet(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
-                        placeholder = { Text("e.g. google/gemini-2.0-flash-001") },
+                        placeholder = { Text("google/gemini-2.0-flash-001", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.AutoAwesome,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
+                                tint = NothingRed,
+                                modifier = Modifier.size(18.dp)
                             )
                         },
-                        shape = RoundedCornerShape(12.dp)
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            focusedBorderColor = NothingRed,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        shape = RoundedCornerShape(16.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(18.dp))
 
                     Button(
                         onClick = onDismiss,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                        shape = RoundedCornerShape(24.dp)
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.onSurface,
+                            contentColor = MaterialTheme.colorScheme.surface
+                        )
                     ) {
-                        Text("Save & Close", fontWeight = FontWeight.Bold)
+                        Text("Speichern & Schließen", fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -315,8 +375,6 @@ fun ProfileSettingsSheet(
         }
     }
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)

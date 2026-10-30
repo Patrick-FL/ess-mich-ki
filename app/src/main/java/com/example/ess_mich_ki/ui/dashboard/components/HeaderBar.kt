@@ -1,5 +1,6 @@
 package com.example.ess_mich_ki.ui.dashboard.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,16 +35,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ess_mich_ki.ui.dashboard.DayItem
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
+import com.example.ess_mich_ki.ui.theme.NothingRed
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,9 +63,9 @@ fun HeaderBar(
     var showDatePicker by remember { mutableStateOf(false) }
 
     val dateTitle = if (selectedDate == LocalDate.now()) {
-        "Today"
+        "HEUTE"
     } else {
-        selectedDate.format(DateTimeFormatter.ofPattern("MMM d"))
+        selectedDate.format(DateTimeFormatter.ofPattern("MMM d", Locale.GERMAN)).uppercase()
     }
 
     Column(
@@ -75,25 +79,37 @@ fun HeaderBar(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Date Selector Dropdown
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable { showDatePicker = true }
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
+            // Date Selector Dropdown Pill
+            Surface(
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.surface,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                modifier = Modifier.clip(CircleShape).clickable { showDatePicker = true }
             ) {
-                Text(
-                    text = dateTitle,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "Select Date",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Row(
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .background(NothingRed, CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = dateTitle,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        letterSpacing = 1.sp
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "Datum wählen",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
 
             // Streak & Profile Avatar
@@ -102,21 +118,23 @@ fun HeaderBar(
             ) {
                 // Streak Flame Badge
                 Surface(
-                    shape = RoundedCornerShape(20.dp),
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.surface,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     modifier = Modifier
                         .padding(end = 8.dp)
-                        .clip(RoundedCornerShape(20.dp))
+                        .clip(CircleShape)
                         .clickable { onStreakClick() }
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = "$streakCount 🔥",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
+                            style = MaterialTheme.typography.labelLarge,
+                            fontFamily = FontFamily.Monospace,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -126,21 +144,22 @@ fun HeaderBar(
                     modifier = Modifier
                         .size(38.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary)
+                        .background(NothingRed)
                         .clickable { onAvatarClick() },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "S",
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = Color.White,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 16.sp
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
         // Weekly Day Selector Strip
         Row(
@@ -150,37 +169,49 @@ fun HeaderBar(
             weeklyDays.forEach { dayItem ->
                 val isSelected = dayItem.isSelected
                 val backgroundColor = if (isSelected) {
-                    MaterialTheme.colorScheme.primaryContainer
+                    NothingRed
                 } else {
-                    Color.Transparent
+                    MaterialTheme.colorScheme.surface
                 }
                 val textColor = if (isSelected) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
+                    Color.White
                 } else {
                     MaterialTheme.colorScheme.onSurfaceVariant
                 }
+                val border = if (isSelected) {
+                    BorderStroke(1.dp, NothingRed)
+                } else {
+                    BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                }
 
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                Surface(
+                    shape = RoundedCornerShape(20.dp),
+                    color = backgroundColor,
+                    border = border,
                     modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(backgroundColor)
+                        .clip(RoundedCornerShape(20.dp))
                         .clickable { onDateSelected(dayItem.date) }
-                        .padding(horizontal = 10.dp, vertical = 8.dp)
                 ) {
-                    Text(
-                        text = dayItem.dayNameLetter,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = textColor,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = dayItem.dayNumber.toString(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = textColor,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+                    ) {
+                        Text(
+                            text = dayItem.dayNameLetter.uppercase(),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = textColor,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = dayItem.dayNumber.toString(),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = textColor,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
@@ -209,12 +240,12 @@ fun HeaderBar(
                         showDatePicker = false
                     }
                 ) {
-                    Text("OK")
+                    Text("OK", color = NothingRed)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
+                    Text("Abbrechen")
                 }
             }
         ) {
@@ -229,9 +260,9 @@ fun HeaderBarPreview() {
     val today = LocalDate.now()
     val sampleDays = listOf(
         DayItem(today.minusDays(3), "M", 20, false, false),
-        DayItem(today.minusDays(2), "T", 21, false, false),
-        DayItem(today.minusDays(1), "W", 22, false, false),
-        DayItem(today, "T", 23, true, true),
+        DayItem(today.minusDays(2), "D", 21, false, false),
+        DayItem(today.minusDays(1), "M", 22, false, false),
+        DayItem(today, "D", 23, true, true),
         DayItem(today.plusDays(1), "F", 24, false, false),
         DayItem(today.plusDays(2), "S", 25, false, false),
         DayItem(today.plusDays(3), "S", 26, false, false)

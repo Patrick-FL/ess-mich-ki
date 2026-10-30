@@ -1,18 +1,26 @@
 package com.example.ess_mich_ki.ui.dashboard
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -20,10 +28,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.ess_mich_ki.data.local.entity.LoggedMealItemEntity
 import com.example.ess_mich_ki.ui.dashboard.components.AiFoodLoggingDialog
 import com.example.ess_mich_ki.ui.dashboard.components.CalorieGaugeCard
@@ -33,6 +44,8 @@ import com.example.ess_mich_ki.ui.dashboard.components.MealCard
 import com.example.ess_mich_ki.ui.dashboard.components.ProfileSettingsSheet
 import com.example.ess_mich_ki.ui.progress.components.NutritionalGoalsDialog
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
+import com.example.ess_mich_ki.ui.theme.NothingBorder
+import com.example.ess_mich_ki.ui.theme.NothingRed
 import java.time.LocalDate
 
 @Composable
@@ -99,19 +112,22 @@ fun DashboardContent(
     onStreakClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val mealTypes = listOf("Breakfast", "Lunch", "Dinner", "Snack")
+    val mealTypes = listOf("Frühstück", "Mittagessen", "Abendessen", "Snack")
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onOpenAiDialog(uiState.aiSelectedMealType) },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                shape = CircleShape,
+                containerColor = NothingRed,
+                contentColor = Color.White,
+                elevation = FloatingActionButtonDefaults.elevation(0.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Log food"
+                    contentDescription = "Mahlzeit erfassen",
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
@@ -156,18 +172,32 @@ fun DashboardContent(
 
                 // Meals Section Header
                 item {
-                    Text(
-                        text = "Today's Meals",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 8.dp, bottom = 2.dp)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(NothingRed, CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "MAHLZEITEN HEUTE",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            letterSpacing = 1.2.sp
+                        )
+                    }
                 }
 
                 // Meal Cards (Breakfast, Lunch, Dinner, Snack)
                 items(mealTypes) { mealType ->
                     val mealWithItems = uiState.meals.find {
-                        it.meal.mealType.equals(mealType, ignoreCase = true)
+                        it.meal.mealType.equals(mealType, ignoreCase = true) ||
+                                (mealType == "Frühstück" && it.meal.mealType.equals("Breakfast", ignoreCase = true)) ||
+                                (mealType == "Mittagessen" && it.meal.mealType.equals("Lunch", ignoreCase = true)) ||
+                                (mealType == "Abendessen" && it.meal.mealType.equals("Dinner", ignoreCase = true))
                     }
 
                     MealCard(

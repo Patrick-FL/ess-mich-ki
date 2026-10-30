@@ -1,5 +1,6 @@
 package com.example.ess_mich_ki.ui.dashboard.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,11 +22,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +37,8 @@ import androidx.compose.ui.unit.sp
 import com.example.ess_mich_ki.data.local.entity.LoggedMealItemEntity
 import com.example.ess_mich_ki.data.local.model.MealWithItems
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
+import com.example.ess_mich_ki.ui.theme.NothingRed
+import com.example.ess_mich_ki.util.ServingUnitUtils
 import kotlin.math.roundToInt
 
 @Composable
@@ -53,16 +58,17 @@ fun MealCard(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(28.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+            containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(20.dp)
         ) {
             // Header: Title & Macros Summary
             Row(
@@ -70,26 +76,34 @@ fun MealCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = mealType,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .background(NothingRed, CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = mealType.uppercase(),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        letterSpacing = 1.2.sp
+                    )
+                }
 
                 Text(
-                    text = "$totalKcal kcal • $totalP P | $totalC C | $totalF F",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontWeight = FontWeight.Medium
+                    text = "$totalKcal KCAL • ${totalP}P | ${totalC}C | ${totalF}F",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontFamily = FontFamily.Monospace,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
             // List of Food Items
             if (items.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items.forEach { item ->
                         FoodItemRow(
@@ -113,69 +127,76 @@ private fun FoodItemRow(
 ) {
     val emoji = getEmojiForFood(item.name)
 
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        modifier = modifier.fillMaxWidth()
     ) {
-        // Food Emoji Icon Box
-        Box(
+        Row(
             modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                .clickable { onEdit() },
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = emoji, fontSize = 18.sp)
-        }
+            // Food Emoji Icon Circle
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface)
+                    .clickable { onEdit() },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = emoji, fontSize = 16.sp)
+            }
 
-        Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
-        // Food Name & Serving (Clickable to edit)
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .clickable { onEdit() }
-        ) {
+            // Food Name & Serving
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable { onEdit() }
+            ) {
+                Text(
+                    text = item.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "${ServingUnitUtils.formatServingDisplay(item.quantity, item.servingName, item.servingGrams)} ✏️",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // Calories
             Text(
-                text = item.name,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = "${com.example.ess_mich_ki.util.ServingUnitUtils.formatServingDisplay(item.quantity, item.servingName, item.servingGrams)} ✏️",
+                text = "${item.calories.roundToInt()} KCAL",
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.outline
+                fontFamily = FontFamily.Monospace,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(horizontal = 8.dp)
             )
-        }
 
-        // Calories
-        Text(
-            text = "${item.calories.roundToInt()} kcal",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(horizontal = 8.dp)
-        )
-
-        // Delete button
-        IconButton(
-            onClick = onDelete,
-            modifier = Modifier.size(28.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.DeleteOutline,
-                contentDescription = "Delete item",
-                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
-                modifier = Modifier.size(18.dp)
-            )
+            // Delete button
+            IconButton(
+                onClick = onDelete,
+                modifier = Modifier
+                    .size(30.dp)
+                    .background(NothingRed.copy(alpha = 0.15f), CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DeleteOutline,
+                    contentDescription = "Eintrag löschen",
+                    tint = NothingRed,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
         }
     }
 }
@@ -204,7 +225,7 @@ fun MealCardPreview() {
         meal = com.example.ess_mich_ki.data.local.entity.LoggedMealEntity(
             id = 1,
             dateString = "2026-10-22",
-            mealType = "Breakfast",
+            mealType = "Frühstück",
             totalCalories = 280.0
         ),
         items = listOf(
@@ -229,24 +250,13 @@ fun MealCardPreview() {
                 carbs = 7.5,
                 fat = 9.5,
                 isChecked = true
-            ),
-            LoggedMealItemEntity(
-                id = 3,
-                mealId = 1,
-                name = "Himbeere Raspberry",
-                servingName = "1 Portion (100g)",
-                calories = 52.0,
-                protein = 1.2,
-                carbs = 12.0,
-                fat = 0.6,
-                isChecked = true
             )
         )
     )
 
     EssmichkiTheme {
         MealCard(
-            mealType = "Breakfast",
+            mealType = "Frühstück",
             mealWithItems = sampleMeal,
             onDeleteItem = {},
             modifier = Modifier.padding(16.dp)

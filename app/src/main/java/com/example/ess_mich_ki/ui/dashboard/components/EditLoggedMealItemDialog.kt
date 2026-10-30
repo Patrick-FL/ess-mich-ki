@@ -1,5 +1,6 @@
 package com.example.ess_mich_ki.ui.dashboard.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,13 +18,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,7 +31,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -46,13 +46,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.ess_mich_ki.data.local.entity.LoggedMealItemEntity
 import com.example.ess_mich_ki.ui.detail.MacroStatCard
 import com.example.ess_mich_ki.ui.theme.CarbsColor
 import com.example.ess_mich_ki.ui.theme.FatColor
+import com.example.ess_mich_ki.ui.theme.NothingRed
+import com.example.ess_mich_ki.ui.theme.NothingYellow
 import com.example.ess_mich_ki.ui.theme.ProteinColor
 import com.example.ess_mich_ki.util.ServingUnitUtils
 import kotlin.math.roundToInt
@@ -99,7 +103,6 @@ fun EditLoggedMealItemDialog(
         ).distinctBy { it.unitKey }
     }
 
-    // Base calculations
     val oldTotalGrams = (item.quantity * item.servingGrams).coerceAtLeast(0.1)
     val newTotalGrams = (quantity * selectedUnitGramWeight).coerceAtLeast(0.0)
     val scaleFactor = newTotalGrams / oldTotalGrams
@@ -112,6 +115,7 @@ fun EditLoggedMealItemDialog(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
     ) {
         Column(
@@ -127,27 +131,41 @@ fun EditLoggedMealItemDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit Logged Item",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(24.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .background(NothingRed, CircleShape)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Edit ${item.name}",
+                        text = "BEARBEITEN",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        color = MaterialTheme.colorScheme.onSurface,
+                        letterSpacing = 1.2.sp
                     )
                 }
 
-                IconButton(onClick = onDismiss) {
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Close"
+                        contentDescription = "Schließen",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }
+
+            Text(
+                text = item.name,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
 
             // Macro Stats Preview Cards
             Row(
@@ -155,37 +173,36 @@ fun EditLoggedMealItemDialog(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 MacroStatCard(
-                    label = "Calories",
-                    value = "${calculatedCalories.roundToInt()} kcal",
-                    accentColor = MaterialTheme.colorScheme.primary,
+                    label = "KCAL",
+                    value = "${calculatedCalories.roundToInt()}",
+                    accentColor = NothingRed,
                     modifier = Modifier.weight(1f)
                 )
                 MacroStatCard(
-                    label = "Protein",
-                    value = "${calculatedProtein.roundToInt()} g",
+                    label = "PROT",
+                    value = "${calculatedProtein.roundToInt()}g",
                     accentColor = ProteinColor,
                     modifier = Modifier.weight(1f)
                 )
                 MacroStatCard(
-                    label = "Carbs",
-                    value = "${calculatedCarbs.roundToInt()} g",
+                    label = "CARBS",
+                    value = "${calculatedCarbs.roundToInt()}g",
                     accentColor = CarbsColor,
                     modifier = Modifier.weight(1f)
                 )
                 MacroStatCard(
-                    label = "Fat",
-                    value = "${calculatedFat.roundToInt()} g",
+                    label = "FETT",
+                    value = "${calculatedFat.roundToInt()}g",
                     accentColor = FatColor,
                     modifier = Modifier.weight(1f)
                 )
             }
 
             // Quantity & Portion Selection Card
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                ),
+            Surface(
+                shape = RoundedCornerShape(20.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
@@ -193,9 +210,10 @@ fun EditLoggedMealItemDialog(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = "Portion & Quantity",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        text = "PORTION & MENGE",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        letterSpacing = 0.8.sp
                     )
 
                     // Quantity Stepper + Direct Text Field
@@ -205,8 +223,10 @@ fun EditLoggedMealItemDialog(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Quantity:",
-                            style = MaterialTheme.typography.bodyMedium
+                            text = "MENGE:",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontFamily = FontFamily.Monospace,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
 
                         Row(
@@ -222,9 +242,13 @@ fun EditLoggedMealItemDialog(
                                 modifier = Modifier
                                     .size(36.dp)
                                     .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                    .background(MaterialTheme.colorScheme.surface)
                             ) {
-                                Icon(imageVector = Icons.Default.Remove, contentDescription = "Decrease")
+                                Icon(
+                                    imageVector = Icons.Default.Remove,
+                                    contentDescription = "Verringern",
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
                             }
 
                             OutlinedTextField(
@@ -238,6 +262,15 @@ fun EditLoggedMealItemDialog(
                                 },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 singleLine = true,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                                    focusedBorderColor = NothingRed,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                                ),
+                                shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier
                                     .width(80.dp)
                                     .height(52.dp)
@@ -252,9 +285,13 @@ fun EditLoggedMealItemDialog(
                                 modifier = Modifier
                                     .size(36.dp)
                                     .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                    .background(MaterialTheme.colorScheme.surface)
                             ) {
-                                Icon(imageVector = Icons.Default.Add, contentDescription = "Increase")
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Erhöhen",
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
                             }
                         }
                     }
@@ -264,7 +301,8 @@ fun EditLoggedMealItemDialog(
                         OutlinedButton(
                             onClick = { showServingDropdown = true },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp)
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                            shape = CircleShape
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -272,8 +310,12 @@ fun EditLoggedMealItemDialog(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 val totalG = (quantity * selectedUnitGramWeight).roundToInt()
-                                Text("Unit: $selectedUnitKey (~${totalG}g total)")
-                                Icon(Icons.Default.ExpandMore, contentDescription = "Select unit")
+                                Text(
+                                    text = "EINHEIT: $selectedUnitKey (~${totalG}g)",
+                                    fontFamily = FontFamily.Monospace,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Icon(Icons.Default.ExpandMore, contentDescription = "Einheit wählen", tint = MaterialTheme.colorScheme.onSurface)
                             }
                         }
 
@@ -283,7 +325,7 @@ fun EditLoggedMealItemDialog(
                         ) {
                             presetUnits.forEach { option ->
                                 DropdownMenuItem(
-                                    text = { Text(option.displayLabel) },
+                                    text = { Text(option.displayLabel, fontFamily = FontFamily.Monospace) },
                                     onClick = {
                                         selectedUnitKey = option.unitKey
                                         selectedUnitGramWeight = option.gramWeightPerUnit
@@ -303,16 +345,16 @@ fun EditLoggedMealItemDialog(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(25.dp),
+                    .height(48.dp),
+                shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFFC107), // Yellow theme
+                    containerColor = NothingYellow,
                     contentColor = Color.Black
                 )
             ) {
                 Text(
-                    text = "Save Changes",
-                    style = MaterialTheme.typography.titleMedium,
+                    text = "Änderungen speichern",
+                    fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold
                 )
             }

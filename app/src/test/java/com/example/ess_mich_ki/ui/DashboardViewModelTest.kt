@@ -77,8 +77,7 @@ class DashboardViewModelTest {
 
         assertEquals(today, state.selectedDate)
         assertEquals(4, state.meals.size)
-        // 108 + 120 + 52 + 248 + 92 = 620 kcal
-        assertEquals(620, state.calorieConsumed)
+        assertEquals(0, state.calorieConsumed)
     }
 
     @Test
@@ -88,7 +87,7 @@ class DashboardViewModelTest {
 
         val initialState = viewModel.uiState.first { it.meals.isNotEmpty() }
         val initialCalories = initialState.calorieConsumed
-        assertEquals(620, initialCalories)
+        assertEquals(0, initialCalories)
 
         val today = LocalDate.now()
         val yesterday = today.minusDays(1)
@@ -108,7 +107,7 @@ class DashboardViewModelTest {
 
         val backToTodayState = viewModel.uiState.first { it.selectedDate == today && it.meals.isNotEmpty() }
         assertEquals(today, backToTodayState.selectedDate)
-        assertEquals(620, backToTodayState.calorieConsumed)
+        assertEquals(0, backToTodayState.calorieConsumed)
         assertEquals(4, backToTodayState.meals.size)
 
         // Switch to tomorrow and back to today multiple times
@@ -118,7 +117,7 @@ class DashboardViewModelTest {
         advanceUntilIdle()
 
         val finalTodayState = viewModel.uiState.first { it.selectedDate == today && it.meals.isNotEmpty() }
-        assertEquals(620, finalTodayState.calorieConsumed)
+        assertEquals(0, finalTodayState.calorieConsumed)
         assertEquals(4, finalTodayState.meals.size)
     }
 
@@ -158,29 +157,46 @@ class DashboardViewModelTest {
 
         val initialState = viewModel.uiState.first { it.meals.isNotEmpty() }
         val breakfast = initialState.meals.find { it.meal.mealType.equals("Breakfast", true) }!!
-        val soyYogurtItem = breakfast.items.find { it.name.contains("Soy Yogurt", true) }!!
+
+        val soyYogurtItem = LoggedMealItemEntity(
+            mealId = breakfast.meal.id,
+            foodItemId = 1,
+            name = "Soy Yogurt",
+            quantity = 1.0,
+            servingName = "cup",
+            servingGrams = 200.0,
+            calories = 108.0,
+            protein = 8.0,
+            carbs = 4.2,
+            fat = 4.6,
+            isChecked = true
+        )
+        val insertedId = fakeItemDao.insertItem(soyYogurtItem)
+        val itemToUpdate = soyYogurtItem.copy(id = insertedId)
+        viewModel.toggleItemCheck(itemToUpdate, true)
+        advanceUntilIdle()
 
         // Initial values: quantity 1.0, 200g serving, 108 kcal, 8g protein, 4.2g carbs, 4.6g fat
-        assertEquals(1.0, soyYogurtItem.quantity, 0.01)
-        assertEquals(108.0, soyYogurtItem.calories, 0.01)
+        assertEquals(1.0, itemToUpdate.quantity, 0.01)
+        assertEquals(108.0, itemToUpdate.calories, 0.01)
 
         // Change quantity to 1.5 and serving to 200g -> total grams: 300g (1.5x scale)
         viewModel.updateLoggedMealItem(
-            item = soyYogurtItem,
+            item = itemToUpdate,
             newQuantity = 1.5,
-            newServingName = soyYogurtItem.servingName,
-            newServingGrams = soyYogurtItem.servingGrams
+            newServingName = itemToUpdate.servingName,
+            newServingGrams = itemToUpdate.servingGrams
         )
         advanceUntilIdle()
 
-        val updatedItem = fakeItemDao.getItemById(soyYogurtItem.id)!!
+        val updatedItem = fakeItemDao.getItemById(insertedId)!!
         assertEquals(1.5, updatedItem.quantity, 0.01)
         assertEquals(162.0, updatedItem.calories, 0.01) // 108 * 1.5 = 162
         assertEquals(12.0, updatedItem.protein, 0.01)  // 8 * 1.5 = 12
 
-        // Verify total calories for today increased by 54 kcal (from 620 to 674)
-        val updatedState = viewModel.uiState.first { it.calorieConsumed == 674 }
-        assertEquals(674, updatedState.calorieConsumed)
+        // Verify total calories for today is 162
+        val updatedState = viewModel.uiState.first { it.calorieConsumed == 162 }
+        assertEquals(162, updatedState.calorieConsumed)
     }
 
     @Test
@@ -230,8 +246,20 @@ class DashboardViewModelTest {
         val viewModel = DashboardViewModel(fakeDatabase, settingsDataStore, openRouterApiClient)
         advanceUntilIdle()
 
-        val state = viewModel.uiState.first { it.meals.isNotEmpty() }
-        // Seeded data logs meals for today, so currentLoggedStreak should be at least 1
+        val initialState = viewModel.uiState.first { it.meals.isNotEmpty() }
+        val breakfast = initialState.meals.find { it.meal.mealType.equals("Breakfast", true) }!!
+        val appleItem = LoggedMealItemEntity(
+            mealId = breakfast.meal.id,
+            name = "Apple",
+            calories = 100.0,
+            isChecked = true
+        )
+        val insertedId = fakeItemDao.insertItem(appleItem)
+        viewModel.toggleItemCheck(appleItem.copy(id = insertedId), true)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.first { it.calorieConsumed > 0 }
+        // Logged meals for today, so currentLoggedStreak should be at least 1
         assertTrue(state.currentLoggedStreak >= 1)
         assertTrue(state.bestLoggedStreak >= 1)
         assertTrue(state.monthlyCalendarData != null)

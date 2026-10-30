@@ -1,5 +1,6 @@
 package com.example.ess_mich_ki.ui.streaks
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,12 +36,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ess_mich_ki.ui.theme.CheckedGreen
+import androidx.compose.ui.unit.sp
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
+import com.example.ess_mich_ki.ui.theme.NothingRed
+import com.example.ess_mich_ki.ui.theme.NothingSage
+import com.example.ess_mich_ki.ui.theme.NothingYellow
 import com.example.ess_mich_ki.util.MonthlyCalendarData
 import com.example.ess_mich_ki.util.StreakCalculator
 
@@ -66,14 +71,35 @@ fun StreaksScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "My Streaks",
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(NothingRed, CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "STREAKS",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            letterSpacing = 1.2.sp
+                        )
+                    }
                 },
                 actions = {
-                    IconButton(onClick = onCloseClick) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
+                    IconButton(
+                        onClick = onCloseClick,
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .size(32.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Schließen",
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -97,19 +123,19 @@ fun StreaksScreen(
                 ) {
                     // Logged Days Card
                     StreakStatCard(
-                        title = "Logged Days",
+                        title = "GELOGGT",
                         currentStreak = currentLoggedStreak,
                         bestStreak = bestLoggedStreak,
-                        flameColor = Color(0xFFFF5722),
+                        flameColor = NothingRed,
                         modifier = Modifier.weight(1f)
                     )
 
                     // Perfect Days Card
                     StreakStatCard(
-                        title = "Perfect Days",
+                        title = "PERFEKT",
                         currentStreak = currentPerfectStreak,
                         bestStreak = bestPerfectStreak,
-                        flameColor = Color(0xFFFFB300),
+                        flameColor = NothingYellow,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -123,13 +149,15 @@ fun StreaksScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = calendar.monthTitle,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        text = calendar.monthTitle.uppercase(),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        letterSpacing = 1.2.sp
                     )
                     Text(
-                        text = "Avg Kcal Column",
+                        text = "Ø KCAL SPALTE",
                         style = MaterialTheme.typography.labelSmall,
+                        fontFamily = FontFamily.Monospace,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -138,34 +166,36 @@ fun StreaksScreen(
             // 3. Monthly Calendar Grid Card
             item {
                 Card(
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(20.dp)
                     ) {
-                        // Weekday Labels Row (M, T, W, T, F, S, S | AVG)
+                        // Weekday Labels Row (M, D, M, D, F, S, S | Ø)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            listOf("M", "T", "W", "T", "F", "S", "S", "AVG").forEach { label ->
+                            listOf("M", "D", "M", "D", "F", "S", "S", "Ø").forEach { label ->
                                 Text(
                                     text = label,
                                     style = MaterialTheme.typography.labelSmall,
+                                    fontFamily = FontFamily.Monospace,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (label == "AVG") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    color = if (label == "Ø") NothingRed else MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.weight(1f),
                                     textAlign = TextAlign.Center
                                 )
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
 
                         // Dynamic Monthly Calendar Weeks
                         calendar.weeks.forEach { week ->
@@ -192,9 +222,9 @@ fun StreaksScreen(
                                                     .clip(CircleShape)
                                                     .background(
                                                         when {
-                                                            isToday -> MaterialTheme.colorScheme.primary
-                                                            isPerfect -> Color(0xFFFFB300).copy(alpha = 0.25f)
-                                                            isLogged -> CheckedGreen.copy(alpha = 0.2f)
+                                                            isToday -> NothingRed
+                                                            isPerfect -> NothingYellow.copy(alpha = 0.25f)
+                                                            isLogged -> NothingSage.copy(alpha = 0.25f)
                                                             else -> Color.Transparent
                                                         }
                                                     ),
@@ -204,29 +234,30 @@ fun StreaksScreen(
                                                     Text(
                                                         text = "${dayInfo.dayOfMonth}",
                                                         style = MaterialTheme.typography.labelSmall,
+                                                        fontFamily = FontFamily.Monospace,
                                                         color = Color.White,
                                                         fontWeight = FontWeight.Bold
                                                     )
                                                 } else if (isPerfect) {
                                                     Icon(
                                                         imageVector = Icons.Default.Whatshot,
-                                                        contentDescription = "Perfect Day",
-                                                        tint = Color(0xFFFFB300),
-                                                        modifier = Modifier.size(18.dp)
+                                                        contentDescription = "Perfekter Tag",
+                                                        tint = NothingYellow,
+                                                        modifier = Modifier.size(16.dp)
                                                     )
                                                 } else if (isLogged) {
                                                     Icon(
                                                         imageVector = Icons.Default.Whatshot,
-                                                        contentDescription = "Logged Day",
-                                                        tint = CheckedGreen,
+                                                        contentDescription = "Geloggter Tag",
+                                                        tint = NothingSage,
                                                         modifier = Modifier.size(16.dp)
                                                     )
                                                 } else {
                                                     Text(
                                                         text = "${dayInfo.dayOfMonth}",
                                                         style = MaterialTheme.typography.labelSmall,
-                                                        color = MaterialTheme.colorScheme.onSurface,
-                                                        fontWeight = FontWeight.Normal
+                                                        fontFamily = FontFamily.Monospace,
+                                                        color = MaterialTheme.colorScheme.onSurface
                                                     )
                                                 }
                                             }
@@ -243,13 +274,15 @@ fun StreaksScreen(
                                         Text(
                                             text = "${week.avgCalories}",
                                             style = MaterialTheme.typography.labelSmall,
+                                            fontFamily = FontFamily.Monospace,
                                             fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.primary
+                                            color = NothingRed
                                         )
                                     } else {
                                         Text(
                                             text = "-",
                                             style = MaterialTheme.typography.labelSmall,
+                                            fontFamily = FontFamily.Monospace,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
@@ -272,15 +305,16 @@ fun StreakStatCard(
     modifier: Modifier = Modifier
 ) {
     Card(
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(28.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = modifier
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(18.dp),
             horizontalAlignment = Alignment.Start
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -295,14 +329,15 @@ fun StreakStatCard(
                         imageVector = Icons.Default.Whatshot,
                         contentDescription = title,
                         tint = flameColor,
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    letterSpacing = 1.sp
                 )
             }
 
@@ -310,28 +345,31 @@ fun StreakStatCard(
 
             Text(
                 text = "$currentStreak",
-                style = MaterialTheme.typography.headlineLarge,
+                style = MaterialTheme.typography.displayMedium,
                 fontWeight = FontWeight.Bold,
                 color = flameColor
             )
 
             Text(
-                text = "Current Streak (days)",
+                text = "AKTUELLE STREAK (TAGE)",
                 style = MaterialTheme.typography.labelSmall,
+                fontFamily = FontFamily.Monospace,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Surface(
-                shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
             ) {
                 Text(
-                    text = "Best: $bestStreak days",
+                    text = "REKORD: $bestStreak TAGE",
                     style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    fontFamily = FontFamily.Monospace,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                 )
             }
         }

@@ -1,21 +1,20 @@
-# Graph Report - food_tracker  (2026-10-23)
+# Graph Report - food_tracker  (2026-10-24)
 
 ## Corpus Check
-- 60 files · ~62,813 words
+- 60 files · ~64,424 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 444 nodes · 888 edges · 22 communities (19 shown, 3 thin omitted)
+- 444 nodes · 897 edges · 21 communities (18 shown, 3 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 16 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b5560e9c`
+- Built from commit: `21eb0f47`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- DashboardViewModelTest.kt
 - FoodItemEntity
 - LoggedMealEntity
 - UserGoalEntity
@@ -24,7 +23,7 @@
 - DashboardViewModel
 - FoodDetailViewModel
 - LoggedMealItemEntity
-- OpenRouterApiClient
+- AiFoodLoggingDialog.kt
 - SettingsDataStore
 - EditLoggedMealItemDialog.kt
 - Implementation Steps
@@ -36,7 +35,7 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `DashboardViewModel` - 47 edges
-2. `LoggedMealItemEntity` - 41 edges
+2. `LoggedMealItemEntity` - 42 edges
 3. `LoggedMealEntity` - 29 edges
 4. `UserGoalEntity` - 24 edges
 5. `EssmichkiTheme()` - 23 edges
@@ -61,11 +60,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (22 total, 3 thin omitted)
-
-### Community 0 - "DashboardViewModelTest.kt"
-Cohesion: 0.11
-Nodes (8): DashboardViewModelTest, OpenRouterApiClient, FakeAppDatabase, FakeContext, Context, ContextWrapper, InvalidationTracker, OpenRouterApiClient
+## Communities (21 total, 3 thin omitted)
 
 ### Community 1 - "FoodItemEntity"
 Cohesion: 0.11
@@ -80,7 +75,7 @@ Cohesion: 0.05
 Nodes (25): Flow, UserGoalDao, Flow, WeightLogDao, UserGoalEntity, WeightLogEntity, AddWeightDialog(), EditGoalDialog() (+17 more)
 
 ### Community 4 - "EssmichkiTheme"
-Cohesion: 0.12
+Cohesion: 0.13
 Nodes (25): CalorieGaugeCard(), CalorieGaugeCardPreview(), Color, Modifier, MacroProgressRow(), HeaderBar(), HeaderBarPreview(), Modifier (+17 more)
 
 ### Community 5 - "NutritionalGoalState"
@@ -96,10 +91,10 @@ Cohesion: 0.12
 Nodes (16): AccordionCard(), FoodDetailContent(), FoodDetailScreen(), FoodDetailScreenPreview(), Color, Modifier, MacroStatCard(), NutritionRow() (+8 more)
 
 ### Community 8 - "LoggedMealItemEntity"
-Cohesion: 0.13
-Nodes (9): Flow, LoggedMealItemDao, LoggedMealItemEntity, FoodItemRow(), getEmojiForFood(), Modifier, MealCard(), MealCardPreview() (+1 more)
+Cohesion: 0.07
+Nodes (17): Flow, LoggedMealItemDao, LoggedMealItemEntity, FoodItemRow(), getEmojiForFood(), Modifier, MealCard(), MealCardPreview() (+9 more)
 
-### Community 9 - "OpenRouterApiClient"
+### Community 9 - "AiFoodLoggingDialog.kt"
 Cohesion: 0.11
 Nodes (20): Result, OpenRouterApiClient, OpenRouterChoice, OpenRouterError, OpenRouterMessage, OpenRouterRequest, OpenRouterResponse, OpenRouterResponseFormat (+12 more)
 
@@ -131,17 +126,17 @@ Nodes (13): Color, Modifier, StreaksScreen(), StreaksScreenPreview(), StreakStat
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `DashboardViewModel` connect `DashboardViewModel` to `DashboardViewModelTest.kt`, `LoggedMealEntity`, `EssmichkiTheme`, `LoggedMealItemEntity`, `OpenRouterApiClient`, `EditLoggedMealItemDialog.kt`, `.calculateMonthlyCalendar`?**
-  _High betweenness centrality (0.203) - this node is a cross-community bridge._
-- **Why does `LoggedMealItemEntity` connect `LoggedMealItemEntity` to `DashboardViewModelTest.kt`, `FoodItemEntity`, `LoggedMealEntity`, `EssmichkiTheme`, `DashboardViewModel`, `FoodDetailViewModel`, `EditLoggedMealItemDialog.kt`?**
-  _High betweenness centrality (0.157) - this node is a cross-community bridge._
-- **Why does `EssmichkiTheme()` connect `EssmichkiTheme` to `UserGoalEntity`, `DashboardViewModel`, `FoodDetailViewModel`, `LoggedMealItemEntity`, `OpenRouterApiClient`, `.calculateMonthlyCalendar`?**
-  _High betweenness centrality (0.149) - this node is a cross-community bridge._
+- **Why does `DashboardViewModel` connect `DashboardViewModel` to `LoggedMealEntity`, `EssmichkiTheme`, `LoggedMealItemEntity`, `AiFoodLoggingDialog.kt`, `EditLoggedMealItemDialog.kt`, `.calculateMonthlyCalendar`?**
+  _High betweenness centrality (0.201) - this node is a cross-community bridge._
+- **Why does `LoggedMealItemEntity` connect `LoggedMealItemEntity` to `FoodItemEntity`, `LoggedMealEntity`, `EssmichkiTheme`, `DashboardViewModel`, `FoodDetailViewModel`, `EditLoggedMealItemDialog.kt`?**
+  _High betweenness centrality (0.152) - this node is a cross-community bridge._
+- **Why does `EssmichkiTheme()` connect `EssmichkiTheme` to `UserGoalEntity`, `DashboardViewModel`, `FoodDetailViewModel`, `LoggedMealItemEntity`, `AiFoodLoggingDialog.kt`, `.calculateMonthlyCalendar`?**
+  _High betweenness centrality (0.141) - this node is a cross-community bridge._
 - **What connects `OpenRouterChoice`, `OpenRouterResponse`, `OpenRouterError` to the rest of the system?**
   _15 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `DashboardViewModelTest.kt` be split into smaller, more focused modules?**
-  _Cohesion score 0.10869565217391304 - nodes in this community are weakly interconnected._
 - **Should `FoodItemEntity` be split into smaller, more focused modules?**
   _Cohesion score 0.10967741935483871 - nodes in this community are weakly interconnected._
 - **Should `LoggedMealEntity` be split into smaller, more focused modules?**
   _Cohesion score 0.09743589743589744 - nodes in this community are weakly interconnected._
+- **Should `UserGoalEntity` be split into smaller, more focused modules?**
+  _Cohesion score 0.05443371378402107 - nodes in this community are weakly interconnected._

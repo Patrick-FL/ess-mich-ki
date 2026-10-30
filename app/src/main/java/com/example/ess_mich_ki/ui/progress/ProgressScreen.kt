@@ -1,5 +1,6 @@
 package com.example.ess_mich_ki.ui.progress
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MonitorWeight
@@ -56,20 +56,23 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import com.example.ess_mich_ki.data.local.entity.UserGoalEntity
 import com.example.ess_mich_ki.data.local.entity.WeightLogEntity
 import com.example.ess_mich_ki.ui.progress.components.AddWeightDialog
 import com.example.ess_mich_ki.ui.progress.components.EditGoalDialog
 import com.example.ess_mich_ki.ui.progress.components.ManageWeightLogsDialog
-import com.example.ess_mich_ki.ui.theme.CheckedGreen
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
+import com.example.ess_mich_ki.ui.theme.NothingRed
+import com.example.ess_mich_ki.ui.theme.NothingSage
+import com.example.ess_mich_ki.ui.theme.NothingYellow
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun ProgressScreen(
@@ -113,10 +116,20 @@ fun ProgressContent(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "Progress & Goals",
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(NothingRed, CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "FORTSCHRITT & ZIELE",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            letterSpacing = 1.2.sp
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
@@ -134,17 +147,18 @@ fun ProgressContent(
             // 1. "Nutrition Score" Section
             item {
                 Card(
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(20.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -152,26 +166,28 @@ fun ProgressContent(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Nutrition Score",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                text = "ERNÄHRUNGS-SCORE",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                letterSpacing = 1.2.sp
                             )
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(CheckedGreen.copy(alpha = 0.15f))
-                                    .padding(horizontal = 10.dp, vertical = 4.dp)
+                            Surface(
+                                shape = CircleShape,
+                                color = NothingSage.copy(alpha = 0.15f),
+                                border = BorderStroke(1.dp, NothingSage)
                             ) {
                                 Text(
-                                    text = "Great Compliance",
+                                    text = "HOHE TREFFERQUOTE",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = CheckedGreen,
-                                    fontWeight = FontWeight.Bold
+                                    fontFamily = FontFamily.Monospace,
+                                    color = NothingSage,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                                 )
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(14.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
                         // Weekly Calendar Row (M, T, W, T, F, S, S)
                         Row(
@@ -184,8 +200,9 @@ fun ProgressContent(
                                     verticalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
                                     Text(
-                                        text = stat.dayLabel,
+                                        text = stat.dayLabel.uppercase(),
                                         style = MaterialTheme.typography.labelSmall,
+                                        fontFamily = FontFamily.Monospace,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Box(
@@ -193,14 +210,14 @@ fun ProgressContent(
                                             .size(36.dp)
                                             .clip(CircleShape)
                                             .background(
-                                                if (stat.isCompliant) CheckedGreen else MaterialTheme.colorScheme.surfaceVariant
+                                                if (stat.isCompliant) NothingSage else MaterialTheme.colorScheme.surfaceVariant
                                             ),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         if (stat.isCompliant) {
                                             Icon(
                                                 imageVector = Icons.Default.Check,
-                                                contentDescription = "Compliant",
+                                                contentDescription = "Eingehalten",
                                                 tint = Color.White,
                                                 modifier = Modifier.size(18.dp)
                                             )
@@ -208,6 +225,7 @@ fun ProgressContent(
                                             Text(
                                                 text = "-",
                                                 style = MaterialTheme.typography.labelSmall,
+                                                fontFamily = FontFamily.Monospace,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
@@ -222,17 +240,18 @@ fun ProgressContent(
             // 2. "Goal" Card
             item {
                 Card(
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(20.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -242,38 +261,46 @@ fun ProgressContent(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Box(
                                     modifier = Modifier
-                                        .size(36.dp)
+                                        .size(38.dp)
                                         .clip(CircleShape)
-                                        .background(Color(0xFFFFEBEE)),
+                                        .background(NothingRed.copy(alpha = 0.15f)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Favorite,
-                                        contentDescription = "Goal",
-                                        tint = Color.Red,
-                                        modifier = Modifier.size(20.dp)
+                                        contentDescription = "Ziel",
+                                        tint = NothingRed,
+                                        modifier = Modifier.size(18.dp)
                                     )
                                 }
-                                Spacer(modifier = Modifier.width(10.dp))
+                                Spacer(modifier = Modifier.width(12.dp))
                                 Column {
                                     Text(
-                                        text = "Goal: ${uiState.userGoal?.goalType ?: "Fat Loss"}",
+                                        text = "ZIEL: ${uiState.userGoal?.goalType?.uppercase() ?: "GEWICHTSVERLUST"}",
                                         style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        text = "${uiState.userGoal?.calorieTarget ?: 1284} kcal / day target",
-                                        style = MaterialTheme.typography.bodySmall,
+                                        text = "${uiState.userGoal?.calorieTarget ?: 1284} KCAL / TAG",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontFamily = FontFamily.Monospace,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
 
-                            IconButton(onClick = onOpenEditGoal) {
+                            IconButton(
+                                onClick = onOpenEditGoal,
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                            ) {
                                 Icon(
                                     imageVector = Icons.Default.Edit,
-                                    contentDescription = "Edit Goal",
-                                    tint = MaterialTheme.colorScheme.primary
+                                    contentDescription = "Ziel bearbeiten",
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.size(16.dp)
                                 )
                             }
                         }
@@ -287,16 +314,18 @@ fun ProgressContent(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "Target: ${uiState.targetWeight} kg",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = CheckedGreen,
+                                    text = "ZIEL: ${uiState.targetWeight} KG",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = NothingSage,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "Current: ${uiState.currentWeight} kg",
-                                    style = MaterialTheme.typography.labelMedium,
+                                    text = "AKTUELL: ${uiState.currentWeight} KG",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontFamily = FontFamily.Monospace,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = NothingRed
                                 )
                             }
 
@@ -306,15 +335,15 @@ fun ProgressContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(10.dp)
-                                    .clip(RoundedCornerShape(5.dp))
+                                    .clip(CircleShape)
                                     .background(MaterialTheme.colorScheme.surfaceVariant)
                             ) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxHeight()
                                         .fillMaxWidth(fraction = uiState.progressPercentage.coerceIn(0.1f, 1f))
-                                        .clip(RoundedCornerShape(5.dp))
-                                        .background(MaterialTheme.colorScheme.primary)
+                                        .clip(CircleShape)
+                                        .background(NothingRed)
                                 )
                             }
                         }
@@ -324,9 +353,15 @@ fun ProgressContent(
                         OutlinedButton(
                             onClick = onOpenEditGoal,
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp)
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                            shape = CircleShape
                         ) {
-                            Text("+ Update Progress / Edit Goal", fontWeight = FontWeight.Bold)
+                            Text(
+                                text = "+ Ziel / Fortschritt anpassen",
+                                fontFamily = FontFamily.Monospace,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }
@@ -334,29 +369,40 @@ fun ProgressContent(
 
             // 3. "Stats" Section Header
             item {
-                Text(
-                    text = "STATS",
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 4.dp, bottom = 2.dp)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 2.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .background(NothingRed, CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "STATISTIKEN",
+                        style = MaterialTheme.typography.labelLarge,
+                        letterSpacing = 1.2.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
 
             // Calories Mini Bar Chart Card
             item {
                 Card(
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(20.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -366,21 +412,23 @@ fun ProgressContent(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = Icons.Default.Whatshot,
-                                    contentDescription = "Calories Stat",
-                                    tint = MaterialTheme.colorScheme.primary
+                                    contentDescription = "Kalorien",
+                                    tint = NothingRed,
+                                    modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Calories",
+                                    text = "KALORIEN",
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    letterSpacing = 1.sp
                                 )
                             }
                             Text(
-                                text = "${uiState.averageWeeklyCalories} kcal avg",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                                text = "${uiState.averageWeeklyCalories} KCAL Ø",
+                                style = MaterialTheme.typography.labelLarge,
+                                fontFamily = FontFamily.Monospace,
+                                color = NothingRed
                             )
                         }
 
@@ -406,15 +454,16 @@ fun ProgressContent(
                                         modifier = Modifier
                                             .width(16.dp)
                                             .fillMaxHeight(fraction = fillRatio)
-                                            .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
+                                            .clip(CircleShape)
                                             .background(
-                                                if (stat.calories > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                                                if (stat.calories > 0) NothingRed else MaterialTheme.colorScheme.surfaceVariant
                                             )
                                     )
-                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Spacer(modifier = Modifier.height(6.dp))
                                     Text(
-                                        text = stat.dayLabel,
+                                        text = stat.dayLabel.uppercase(),
                                         style = MaterialTheme.typography.labelSmall,
+                                        fontFamily = FontFamily.Monospace,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
@@ -424,20 +473,21 @@ fun ProgressContent(
                 }
             }
 
-            // Scale Weight Line Graph Chart Card (Option B)
+            // Scale Weight Line Graph Chart Card
             item {
                 Card(
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(20.dp)
                     ) {
                         val logs = uiState.weightLogs
 
@@ -449,14 +499,16 @@ fun ProgressContent(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = Icons.Default.MonitorWeight,
-                                    contentDescription = "Scale Weight",
-                                    tint = MaterialTheme.colorScheme.primary
+                                    contentDescription = "Gewicht",
+                                    tint = NothingRed,
+                                    modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Scale Weight",
+                                    text = "GEWICHT",
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    letterSpacing = 1.sp
                                 )
 
                                 // Net weight change badge
@@ -466,16 +518,18 @@ fun ProgressContent(
                                     val isLoss = diff <= 0
 
                                     Surface(
-                                        shape = RoundedCornerShape(8.dp),
-                                        color = if (isLoss) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
-                                        contentColor = if (isLoss) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                                        shape = CircleShape,
+                                        color = if (isLoss) NothingSage.copy(alpha = 0.15f) else NothingRed.copy(alpha = 0.15f),
+                                        border = BorderStroke(1.dp, if (isLoss) NothingSage else NothingRed),
                                         modifier = Modifier.padding(start = 8.dp)
                                     ) {
                                         Text(
                                             text = diffText,
                                             style = MaterialTheme.typography.labelSmall,
+                                            fontFamily = FontFamily.Monospace,
                                             fontWeight = FontWeight.Bold,
-                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                            color = if (isLoss) NothingSage else NothingRed,
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                                         )
                                     }
                                 }
@@ -484,33 +538,36 @@ fun ProgressContent(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 IconButton(
                                     onClick = onOpenManageWeight,
-                                    modifier = Modifier.size(36.dp)
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
                                 ) {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.FormatListBulleted,
                                         contentDescription = "Gewichtsverlauf verwalten",
-                                        tint = MaterialTheme.colorScheme.primary
+                                        tint = MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.size(16.dp)
                                     )
                                 }
 
-                                Spacer(modifier = Modifier.width(4.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
 
                                 Button(
                                     onClick = onOpenAddWeight,
-                                    shape = RoundedCornerShape(12.dp),
+                                    shape = CircleShape,
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                        contentColor = MaterialTheme.colorScheme.primary
+                                        containerColor = NothingRed,
+                                        contentColor = Color.White
                                     ),
                                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Add,
-                                        contentDescription = "Add Weight",
+                                        contentDescription = "Gewicht eintragen",
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Add Weight", style = MaterialTheme.typography.labelMedium)
+                                    Text("+ WÄGEN", fontFamily = FontFamily.Monospace, fontSize = 11.sp)
                                 }
                             }
                         }
@@ -523,8 +580,8 @@ fun ProgressContent(
                                     .fillMaxWidth()
                                     .height(130.dp)
                                     .background(
-                                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
-                                        shape = RoundedCornerShape(12.dp)
+                                        color = MaterialTheme.colorScheme.surfaceVariant,
+                                        shape = RoundedCornerShape(20.dp)
                                     )
                                     .padding(16.dp),
                                 contentAlignment = Alignment.Center
@@ -542,7 +599,7 @@ fun ProgressContent(
                                     Spacer(modifier = Modifier.height(6.dp))
                                     Text(
                                         text = if (logs.isEmpty()) {
-                                            "Noch keine Gewichtseinträge vorhanden."
+                                            "Noch keine Gewichtseinträge."
                                         } else {
                                             "Aktuelles Gewicht: ${"%.1f kg".format(logs.first().weightKg)}"
                                         },
@@ -552,29 +609,32 @@ fun ProgressContent(
                                     )
                                     Spacer(modifier = Modifier.height(2.dp))
                                     Text(
-                                        text = "Trage mindestens 2 Gewichte ein, um deinen Verlauf zu sehen.",
-                                        style = MaterialTheme.typography.bodySmall,
+                                        text = "Mindestens 2 Gewichte eintragen für den Verlauf.",
+                                        style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
                         } else {
-                            // Enhanced Option B Line Chart Canvas
+                            // Line Chart Canvas
                             val textMeasurer = rememberTextMeasurer()
-                            val primaryColor = MaterialTheme.colorScheme.primary
+                            val primaryColor = NothingRed
                             val surfaceColor = MaterialTheme.colorScheme.surface
                             val onSurfaceColor = MaterialTheme.colorScheme.onSurface
                             val onSurfaceVariantColor = MaterialTheme.colorScheme.onSurfaceVariant
-                            val goalLineColor = MaterialTheme.colorScheme.secondary
+                            val goalLineColor = NothingYellow
 
-                            val valueStyle = MaterialTheme.typography.labelMedium.copy(
+                            val valueStyle = MaterialTheme.typography.labelSmall.copy(
+                                fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Bold,
                                 color = onSurfaceColor
                             )
                             val dateStyle = MaterialTheme.typography.labelSmall.copy(
+                                fontFamily = FontFamily.Monospace,
                                 color = onSurfaceVariantColor
                             )
                             val goalStyle = MaterialTheme.typography.labelSmall.copy(
+                                fontFamily = FontFamily.Monospace,
                                 color = goalLineColor,
                                 fontWeight = FontWeight.Medium
                             )
@@ -611,7 +671,7 @@ fun ProgressContent(
                                     val goalY = paddingTop + chartHeight - ((targetWeight - minW) / rangeW * chartHeight).toFloat()
                                     if (goalY in (paddingTop - 10f)..(paddingTop + chartHeight + 10f)) {
                                         drawLine(
-                                            color = goalLineColor.copy(alpha = 0.5f),
+                                            color = goalLineColor.copy(alpha = 0.6f),
                                             start = Offset(paddingX, goalY),
                                             end = Offset(size.width - paddingX, goalY),
                                             strokeWidth = 1.5.dp.toPx(),
@@ -662,7 +722,7 @@ fun ProgressContent(
                                     path = fillPath,
                                     brush = Brush.verticalGradient(
                                         colors = listOf(
-                                            primaryColor.copy(alpha = 0.25f),
+                                            primaryColor.copy(alpha = 0.20f),
                                             primaryColor.copy(alpha = 0.01f)
                                         ),
                                         startY = paddingTop,
@@ -681,25 +741,22 @@ fun ProgressContent(
                                     )
                                 )
 
-                                // 3. Draw Points, Weight Labels & Date Labels
+                                // 3. Draw Points & Labels
                                 points.forEachIndexed { i, pt ->
                                     val log = logs[i]
 
-                                    // Outer colored circle
                                     drawCircle(
                                         color = primaryColor,
                                         radius = 6.dp.toPx(),
                                         center = pt
                                     )
-                                    // Inner surface circle
                                     drawCircle(
                                         color = surfaceColor,
                                         radius = 3.dp.toPx(),
                                         center = pt
                                     )
 
-                                    // Weight label above point
-                                    val weightText = "%.1f kg".format(log.weightKg)
+                                    val weightText = "%.1f".format(log.weightKg)
                                     val weightLayout = textMeasurer.measure(
                                         text = weightText,
                                         style = valueStyle
@@ -714,7 +771,6 @@ fun ProgressContent(
                                         )
                                     )
 
-                                    // Date label below point
                                     val dateText = formatWeightDate(log.dateString)
                                     val dateLayout = textMeasurer.measure(
                                         text = dateText,
@@ -770,7 +826,7 @@ fun ProgressScreenPreview() {
     val sampleState = ProgressUiState(
         userGoal = UserGoalEntity(
             id = 1,
-            goalType = "Fat Loss",
+            goalType = "Gewichtsverlust",
             initialWeight = 64.2,
             currentWeight = 63.0,
             goalWeight = 59.0,
@@ -780,9 +836,9 @@ fun ProgressScreenPreview() {
         ),
         weeklyCalorieStats = listOf(
             DailyCalorieStat("M", "2026-10-19", 632, 1284, true),
-            DailyCalorieStat("T", "2026-10-20", 1150, 1284, true),
-            DailyCalorieStat("W", "2026-10-21", 1200, 1284, true),
-            DailyCalorieStat("T", "2026-10-22", 632, 1284, true),
+            DailyCalorieStat("D", "2026-10-20", 1150, 1284, true),
+            DailyCalorieStat("M", "2026-10-21", 1200, 1284, true),
+            DailyCalorieStat("D", "2026-10-22", 632, 1284, true),
             DailyCalorieStat("F", "2026-10-23", 0, 1284, false),
             DailyCalorieStat("S", "2026-10-24", 0, 1284, false),
             DailyCalorieStat("S", "2026-10-25", 0, 1284, false)
@@ -821,6 +877,3 @@ private fun formatWeightDate(dateString: String): String {
         dateString
     }
 }
-
-
-

@@ -1,5 +1,4 @@
 {
-  "0": "DashboardViewModelTest.kt",
   "1": "FoodItemEntity",
   "2": "LoggedMealEntity",
   "3": "UserGoalEntity",
@@ -8,7 +7,7 @@
   "6": "DashboardViewModel",
   "7": "FoodDetailViewModel",
   "8": "LoggedMealItemEntity",
-  "9": "OpenRouterApiClient",
+  "9": "AiFoodLoggingDialog.kt",
   "10": "SettingsDataStore",
   "11": "EditLoggedMealItemDialog.kt",
   "12": "Implementation Steps",

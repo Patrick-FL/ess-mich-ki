@@ -1,7 +1,10 @@
 package com.example.ess_mich_ki.ui.dashboard.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,16 +31,16 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -45,9 +48,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,6 +61,9 @@ import androidx.compose.ui.unit.sp
 import com.example.ess_mich_ki.data.network.openrouter.ParsedFoodItem
 import com.example.ess_mich_ki.data.network.openrouter.ParsedMealAiResult
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
+import com.example.ess_mich_ki.ui.theme.NothingRed
+import com.example.ess_mich_ki.ui.theme.NothingSage
+import com.example.ess_mich_ki.util.ServingUnitUtils
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,7 +86,7 @@ fun AiFoodLoggingDialog(
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
-    val mealTypes = listOf("Breakfast", "Lunch", "Dinner", "Snack")
+    val mealTypes = listOf("Frühstück", "Mittagessen", "Abendessen", "Snack")
 
     val noDismissNestedScrollConnection = remember(sheetState.currentValue) {
         object : NestedScrollConnection {
@@ -99,6 +107,7 @@ fun AiFoodLoggingDialog(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
     ) {
         Column(
@@ -114,37 +123,45 @@ fun AiFoodLoggingDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.AutoAwesome,
-                        contentDescription = "AI Food Logger",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(24.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .background(NothingRed, CircleShape)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Log Food with AI",
+                        text = "KI-ERFASSUNG",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        color = MaterialTheme.colorScheme.onSurface,
+                        letterSpacing = 1.2.sp
                     )
                 }
 
-                IconButton(onClick = onDismiss) {
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Close"
+                        contentDescription = "Schließen",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             // Meal Type Selector Chips
             Text(
-                text = "Target Meal",
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = "MAHLZEIT WÄHLEN",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                letterSpacing = 0.8.sp
             )
+            Spacer(modifier = Modifier.height(6.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -152,22 +169,40 @@ fun AiFoodLoggingDialog(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 mealTypes.forEach { type ->
-                    FilterChip(
-                        selected = type == selectedMealType,
-                        onClick = { onMealTypeSelected(type) },
-                        label = { Text(type) }
-                    )
+                    val isSelected = (type == selectedMealType) ||
+                            (selectedMealType.equals("Breakfast", true) && type == "Frühstück") ||
+                            (selectedMealType.equals("Lunch", true) && type == "Mittagessen") ||
+                            (selectedMealType.equals("Dinner", true) && type == "Abendessen")
+
+                    Surface(
+                        shape = CircleShape,
+                        color = if (isSelected) NothingRed else MaterialTheme.colorScheme.surfaceVariant,
+                        border = BorderStroke(1.dp, if (isSelected) NothingRed else MaterialTheme.colorScheme.outline),
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .clickable { onMealTypeSelected(type) }
+                    ) {
+                        Text(
+                            text = type.uppercase(),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FontFamily.Monospace,
+                            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             // API Key Missing Warning Card
             if (isApiKeyMissing) {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer
+                        containerColor = NothingRed.copy(alpha = 0.15f)
                     ),
+                    border = BorderStroke(1.dp, NothingRed),
+                    shape = RoundedCornerShape(20.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
@@ -177,22 +212,21 @@ fun AiFoodLoggingDialog(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Default.Key,
-                                contentDescription = "API Key Required",
-                                tint = MaterialTheme.colorScheme.onErrorContainer
+                                contentDescription = "API Key erforderlich",
+                                tint = NothingRed
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "OpenRouter API Key Required",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onErrorContainer
+                                text = "OPENROUTER API KEY FEHLT",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = NothingRed
                             )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Please enter your free OpenRouter API key in Settings to enable AI meal parsing.",
+                            text = "Bitte trage deinen kostenlosen OpenRouter API Key in den Einstellungen ein.",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            color = MaterialTheme.colorScheme.onSurface,
                             textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(12.dp))
@@ -201,12 +235,13 @@ fun AiFoodLoggingDialog(
                                 onDismiss()
                                 onOpenSettingsClick()
                             },
+                            shape = CircleShape,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.error,
-                                contentColor = MaterialTheme.colorScheme.onError
+                                containerColor = NothingRed,
+                                contentColor = Color.White
                             )
                         ) {
-                            Text("Open Settings")
+                            Text("Einstellungen öffnen", fontFamily = FontFamily.Monospace)
                         }
                     }
                 }
@@ -220,9 +255,17 @@ fun AiFoodLoggingDialog(
                         .fillMaxWidth()
                         .height(110.dp),
                     placeholder = {
-                        Text("e.g. 500g Soy Yogurt with raspberries and chocolate")
+                        Text("z.B. 200g Soja-Joghurt mit Himbeeren und 25g Schokolade", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     },
-                    shape = RoundedCornerShape(16.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        focusedBorderColor = NothingRed,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    shape = RoundedCornerShape(20.dp),
                     maxLines = 4
                 )
 
@@ -235,16 +278,22 @@ fun AiFoodLoggingDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),
-                    shape = RoundedCornerShape(24.dp)
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = NothingRed,
+                        contentColor = Color.White,
+                        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(20.dp),
+                            color = Color.White,
                             strokeWidth = 2.dp
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Analyzing with AI...")
+                        Text("Analysiere mit KI...", fontFamily = FontFamily.Monospace)
                     } else {
                         Icon(
                             imageVector = Icons.Default.AutoAwesome,
@@ -252,7 +301,7 @@ fun AiFoodLoggingDialog(
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Analyze & Log")
+                        Text("Analysieren & Erfassen", fontFamily = FontFamily.Monospace)
                     }
                 }
 
@@ -262,7 +311,7 @@ fun AiFoodLoggingDialog(
                 if (errorMsg != null) {
                     Text(
                         text = errorMsg,
-                        color = MaterialTheme.colorScheme.error,
+                        color = NothingRed,
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
@@ -271,10 +320,9 @@ fun AiFoodLoggingDialog(
                 // Parsed Results Review Section
                 if (parsedResult != null && parsedResult.items.isNotEmpty()) {
                     Text(
-                        text = "Extracted Food Items (${parsedResult.totalCalories.roundToInt()} kcal)",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
+                        text = "ERFASSTE LEBENSMITTEL (${parsedResult.totalCalories.roundToInt()} KCAL)",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = NothingSage,
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
 
@@ -301,16 +349,17 @@ fun AiFoodLoggingDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                        shape = RoundedCornerShape(24.dp),
+                        shape = CircleShape,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            containerColor = MaterialTheme.colorScheme.onSurface,
+                            contentColor = MaterialTheme.colorScheme.surface
                         )
                     ) {
                         Text(
-                            text = "Save to $selectedMealType",
+                            text = "Speichern unter $selectedMealType",
+                            fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
+                            fontSize = 14.sp
                         )
                     }
                 }
@@ -328,12 +377,11 @@ private fun ParsedFoodItemRow(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        )
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        modifier = modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
@@ -348,26 +396,35 @@ private fun ParsedFoodItemRow(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = item.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "${com.example.ess_mich_ki.util.ServingUnitUtils.formatServingDisplay(item.quantity, item.servingName, item.servingGrams)} • ${item.calories.roundToInt()} kcal",
-                        style = MaterialTheme.typography.bodyMedium,
+                        text = "${ServingUnitUtils.formatServingDisplay(item.quantity, item.servingName, item.servingGrams)} • ${item.calories.roundToInt()} KCAL",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontFamily = FontFamily.Monospace,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = "P: ${item.proteinGrams.roundToInt()}g | C: ${item.carbsGrams.roundToInt()}g | F: ${item.fatGrams.roundToInt()}g",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.outline
+                        style = MaterialTheme.typography.labelSmall,
+                        fontFamily = FontFamily.Monospace,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
-                IconButton(onClick = onDelete) {
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .background(NothingRed.copy(alpha = 0.15f), CircleShape)
+                ) {
                     Icon(
                         imageVector = Icons.Default.DeleteOutline,
-                        contentDescription = "Remove Item",
-                        tint = MaterialTheme.colorScheme.error
+                        contentDescription = "Entfernen",
+                        tint = NothingRed,
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }
@@ -381,8 +438,8 @@ private fun ParsedFoodItemRow(
                 horizontalArrangement = Arrangement.End
             ) {
                 Text(
-                    text = "Menge: ",
-                    style = MaterialTheme.typography.labelMedium,
+                    text = "MENGE: ",
+                    style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
@@ -406,19 +463,22 @@ private fun ParsedFoodItemRow(
                     modifier = Modifier
                         .size(28.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .background(MaterialTheme.colorScheme.surface)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Remove,
-                        contentDescription = "Decrease",
-                        modifier = Modifier.size(16.dp)
+                        contentDescription = "Verringern",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(14.dp)
                     )
                 }
 
                 Text(
                     text = if (item.quantity % 1.0 == 0.0) "${item.quantity.toInt()}" else "%.1f".format(item.quantity),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(horizontal = 10.dp)
                 )
 
@@ -442,12 +502,13 @@ private fun ParsedFoodItemRow(
                     modifier = Modifier
                         .size(28.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .background(MaterialTheme.colorScheme.surface)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Increase",
-                        modifier = Modifier.size(16.dp)
+                        contentDescription = "Erhöhen",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(14.dp)
                     )
                 }
             }
@@ -475,8 +536,8 @@ fun AiFoodLoggingDialogPreview() {
 
     EssmichkiTheme {
         AiFoodLoggingDialog(
-            selectedMealType = "Breakfast",
-            inputText = "500g Soy Yogurt with raspberries",
+            selectedMealType = "Frühstück",
+            inputText = "500g Soja Joghurt mit Himbeeren",
             isLoading = false,
             parsedResult = sampleResult,
             errorMsg = null,

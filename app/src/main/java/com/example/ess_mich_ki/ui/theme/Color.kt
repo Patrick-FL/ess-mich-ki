@@ -2,34 +2,45 @@ package com.example.ess_mich_ki.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Core Theme Colors - Dynamic & Fallbacks
-val PrimaryGreen = Color(0xFF2E7D32)
-val PrimaryGreenLight = Color(0xFF4CAF50)
-val PrimaryGreenDark = Color(0xFF1B5E20)
+// Nothing OS Light / Hybrid Palette (Option 2)
+val NothingLightBg = Color(0xFFF2F2F4)
+val NothingLightSurface = Color(0xFFFFFFFF)
+val NothingLightSurfaceVariant = Color(0xFFE8E8EC)
+val NothingLightBorder = Color(0x24000000)         // rgba(0, 0, 0, 0.14)
+
+val NothingLightTextPrimary = Color(0xFF111111)
+val NothingLightTextSecondary = Color(0xFF636366)
+
+// Nothing OS Dark Palette
+val NothingBlack = Color(0xFF000000)
+val NothingDarkBg = Color(0xFF0D0D0F)
+val NothingSurface = Color(0xFF1E1E22)
+val NothingSurfaceVariant = Color(0xFF28282C)
+val NothingBorder = Color(0x24FFFFFF)             // rgba(255, 255, 255, 0.14)
+
+val NothingTextPrimary = Color(0xFFFFFFFF)
+val NothingTextSecondary = Color(0xFF8E8E93)
+
+// Nothing OS Accent Colors
+val NothingRed = Color(0xFFD71921)     // Accent Primary (Nothing Red)
+val NothingSage = Color(0xFF2E7D32)    // Sage Green
+val NothingYellow = Color(0xFFD9A000)  // Signal Yellow / Amber
+val NothingBlue = Color(0xFF3B6B9A)    // Muted Blue
 
 // Macro Accent Colors
-val ProteinColor = Color(0xFF43A047) // Green
-val CarbsColor = Color(0xFFFB8C00)   // Orange/Amber
-val FatColor = Color(0xFF1E88E5)     // Blue/Cyan
+val ProteinColor = NothingSage
+val CarbsColor = NothingYellow
+val FatColor = NothingBlue
 
-val CalorieGaugeArc = Color(0xFF8E24AA) // Purple accent for gauge
-val GaugeTrack = Color(0xFFE0E0E0)
-val GaugeTrackDark = Color(0xFF424242)
+val CalorieGaugeArc = NothingRed
+val GaugeTrack = Color(0xFFE0E0E5)
+val GaugeTrackDark = Color(0xFF2C2C2E)
 
-val CheckedGreen = Color(0xFF4CAF50)
+val CheckedGreen = NothingSage
 val CheckedGreenContainer = Color(0xFFE8F5E9)
 
-// Light Theme Neutrals
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
-
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
-
 // Custom Surfaces
-val SurfaceLight = Color(0xFFF8F9FA)
-val SurfaceDark = Color(0xFF121212)
-val CardSurfaceLight = Color(0xFFFFFFFF)
-val CardSurfaceDark = Color(0xFF1E1E1E)
+val SurfaceLight = NothingLightBg
+val SurfaceDark = NothingDarkBg
+val CardSurfaceLight = NothingLightSurface
+val CardSurfaceDark = NothingSurface

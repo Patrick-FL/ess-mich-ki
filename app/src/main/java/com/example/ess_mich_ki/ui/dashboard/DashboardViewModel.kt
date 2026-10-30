@@ -512,25 +512,25 @@ class DashboardViewModel(
     private suspend fun seedInitialDataForDate(date: LocalDate) {
         val dateString = date.format(dateFormatter)
 
-        val breakfastId = database.loggedMealDao().insertMeal(
+        database.loggedMealDao().insertMeal(
             LoggedMealEntity(
                 dateString = dateString,
                 mealType = "Breakfast",
-                totalCalories = 280.0,
-                totalProtein = 11.0,
-                totalCarbs = 23.0,
-                totalFat = 15.0
+                totalCalories = 0.0,
+                totalProtein = 0.0,
+                totalCarbs = 0.0,
+                totalFat = 0.0
             )
         )
 
-        val lunchId = database.loggedMealDao().insertMeal(
+        database.loggedMealDao().insertMeal(
             LoggedMealEntity(
                 dateString = dateString,
                 mealType = "Lunch",
-                totalCalories = 352.0,
-                totalProtein = 16.0,
-                totalCarbs = 61.0,
-                totalFat = 7.0
+                totalCalories = 0.0,
+                totalProtein = 0.0,
+                totalCarbs = 0.0,
+                totalFat = 0.0
             )
         )
 
@@ -555,85 +555,6 @@ class DashboardViewModel(
                 totalFat = 0.0
             )
         )
-
-        // Seed Breakfast items
-        val breakfastItems = listOf(
-            LoggedMealItemEntity(
-                mealId = breakfastId,
-                foodItemId = 1,
-                name = "Soy Yogurt",
-                quantity = 1.0,
-                servingName = "cup",
-                servingGrams = 200.0,
-                calories = 108.0,
-                protein = 8.0,
-                carbs = 4.2,
-                fat = 4.6,
-                isChecked = true
-            ),
-            LoggedMealItemEntity(
-                mealId = breakfastId,
-                foodItemId = 2,
-                name = "Chocolate Without Sugar",
-                quantity = 25.0,
-                servingName = "g",
-                servingGrams = 1.0,
-                calories = 120.0,
-                protein = 1.8,
-                carbs = 7.5,
-                fat = 9.5,
-                isChecked = true
-            ),
-            LoggedMealItemEntity(
-                mealId = breakfastId,
-                foodItemId = 3,
-                name = "Himbeere Raspberry",
-                quantity = 1.0,
-                servingName = "portion",
-                servingGrams = 100.0,
-                calories = 52.0,
-                protein = 1.2,
-                carbs = 12.0,
-                fat = 0.6,
-                isChecked = true
-            )
-        )
-
-        // Seed Lunch items
-        val lunchItems = listOf(
-            LoggedMealItemEntity(
-                mealId = lunchId,
-                foodItemId = 5,
-                name = "Chicken Breast",
-                quantity = 1.0,
-                servingName = "piece",
-                servingGrams = 150.0,
-                calories = 248.0,
-                protein = 46.5,
-                carbs = 0.0,
-                fat = 5.4,
-                isChecked = true
-            ),
-            LoggedMealItemEntity(
-                mealId = lunchId,
-                foodItemId = 4,
-                name = "Oat Milk",
-                quantity = 200.0,
-                servingName = "ml",
-                servingGrams = 1.0,
-                calories = 92.0,
-                protein = 2.0,
-                carbs = 13.0,
-                fat = 3.0,
-                isChecked = true
-            )
-        )
-
-        database.loggedMealItemDao().insertItems(breakfastItems)
-        database.loggedMealItemDao().insertItems(lunchItems)
-
-        recalculateMealTotals(breakfastId)
-        recalculateMealTotals(lunchId)
     }
 
     class Factory(private val context: Context) : ViewModelProvider.Factory {

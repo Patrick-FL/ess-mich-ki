@@ -3,6 +3,7 @@ package com.example.ess_mich_ki.ui.detail
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,14 +26,11 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -47,7 +45,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -63,17 +60,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ess_mich_ki.data.local.entity.FoodItemEntity
 import com.example.ess_mich_ki.ui.theme.CarbsColor
-import com.example.ess_mich_ki.ui.theme.CheckedGreen
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
 import com.example.ess_mich_ki.ui.theme.FatColor
+import com.example.ess_mich_ki.ui.theme.NothingRed
+import com.example.ess_mich_ki.ui.theme.NothingSage
+import com.example.ess_mich_ki.ui.theme.NothingYellow
 import com.example.ess_mich_ki.ui.theme.ProteinColor
 import kotlin.math.roundToInt
 
@@ -123,7 +121,7 @@ fun FoodDetailContent(
     var showMealDropdown by remember { mutableStateOf(false) }
 
     val food = uiState.food
-    val mealTypes = listOf("Breakfast", "Lunch", "Dinner", "Snack")
+    val mealTypes = listOf("Frühstück", "Mittagessen", "Abendessen", "Snack")
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -131,31 +129,34 @@ fun FoodDetailContent(
             TopAppBar(
                 title = { },
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(32.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Zurück",
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(16.dp)
                         )
                     }
                 },
                 actions = {
-                    IconButton(onClick = onToggleFavorite) {
+                    IconButton(
+                        onClick = onToggleFavorite,
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .size(32.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                    ) {
                         Icon(
                             imageVector = if (uiState.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = "Favorite",
-                            tint = if (uiState.isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    IconButton(onClick = { /* Share */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Share,
-                            contentDescription = "Share"
-                        )
-                    }
-                    IconButton(onClick = { /* Menu */ }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "More options"
+                            contentDescription = "Favorit",
+                            tint = if (uiState.isFavorite) NothingRed else MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(16.dp)
                         )
                     }
                 },
@@ -165,10 +166,9 @@ fun FoodDetailContent(
             )
         },
         bottomBar = {
-            // Yellow / Primary Action Button Bar
             Surface(
                 color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 8.dp,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Box(
@@ -180,17 +180,18 @@ fun FoodDetailContent(
                         onClick = onAddFoodToMeal,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(54.dp),
-                        shape = RoundedCornerShape(28.dp),
+                            .height(48.dp),
+                        shape = CircleShape,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFFC107), // Vibrant Yellow from design
+                            containerColor = NothingYellow,
                             contentColor = Color.Black
                         )
                     ) {
                         Text(
-                            text = "Add to ${uiState.selectedMealType}",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            text = "Hinzufügen zu ${uiState.selectedMealType}",
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
                         )
                     }
                 }
@@ -207,25 +208,26 @@ fun FoodDetailContent(
             // Food Name Header Card
             item {
                 Card(
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         // Food Icon Badge
                         Box(
                             modifier = Modifier
-                                .size(72.dp)
+                                .size(64.dp)
                                 .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primaryContainer),
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -235,7 +237,7 @@ fun FoodDetailContent(
                                     food?.category?.contains("Dairy", true) == true -> "🥛"
                                     else -> "🥗"
                                 },
-                                fontSize = 36.sp
+                                fontSize = 32.sp
                             )
                         }
 
@@ -243,17 +245,18 @@ fun FoodDetailContent(
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = food?.name ?: "Loading...",
+                                text = food?.name ?: "Lade...",
                                 style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Bold
                             )
                             if (food?.isVerified == true) {
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Icon(
                                     imageVector = Icons.Default.CheckCircle,
-                                    contentDescription = "Verified Food",
-                                    tint = CheckedGreen,
-                                    modifier = Modifier.size(20.dp)
+                                    contentDescription = "Verifizierte Angaben",
+                                    tint = NothingSage,
+                                    modifier = Modifier.size(18.dp)
                                 )
                             }
                         }
@@ -261,18 +264,20 @@ fun FoodDetailContent(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
-                            text = food?.category ?: "Food Item",
-                            style = MaterialTheme.typography.bodyMedium,
+                            text = food?.category?.uppercase() ?: "LEBENSMITTEL",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FontFamily.Monospace,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
                         Spacer(modifier = Modifier.height(6.dp))
 
                         Text(
-                            text = "Data per ${uiState.selectedServingOption.label}",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.SemiBold
+                            text = "ANGABEN PRO ${uiState.selectedServingOption.label.uppercase()}",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FontFamily.Monospace,
+                            color = NothingRed,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -285,61 +290,63 @@ fun FoodDetailContent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     MacroStatCard(
-                        label = "Calories",
-                        value = "${uiState.calculatedCalories.roundToInt()} kcal",
-                        accentColor = MaterialTheme.colorScheme.primary,
+                        label = "KCAL",
+                        value = "${uiState.calculatedCalories.roundToInt()}",
+                        accentColor = NothingRed,
                         modifier = Modifier.weight(1f)
                     )
                     MacroStatCard(
-                        label = "Protein",
-                        value = "${uiState.calculatedProtein.roundToInt()} g",
+                        label = "PROT",
+                        value = "${uiState.calculatedProtein.roundToInt()}g",
                         accentColor = ProteinColor,
                         modifier = Modifier.weight(1f)
                     )
                     MacroStatCard(
-                        label = "Carbs",
-                        value = "${uiState.calculatedCarbs.roundToInt()} g",
+                        label = "CARBS",
+                        value = "${uiState.calculatedCarbs.roundToInt()}g",
                         accentColor = CarbsColor,
                         modifier = Modifier.weight(1f)
                     )
                     MacroStatCard(
-                        label = "Fat",
-                        value = "${uiState.calculatedFat.roundToInt()} g",
+                        label = "FETT",
+                        value = "${uiState.calculatedFat.roundToInt()}g",
                         accentColor = FatColor,
                         modifier = Modifier.weight(1f)
                     )
                 }
             }
 
-            // "★ Analyze with Fitia Coach" AI Button
+            // "★ Analyze with Coach" AI Button
             item {
                 OutlinedButton(
                     onClick = onAnalyzeWithCoach,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp),
-                    shape = RoundedCornerShape(25.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.primary
-                    )
+                        .height(48.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    shape = CircleShape
                 ) {
                     if (uiState.isCoachAnalyzing) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
+                            modifier = Modifier.size(18.dp),
+                            color = NothingRed,
                             strokeWidth = 2.dp
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Fitia Coach is analyzing...")
+                        Text("Coach analysiert...", fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onSurface)
                     } else {
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = "Fitia Coach",
-                            tint = Color(0xFFFFB300)
+                            contentDescription = "KI-Coach",
+                            tint = NothingYellow,
+                            modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Analyze with Fitia Coach",
-                            fontWeight = FontWeight.Bold
+                            text = "Mit KI-Coach analysieren",
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -349,9 +356,10 @@ fun FoodDetailContent(
             if (uiState.coachAnalysisText != null) {
                 item {
                     Card(
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        border = BorderStroke(1.dp, NothingRed),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                            containerColor = NothingRed.copy(alpha = 0.12f)
                         ),
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -362,14 +370,13 @@ fun FoodDetailContent(
                                 Icon(
                                     imageVector = Icons.Default.AutoAwesome,
                                     contentDescription = "Coach AI",
-                                    tint = MaterialTheme.colorScheme.primary
+                                    tint = NothingRed
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Fitia Coach Insights",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
+                                    text = "KI-COACH ANALYSE",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = NothingRed
                                 )
                             }
                             Spacer(modifier = Modifier.height(8.dp))
@@ -386,7 +393,8 @@ fun FoodDetailContent(
             // Carbs / Macro Ratio Progress Bar
             item {
                 Card(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
@@ -403,13 +411,15 @@ fun FoodDetailContent(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Carbs Macro Ratio",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold
+                                text = "KOHLENHYDRAT-ANTEIL",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                letterSpacing = 0.8.sp
                             )
                             Text(
-                                text = "Carbs $carbsPct%",
-                                style = MaterialTheme.typography.bodyMedium,
+                                text = "$carbsPct%",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Bold,
                                 color = CarbsColor
                             )
@@ -420,7 +430,7 @@ fun FoodDetailContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(8.dp)
-                                .clip(RoundedCornerShape(4.dp)),
+                                .clip(CircleShape),
                             color = CarbsColor,
                             trackColor = MaterialTheme.colorScheme.surfaceVariant
                         )
@@ -431,7 +441,8 @@ fun FoodDetailContent(
             // Serving & Quantity Selection Section
             item {
                 Card(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
@@ -442,9 +453,10 @@ fun FoodDetailContent(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
-                            text = "Portion & Meal Type",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            text = "PORTION & MAHLZEIT",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            letterSpacing = 0.8.sp
                         )
 
                         // Quantity Stepper Row
@@ -454,8 +466,10 @@ fun FoodDetailContent(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Quantity:",
-                                style = MaterialTheme.typography.bodyMedium
+                                text = "MENGE:",
+                                style = MaterialTheme.typography.labelLarge,
+                                fontFamily = FontFamily.Monospace,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
 
                             Row(
@@ -469,13 +483,20 @@ fun FoodDetailContent(
                                         .clip(CircleShape)
                                         .background(MaterialTheme.colorScheme.surfaceVariant)
                                 ) {
-                                    Icon(imageVector = Icons.Default.Remove, contentDescription = "Decrease")
+                                    Icon(
+                                        imageVector = Icons.Default.Remove,
+                                        contentDescription = "Verringern",
+                                        tint = MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.size(16.dp)
+                                    )
                                 }
 
                                 Text(
                                     text = if (uiState.selectedQuantity % 1.0 == 0.0) "${uiState.selectedQuantity.toInt()}" else "${uiState.selectedQuantity}",
-                                    style = MaterialTheme.typography.titleMedium,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontFamily = FontFamily.Monospace,
                                     fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.padding(horizontal = 8.dp)
                                 )
 
@@ -486,7 +507,12 @@ fun FoodDetailContent(
                                         .clip(CircleShape)
                                         .background(MaterialTheme.colorScheme.surfaceVariant)
                                 ) {
-                                    Icon(imageVector = Icons.Default.Add, contentDescription = "Increase")
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Erhöhen",
+                                        tint = MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.size(16.dp)
+                                    )
                                 }
                             }
                         }
@@ -496,15 +522,16 @@ fun FoodDetailContent(
                             OutlinedButton(
                                 onClick = { showServingDropdown = true },
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp)
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                                shape = CircleShape
                             ) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text("Serving: ${uiState.selectedServingOption.label}")
-                                    Icon(Icons.Default.ExpandMore, contentDescription = "Select serving")
+                                    Text("EINHEIT: ${uiState.selectedServingOption.label.uppercase()}", fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onSurface)
+                                    Icon(Icons.Default.ExpandMore, contentDescription = "Einheit wählen", tint = MaterialTheme.colorScheme.onSurface)
                                 }
                             }
 
@@ -514,7 +541,7 @@ fun FoodDetailContent(
                             ) {
                                 uiState.availableServingOptions.forEach { option ->
                                     DropdownMenuItem(
-                                        text = { Text(option.label) },
+                                        text = { Text(option.label, fontFamily = FontFamily.Monospace) },
                                         onClick = {
                                             onServingSelected(option)
                                             showServingDropdown = false
@@ -529,15 +556,16 @@ fun FoodDetailContent(
                             OutlinedButton(
                                 onClick = { showMealDropdown = true },
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp)
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                                shape = CircleShape
                             ) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text("Meal: ${uiState.selectedMealType}")
-                                    Icon(Icons.Default.ExpandMore, contentDescription = "Select meal")
+                                    Text("MAHLZEIT: ${uiState.selectedMealType.uppercase()}", fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onSurface)
+                                    Icon(Icons.Default.ExpandMore, contentDescription = "Mahlzeit wählen", tint = MaterialTheme.colorScheme.onSurface)
                                 }
                             }
 
@@ -547,7 +575,7 @@ fun FoodDetailContent(
                             ) {
                                 mealTypes.forEach { type ->
                                     DropdownMenuItem(
-                                        text = { Text(type) },
+                                        text = { Text(type.uppercase(), fontFamily = FontFamily.Monospace) },
                                         onClick = {
                                             onMealTypeSelected(type)
                                             showMealDropdown = false
@@ -563,15 +591,15 @@ fun FoodDetailContent(
             // Accordion Section: Nutrition Facts
             item {
                 AccordionCard(
-                    title = "Nutrition Facts",
+                    title = "NÄHRWERTE",
                     isExpanded = uiState.isNutritionFactsExpanded,
                     onToggle = onToggleNutritionFacts
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        NutritionRow("Calories", "${uiState.calculatedCalories.roundToInt()} kcal")
-                        NutritionRow("Protein", "${uiState.calculatedProtein.roundToInt()} g")
-                        NutritionRow("Carbohydrates", "${uiState.calculatedCarbs.roundToInt()} g")
-                        NutritionRow("Fat", "${uiState.calculatedFat.roundToInt()} g")
+                        NutritionRow("KALORIEN", "${uiState.calculatedCalories.roundToInt()} KCAL")
+                        NutritionRow("PROTEIN", "${uiState.calculatedProtein.roundToInt()} G")
+                        NutritionRow("KOHLENHYDRATE", "${uiState.calculatedCarbs.roundToInt()} G")
+                        NutritionRow("FETT", "${uiState.calculatedFat.roundToInt()} G")
                     }
                 }
             }
@@ -579,15 +607,15 @@ fun FoodDetailContent(
             // Accordion Section: Micronutrients
             item {
                 AccordionCard(
-                    title = "Micronutrients",
+                    title = "MIKRONÄHRSTOFFE",
                     isExpanded = uiState.isMicronutrientsExpanded,
                     onToggle = onToggleMicronutrients
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        NutritionRow("Sugars 🍬", "${uiState.calculatedSugars.roundToInt()} g")
-                        NutritionRow("Fiber 🌾", "${uiState.calculatedFiber.roundToInt()} g")
-                        NutritionRow("Salt 🧂", "${uiState.calculatedSalt} g")
-                        NutritionRow("Saturated Fat 🧈", "${uiState.calculatedSatFat.roundToInt()} g")
+                        NutritionRow("ZUCKER 🍬", "${uiState.calculatedSugars.roundToInt()} G")
+                        NutritionRow("BALLASTSTOFFE 🌾", "${uiState.calculatedFiber.roundToInt()} G")
+                        NutritionRow("SALZ 🧂", "${uiState.calculatedSalt} G")
+                        NutritionRow("GESÄTTIGTE FETTE 🧈", "${uiState.calculatedSatFat.roundToInt()} G")
                     }
                 }
             }
@@ -602,12 +630,10 @@ fun MacroStatCard(
     accentColor: Color,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         modifier = modifier
     ) {
         Column(
@@ -616,7 +642,8 @@ fun MacroStatCard(
         ) {
             Text(
                 text = value,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.labelLarge,
+                fontFamily = FontFamily.Monospace,
                 fontWeight = FontWeight.Bold,
                 color = accentColor
             )
@@ -638,7 +665,8 @@ fun AccordionCard(
     content: @Composable () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -654,12 +682,14 @@ fun AccordionCard(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    letterSpacing = 1.sp
                 )
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                    contentDescription = if (isExpanded) "Collapse" else "Expand"
+                    contentDescription = if (isExpanded) "Einklappen" else "Ausklappen",
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -686,13 +716,15 @@ fun NutritionRow(label: String, value: String) {
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold
+            style = MaterialTheme.typography.labelMedium,
+            fontFamily = FontFamily.Monospace,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.Bold
         )
     }
 }
@@ -723,7 +755,7 @@ fun FoodDetailScreenPreview() {
         food = sampleFood,
         selectedQuantity = 1.0,
         selectedServingOption = ServingOption("Tasse (150 g)", 150.0),
-        selectedMealType = "Breakfast",
+        selectedMealType = "Frühstück",
         isFavorite = true
     )
 
