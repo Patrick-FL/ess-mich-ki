@@ -51,5 +51,9 @@ data class DashboardUiState(
     val baseFatTarget: Int = 53,
     val apiKey: String = "",
     val baseUrl: String = "https://openrouter.ai/api/v1/",
-    val model: String = com.example.ess_mich_ki.data.datastore.SettingsDataStore.DEFAULT_MODEL
+    val model: String = com.example.ess_mich_ki.data.datastore.SettingsDataStore.DEFAULT_MODEL,
+    val csvStartDate: LocalDate = LocalDate.now().minusDays(30),
+    val csvEndDate: LocalDate = LocalDate.now(),
+    val csvStatusMessage: String? = null,
+    val isCsvLoading: Boolean = false
 )

@@ -55,6 +55,7 @@ fun DashboardScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     DashboardContent(
         uiState = uiState,
@@ -76,6 +77,11 @@ fun DashboardScreen(
         onApiKeyChange = viewModel::updateApiKeyInSettings,
         onBaseUrlChange = viewModel::updateBaseUrlInSettings,
         onModelChange = viewModel::updateModelInSettings,
+        onCsvStartDateChange = viewModel::updateCsvStartDate,
+        onCsvEndDateChange = viewModel::updateCsvEndDate,
+        onExportCsv = { uri -> viewModel.exportCsvToUri(context, uri) },
+        onImportCsv = { uri -> viewModel.importCsvFromUri(context, uri) },
+        onClearCsvMessage = viewModel::clearCsvStatusMessage,
         onOpenNutritionalGoalsDialog = viewModel::openNutritionalGoalsDialog,
         onCloseNutritionalGoalsDialog = viewModel::closeNutritionalGoalsDialog,
         onSaveNutritionalGoals = viewModel::updateNutritionalGoals,
@@ -106,6 +112,11 @@ fun DashboardContent(
     onApiKeyChange: (String) -> Unit,
     onBaseUrlChange: (String) -> Unit,
     onModelChange: (String) -> Unit,
+    onCsvStartDateChange: (LocalDate) -> Unit = {},
+    onCsvEndDateChange: (LocalDate) -> Unit = {},
+    onExportCsv: (android.net.Uri) -> Unit = {},
+    onImportCsv: (android.net.Uri) -> Unit = {},
+    onClearCsvMessage: () -> Unit = {},
     onOpenNutritionalGoalsDialog: () -> Unit = {},
     onCloseNutritionalGoalsDialog: () -> Unit = {},
     onSaveNutritionalGoals: (Int, Int, Int, Int, Boolean) -> Unit = { _, _, _, _, _ -> },
@@ -249,9 +260,18 @@ fun DashboardContent(
                 apiKey = uiState.apiKey,
                 baseUrl = uiState.baseUrl,
                 model = uiState.model,
+                csvStartDate = uiState.csvStartDate,
+                csvEndDate = uiState.csvEndDate,
+                csvStatusMessage = uiState.csvStatusMessage,
+                isCsvLoading = uiState.isCsvLoading,
                 onApiKeyChange = onApiKeyChange,
                 onBaseUrlChange = onBaseUrlChange,
                 onModelChange = onModelChange,
+                onCsvStartDateChange = onCsvStartDateChange,
+                onCsvEndDateChange = onCsvEndDateChange,
+                onExportCsv = onExportCsv,
+                onImportCsv = onImportCsv,
+                onClearCsvMessage = onClearCsvMessage,
                 onDismiss = onToggleProfileDrawer
             )
         }

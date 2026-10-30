@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -139,22 +140,24 @@ fun HeaderBar(
                     }
                 }
 
-                // Profile Avatar Button
-                Box(
+                // Settings Button
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     modifier = Modifier
                         .size(38.dp)
                         .clip(CircleShape)
-                        .background(NothingRed)
-                        .clickable { onAvatarClick() },
-                    contentAlignment = Alignment.Center
+                        .clickable { onAvatarClick() }
                 ) {
-                    Text(
-                        text = "S",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 16.sp
-                    )
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Einstellungen",
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
             }
         }

@@ -24,6 +24,10 @@ interface LoggedMealDao {
     fun getMealsWithItemsByDate(dateString: String): Flow<List<MealWithItems>>
 
     @Transaction
+    @Query("SELECT * FROM logged_meals WHERE dateString BETWEEN :startDate AND :endDate ORDER BY dateString ASC, id ASC")
+    suspend fun getMealsWithItemsInDateRangeSync(startDate: String, endDate: String): List<MealWithItems>
+
+    @Transaction
     @Query("SELECT * FROM logged_meals WHERE dateString = :dateString AND mealType = :mealType LIMIT 1")
     suspend fun getMealWithItemsByDateAndType(dateString: String, mealType: String): MealWithItems?
 

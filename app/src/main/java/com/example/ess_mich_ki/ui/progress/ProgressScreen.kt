@@ -27,8 +27,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MonitorWeight
 import androidx.compose.material.icons.filled.Whatshot
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -552,22 +550,18 @@ fun ProgressContent(
 
                                 Spacer(modifier = Modifier.width(6.dp))
 
-                                Button(
+                                IconButton(
                                     onClick = onOpenAddWeight,
-                                    shape = CircleShape,
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = NothingRed,
-                                        contentColor = Color.White
-                                    ),
-                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .background(NothingRed, CircleShape)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Add,
                                         contentDescription = "Gewicht eintragen",
-                                        modifier = Modifier.size(16.dp)
+                                        tint = Color.White,
+                                        modifier = Modifier.size(18.dp)
                                     )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text("+ WÄGEN", fontFamily = FontFamily.Monospace, fontSize = 11.sp)
                                 }
                             }
                         }

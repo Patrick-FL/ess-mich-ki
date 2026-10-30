@@ -406,6 +406,13 @@ class DashboardViewModelTest {
             return meals.filter { it.dateString == dateString }
         }
 
+        override suspend fun getMealsWithItemsInDateRangeSync(startDate: String, endDate: String): List<MealWithItems> {
+            return meals.filter { it.dateString in startDate..endDate }
+                .map { meal ->
+                    MealWithItems(meal = meal, items = items.filter { it.mealId == meal.id })
+                }
+        }
+
         override fun getMealsWithItemsByDate(dateString: String): Flow<List<MealWithItems>> {
             return mealsFlow.map { list ->
                 list.filter { it.dateString == dateString }

@@ -28,7 +28,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -187,30 +186,31 @@ fun ManageWeightLogsDialog(
                 // Actions Footer
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    OutlinedButton(
+                    IconButton(
                         onClick = {
                             onDismiss()
                             onOpenAddWeight()
                         },
-                        modifier = Modifier.weight(1f).height(48.dp),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                        shape = CircleShape
+                        modifier = Modifier
+                            .size(48.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = null,
+                            contentDescription = "Gewicht eintragen",
                             tint = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(20.dp)
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("+ WÄGEN", fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onSurface)
                     }
 
                     Button(
                         onClick = onDismiss,
-                        modifier = Modifier.weight(1f).height(48.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
                         shape = CircleShape,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = NothingRed,

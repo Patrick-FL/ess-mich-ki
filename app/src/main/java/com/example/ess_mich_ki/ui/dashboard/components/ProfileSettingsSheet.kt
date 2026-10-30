@@ -1,6 +1,13 @@
 package com.example.ess_mich_ki.ui.dashboard.components
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,24 +30,33 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -61,6 +77,9 @@ import androidx.compose.ui.unit.sp
 import com.example.ess_mich_ki.data.datastore.SettingsDataStore
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
 import com.example.ess_mich_ki.ui.theme.NothingRed
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,17 +87,49 @@ fun ProfileSettingsSheet(
     apiKey: String,
     baseUrl: String,
     model: String,
+    modifier: Modifier = Modifier,
+    csvStartDate: LocalDate = LocalDate.now().minusDays(30),
+    csvEndDate: LocalDate = LocalDate.now(),
+    csvStatusMessage: String? = null,
+    isCsvLoading: Boolean = false,
     onApiKeyChange: (String) -> Unit,
     onBaseUrlChange: (String) -> Unit,
     onModelChange: (String) -> Unit,
+    onCsvStartDateChange: (LocalDate) -> Unit = {},
+    onCsvEndDateChange: (LocalDate) -> Unit = {},
+    onExportCsv: (Uri) -> Unit = {},
+    onImportCsv: (Uri) -> Unit = {},
+    onClearCsvMessage: () -> Unit = {},
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
-    var isSettingsExpanded by remember { mutableStateOf(true) }
     var apiKeyInput by remember { mutableStateOf(apiKey) }
     var isApiKeyVisible by remember { mutableStateOf(false) }
     var modelInput by remember(model) { mutableStateOf(model) }
+
+    // Fold/Unfold state for all sections (C1: default unfolded = true)
+    var isApiKeyExpanded by remember { mutableStateOf(true) }
+    var isBaseUrlExpanded by remember { mutableStateOf(true) }
+    var isModelExpanded by remember { mutableStateOf(true) }
+    var isCsvExpanded by remember { mutableStateOf(true) }
+
+    // Date picker dialog states
+    var showStartDatePicker by remember { mutableStateOf(false) }
+    var showEndDatePicker by remember { mutableStateOf(false) }
+
+    val defaultExportFileName = "food_tracker_export_${csvStartDate}_bis_${csvEndDate}.csv"
+
+    val exportCsvLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("text/csv")
+    ) { uri ->
+        uri?.let { onExportCsv(it) }
+    }
+
+    val importCsvLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { onImportCsv(it) }
+    }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -92,71 +143,9 @@ fun ProfileSettingsSheet(
                 .padding(horizontal = 20.dp, vertical = 8.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Profile Header
+            // Header Bar with Title, Global Fold/Unfold, and Close
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(52.dp)
-                            .clip(CircleShape)
-                            .background(NothingRed),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "S",
-                            color = Color.White,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 22.sp
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(14.dp))
-                    Column {
-                        Text(
-                            text = "SZENT",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            letterSpacing = 1.2.sp
-                        )
-                        Text(
-                            text = "FREE ACCOUNT",
-                            style = MaterialTheme.typography.labelSmall,
-                            fontFamily = FontFamily.Monospace,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-
-                IconButton(
-                    onClick = onDismiss,
-                    modifier = Modifier
-                        .size(32.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Schließen",
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Settings Section Header
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable { isSettingsExpanded = !isSettingsExpanded }
-                    .padding(vertical = 12.dp, horizontal = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -169,33 +158,66 @@ fun ProfileSettingsSheet(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "EINSTELLUNGEN",
-                        style = MaterialTheme.typography.labelLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
-                        letterSpacing = 1.sp
+                        letterSpacing = 1.2.sp
                     )
                 }
 
-                Icon(
-                    imageVector = if (isSettingsExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                    contentDescription = "Einstellungen umschalten",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val allExpanded = isApiKeyExpanded && isBaseUrlExpanded && isModelExpanded && isCsvExpanded
+                    TextButton(
+                        onClick = {
+                            val targetState = !allExpanded
+                            isApiKeyExpanded = targetState
+                            isBaseUrlExpanded = targetState
+                            isModelExpanded = targetState
+                            isCsvExpanded = targetState
+                        }
+                    ) {
+                        Text(
+                            text = if (allExpanded) "ALLE EINKLAPPEN" else "ALLE AUSKLAPPEN",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FontFamily.Monospace,
+                            color = NothingRed
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    IconButton(
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Schließen",
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
             }
 
-            AnimatedVisibility(visible = isSettingsExpanded) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 4.dp, top = 8.dp, end = 4.dp, bottom = 12.dp)
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 4.dp, top = 4.dp, end = 4.dp, bottom = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // SECTION 1: OPENROUTER API KEY (Foldable)
+                CollapsibleSectionCard(
+                    title = "OPENROUTER API KEY",
+                    isExpanded = isApiKeyExpanded,
+                    onToggleExpand = { isApiKeyExpanded = !isApiKeyExpanded }
                 ) {
-                    // OpenRouter API Key Input
-                    Text(
-                        text = "OPENROUTER API KEY",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        letterSpacing = 0.8.sp
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = apiKeyInput,
                         onValueChange = {
@@ -234,18 +256,15 @@ fun ProfileSettingsSheet(
                         ),
                         shape = RoundedCornerShape(16.dp)
                     )
+                }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Base URL Selection
-                    Text(
-                        text = "BASE URL",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        letterSpacing = 0.8.sp
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-
+                // SECTION 2: BASE URL (Foldable)
+                CollapsibleSectionCard(
+                    title = "BASE URL",
+                    isExpanded = isBaseUrlExpanded,
+                    onToggleExpand = { isBaseUrlExpanded = !isBaseUrlExpanded }
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -276,18 +295,15 @@ fun ProfileSettingsSheet(
                             }
                         }
                     }
+                }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // AI Model Selection / Custom Entry
-                    Text(
-                        text = "KI-MODELL",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        letterSpacing = 0.8.sp
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-
+                // SECTION 3: KI-MODELL (Foldable)
+                CollapsibleSectionCard(
+                    title = "KI-MODELL",
+                    isExpanded = isModelExpanded,
+                    onToggleExpand = { isModelExpanded = !isModelExpanded }
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
                     val commonModels = listOf(
                         "Gemini 2.0" to "google/gemini-2.0-flash-001",
                         "GPT-4o mini" to "openai/gpt-4o-mini",
@@ -352,26 +368,421 @@ fun ProfileSettingsSheet(
                         ),
                         shape = RoundedCornerShape(16.dp)
                     )
+                }
 
-                    Spacer(modifier = Modifier.height(18.dp))
+                // SECTION 4: CSV EXPORT & IMPORT (Foldable)
+                CollapsibleSectionCard(
+                    title = "DATEN EXPORT & IMPORT (CSV)",
+                    isExpanded = isCsvExpanded,
+                    onToggleExpand = { isCsvExpanded = !isCsvExpanded }
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                    Button(
-                        onClick = onDismiss,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp),
-                        shape = CircleShape,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.onSurface,
-                            contentColor = MaterialTheme.colorScheme.surface
-                        )
+                    Text(
+                        text = "ZEITRAUM WÄHLEN",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        letterSpacing = 0.8.sp
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Date Pickers Row (Start Date - End Date)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Speichern & Schließen", fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                        // Start Date Pill
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { showStartDatePicker = true }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.DateRange,
+                                    contentDescription = "Von Datum",
+                                    tint = NothingRed,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Column {
+                                    Text(
+                                        text = "VON",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontSize = 9.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = csvStartDate.toString(),
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontFamily = FontFamily.Monospace,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                            }
+                        }
+
+                        Text(
+                            text = "–",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        // End Date Pill
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { showEndDatePicker = true }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.DateRange,
+                                    contentDescription = "Bis Datum",
+                                    tint = NothingRed,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Column {
+                                    Text(
+                                        text = "BIS",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontSize = 9.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = csvEndDate.toString(),
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontFamily = FontFamily.Monospace,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                            }
+                        }
                     }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Date Preset Buttons Row
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        val presets = listOf(
+                            "7 Tage" to {
+                                onCsvStartDateChange(LocalDate.now().minusDays(7))
+                                onCsvEndDateChange(LocalDate.now())
+                            },
+                            "30 Tage" to {
+                                onCsvStartDateChange(LocalDate.now().minusDays(30))
+                                onCsvEndDateChange(LocalDate.now())
+                            },
+                            "Diesen Monat" to {
+                                onCsvStartDateChange(LocalDate.now().withDayOfMonth(1))
+                                onCsvEndDateChange(LocalDate.now())
+                            },
+                            "Alles" to {
+                                onCsvStartDateChange(LocalDate.of(2020, 1, 1))
+                                onCsvEndDateChange(LocalDate.now())
+                            }
+                        )
+
+                        presets.forEach { (label, action) ->
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .clickable { action() }
+                            ) {
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Action Buttons (Export / Import)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = { exportCsvLauncher.launch(defaultExportFileName) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(44.dp),
+                            shape = CircleShape,
+                            border = BorderStroke(1.dp, NothingRed),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = NothingRed)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.FileDownload,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "EXPORT",
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+
+                        Button(
+                            onClick = { importCsvLauncher.launch("text/*") },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(44.dp),
+                            shape = CircleShape,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = NothingRed,
+                                contentColor = Color.White
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.FileUpload,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "IMPORT",
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+
+                    // Loading / Status Message Feedback
+                    if (isCsvLoading) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = NothingRed,
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Verarbeite CSV Daten...",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    } else if (csvStatusMessage != null) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            border = BorderStroke(1.dp, NothingRed.copy(alpha = 0.5f)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = csvStatusMessage,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                IconButton(
+                                    onClick = onClearCsvMessage,
+                                    modifier = Modifier.size(24.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Schließen",
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.onSurface,
+                        contentColor = MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    Text("Speichern & Schließen", fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        // Start Date Picker Dialog
+        if (showStartDatePicker) {
+            val datePickerState = rememberDatePickerState(
+                initialSelectedDateMillis = csvStartDate
+                    .atStartOfDay(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli()
+            )
+
+            DatePickerDialog(
+                onDismissRequest = { showStartDatePicker = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val pickedDate = Instant.ofEpochMilli(millis)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                                onCsvStartDateChange(pickedDate)
+                            }
+                            showStartDatePicker = false
+                        }
+                    ) {
+                        Text("OK", color = NothingRed)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showStartDatePicker = false }) {
+                        Text("Abbrechen")
+                    }
+                }
+            ) {
+                DatePicker(state = datePickerState)
+            }
+        }
+
+        // End Date Picker Dialog
+        if (showEndDatePicker) {
+            val datePickerState = rememberDatePickerState(
+                initialSelectedDateMillis = csvEndDate
+                    .atStartOfDay(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli()
+            )
+
+            DatePickerDialog(
+                onDismissRequest = { showEndDatePicker = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val pickedDate = Instant.ofEpochMilli(millis)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                                onCsvEndDateChange(pickedDate)
+                            }
+                            showEndDatePicker = false
+                        }
+                    ) {
+                        Text("OK", color = NothingRed)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showEndDatePicker = false }) {
+                        Text("Abbrechen")
+                    }
+                }
+            ) {
+                DatePicker(state = datePickerState)
+            }
+        }
+    }
+}
+
+@Composable
+private fun CollapsibleSectionCard(
+    title: String,
+    isExpanded: Boolean,
+    onToggleExpand: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { onToggleExpand() },
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    letterSpacing = 0.8.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                IconButton(
+                    onClick = onToggleExpand,
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = if (isExpanded) "Einklappen" else "Ausklappen",
+                        tint = NothingRed,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    content()
+                }
+            }
         }
     }
 }

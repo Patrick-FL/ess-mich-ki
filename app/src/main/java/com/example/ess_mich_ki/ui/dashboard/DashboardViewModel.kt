@@ -48,6 +48,10 @@ class DashboardViewModel(
     private val isProfileDrawerOpenState = MutableStateFlow(false)
     private val isApiKeyMissingWarningState = MutableStateFlow(false)
     private val isNutritionalGoalsDialogShowingState = MutableStateFlow(false)
+    private val csvStartDateState = MutableStateFlow(LocalDate.now().minusDays(30))
+    private val csvEndDateState = MutableStateFlow(LocalDate.now())
+    private val csvStatusMessageState = MutableStateFlow<String?>(null)
+    private val isCsvLoadingState = MutableStateFlow(false)
 
     private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
 
@@ -79,7 +83,11 @@ class DashboardViewModel(
         isProfileDrawerOpenState,
         isApiKeyMissingWarningState,
         isNutritionalGoalsDialogShowingState,
-        database.loggedMealDao().getAllMeals()
+        database.loggedMealDao().getAllMeals(),
+        csvStartDateState,
+        csvEndDateState,
+        csvStatusMessageState,
+        isCsvLoadingState
     ) { arrayOfValues ->
         val selectedDate = arrayOfValues[0] as LocalDate
         @Suppress("UNCHECKED_CAST")
@@ -99,6 +107,10 @@ class DashboardViewModel(
         val isNutritionalGoalsDialogShowing = arrayOfValues[14] as Boolean
         @Suppress("UNCHECKED_CAST")
         val allMeals = arrayOfValues[15] as List<LoggedMealEntity>
+        val csvStartDate = arrayOfValues[16] as LocalDate
+        val csvEndDate = arrayOfValues[17] as LocalDate
+        val csvStatusMessage = arrayOfValues[18] as String?
+        val isCsvLoading = arrayOfValues[19] as Boolean
 
         val weeklyDays = computeWeeklyDays(selectedDate)
 
@@ -218,7 +230,11 @@ class DashboardViewModel(
             baseFatTarget = baseFatTarget,
             apiKey = userSettings.openRouterApiKey,
             baseUrl = userSettings.openRouterBaseUrl,
-            model = userSettings.openRouterModel
+            model = userSettings.openRouterModel,
+            csvStartDate = csvStartDate,
+            csvEndDate = csvEndDate,
+            csvStatusMessage = csvStatusMessage,
+            isCsvLoading = isCsvLoading
         )
     }.stateIn(
         scope = viewModelScope,
@@ -485,6 +501,102 @@ class DashboardViewModel(
     fun updateModelInSettings(model: String) {
         viewModelScope.launch {
             settingsDataStore.updateOpenRouterModel(model)
+        }
+    }
+
+    fun updateCsvStartDate(date: LocalDate) {
+        csvStartDateState.value = date
+    }
+
+    fun updateCsvEndDate(date: LocalDate) {
+        csvEndDateState.value = date
+    }
+
+    fun clearCsvStatusMessage() {
+        csvStatusMessageState.value = null
+    }
+
+    fun exportCsvToUri(context: Context, uri: android.net.Uri) {
+        viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            isCsvLoadingState.value = true
+            csvStatusMessageState.value = null
+            try {
+                val startStr = csvStartDateState.value.format(dateFormatter)
+                val endStr = csvEndDateState.value.format(dateFormatter)
+                val mealsWithItems = database.loggedMealDao().getMealsWithItemsInDateRangeSync(startStr, endStr)
+                val csvData = com.example.ess_mich_ki.util.CsvExportImportUtil.exportToCsv(mealsWithItems)
+
+                context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                    outputStream.write(csvData.toByteArray(Charsets.UTF_8))
+                }
+                val itemCount = mealsWithItems.sumOf { it.items.size }
+                csvStatusMessageState.value = "Erfolg: $itemCount Einträge exportiert ($startStr bis $endStr)."
+            } catch (e: Exception) {
+                csvStatusMessageState.value = "Fehler beim Export: ${e.localizedMessage}"
+            } finally {
+                isCsvLoadingState.value = false
+            }
+        }
+    }
+
+    fun importCsvFromUri(context: Context, uri: android.net.Uri) {
+        viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            isCsvLoadingState.value = true
+            csvStatusMessageState.value = null
+            try {
+                val csvContent = context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    inputStream.bufferedReader(Charsets.UTF_8).readText()
+                } ?: ""
+
+                val records = com.example.ess_mich_ki.util.CsvExportImportUtil.parseCsv(csvContent)
+                if (records.isEmpty()) {
+                    csvStatusMessageState.value = "Fehler: Keine gültigen Daten in der CSV-Datei gefunden."
+                    isCsvLoadingState.value = false
+                    return@launch
+                }
+
+                val affectedMealIds = mutableSetOf<Long>()
+                for (record in records) {
+                    val existingMeals = database.loggedMealDao().getMealsByDateSync(record.dateString)
+                    val canonicalRecordType = com.example.ess_mich_ki.util.CanonicalMealType.fromString(record.mealType)
+                    val existingMeal = existingMeals.firstOrNull {
+                        com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.mealType) == canonicalRecordType
+                    }
+
+                    val mealId = existingMeal?.id ?: database.loggedMealDao().insertMeal(
+                        LoggedMealEntity(
+                            dateString = record.dateString,
+                            mealType = canonicalRecordType.germanName
+                        )
+                    )
+                    affectedMealIds.add(mealId)
+
+                    database.loggedMealItemDao().insertItem(
+                        LoggedMealItemEntity(
+                            mealId = mealId,
+                            name = record.itemName,
+                            quantity = record.quantity,
+                            servingName = record.servingName,
+                            servingGrams = record.servingGrams,
+                            calories = record.calories,
+                            protein = record.protein,
+                            carbs = record.carbs,
+                            fat = record.fat,
+                            isChecked = record.isChecked
+                        )
+                    )
+                }
+
+                for (mId in affectedMealIds) {
+                    recalculateMealTotals(mId)
+                }
+
+                csvStatusMessageState.value = "Erfolg: ${records.size} Einträge erfolgreich importiert!"
+            } catch (e: Exception) {
+                csvStatusMessageState.value = "Fehler beim Import: ${e.localizedMessage}"
+            } finally {
+                isCsvLoadingState.value = false
+            }
         }
     }
 
