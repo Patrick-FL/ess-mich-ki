@@ -102,8 +102,38 @@ class DashboardViewModel(
 
         val weeklyDays = computeWeeklyDays(selectedDate)
 
-        val distinctMeals = mealsWithItems.distinctBy { it.meal.mealType.lowercase() }
-        val allLoggedItems = distinctMeals.flatMap { it.items }
+        val canonicalOrder = listOf(
+            com.example.ess_mich_ki.util.CanonicalMealType.BREAKFAST,
+            com.example.ess_mich_ki.util.CanonicalMealType.LUNCH,
+            com.example.ess_mich_ki.util.CanonicalMealType.DINNER,
+            com.example.ess_mich_ki.util.CanonicalMealType.SNACK
+        )
+
+        val mergedMeals = canonicalOrder.map { canonicalType ->
+            val matching = mealsWithItems.filter {
+                com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.meal.mealType) == canonicalType
+            }
+            val mergedItems = matching.flatMap { it.items }
+            val representativeMeal = matching.firstOrNull()?.meal ?: com.example.ess_mich_ki.data.local.entity.LoggedMealEntity(
+                dateString = selectedDate.format(dateFormatter),
+                mealType = canonicalType.germanName,
+                totalCalories = mergedItems.sumOf { it.calories },
+                totalProtein = mergedItems.sumOf { it.protein },
+                totalCarbs = mergedItems.sumOf { it.carbs },
+                totalFat = mergedItems.sumOf { it.fat }
+            )
+            MealWithItems(
+                meal = representativeMeal.copy(
+                    totalCalories = mergedItems.sumOf { it.calories },
+                    totalProtein = mergedItems.sumOf { it.protein },
+                    totalCarbs = mergedItems.sumOf { it.carbs },
+                    totalFat = mergedItems.sumOf { it.fat }
+                ),
+                items = mergedItems
+            )
+        }
+
+        val allLoggedItems = mergedMeals.flatMap { it.items }
         val consumedCalories = allLoggedItems.sumOf { it.calories }.roundToInt()
         val consumedProtein = allLoggedItems.sumOf { it.protein }.roundToInt()
         val consumedCarbs = allLoggedItems.sumOf { it.carbs }.roundToInt()
@@ -169,7 +199,7 @@ class DashboardViewModel(
             carbsTarget = carbsTarget,
             fatConsumed = consumedFat,
             fatTarget = fatTarget,
-            meals = distinctMeals,
+            meals = mergedMeals,
             isDayEnded = isDayEnded,
             isAiDialogShowing = isAiDialogShowing,
             aiSelectedMealType = aiSelectedMealType,
@@ -397,19 +427,19 @@ class DashboardViewModel(
         val parsedMeal = aiParsedResultState.value ?: return
         val dateString = selectedDateState.value.format(dateFormatter)
         val mealType = aiSelectedMealTypeState.value
+        val targetCanonical = com.example.ess_mich_ki.util.CanonicalMealType.fromString(mealType)
 
         viewModelScope.launch {
-            var existingMeal = database.loggedMealDao().getMealWithItemsByDateAndType(dateString, mealType)
-            val mealId = if (existingMeal != null) {
-                existingMeal.meal.id
-            } else {
-                database.loggedMealDao().insertMeal(
-                    LoggedMealEntity(
-                        dateString = dateString,
-                        mealType = mealType
-                    )
-                )
+            val existingMeals = database.loggedMealDao().getMealsByDateSync(dateString)
+            val existingMeal = existingMeals.firstOrNull {
+                com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.mealType) == targetCanonical
             }
+            val mealId = existingMeal?.id ?: database.loggedMealDao().insertMeal(
+                LoggedMealEntity(
+                    dateString = dateString,
+                    mealType = mealType
+                )
+            )
 
             val loggedItems = parsedMeal.items.map { parsed ->
                 val cleanUnit = com.example.ess_mich_ki.util.ServingUnitUtils.sanitizeServingName(parsed.servingName)

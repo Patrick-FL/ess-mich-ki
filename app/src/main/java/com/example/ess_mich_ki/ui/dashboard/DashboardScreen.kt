@@ -193,11 +193,9 @@ fun DashboardContent(
 
                 // Meal Cards (Breakfast, Lunch, Dinner, Snack)
                 items(mealTypes) { mealType ->
+                    val canonicalType = com.example.ess_mich_ki.util.CanonicalMealType.fromString(mealType)
                     val mealWithItems = uiState.meals.find {
-                        it.meal.mealType.equals(mealType, ignoreCase = true) ||
-                                (mealType == "Frühstück" && it.meal.mealType.equals("Breakfast", ignoreCase = true)) ||
-                                (mealType == "Mittagessen" && it.meal.mealType.equals("Lunch", ignoreCase = true)) ||
-                                (mealType == "Abendessen" && it.meal.mealType.equals("Dinner", ignoreCase = true))
+                        com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.meal.mealType) == canonicalType
                     }
 
                     MealCard(

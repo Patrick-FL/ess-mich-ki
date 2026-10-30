@@ -196,20 +196,20 @@ class FoodDetailViewModel(
         viewModelScope.launch {
             val todayStr = LocalDate.now().toString()
             val mealType = currentState.selectedMealType
+            val targetCanonical = com.example.ess_mich_ki.util.CanonicalMealType.fromString(mealType)
 
             // Find or create meal for today
-            var existingMeal = database.loggedMealDao().getMealWithItemsByDateAndType(todayStr, mealType)?.meal
-
-            val mealId = if (existingMeal != null) {
-                existingMeal.id
-            } else {
-                database.loggedMealDao().insertMeal(
-                    LoggedMealEntity(
-                        dateString = todayStr,
-                        mealType = mealType
-                    )
-                )
+            val existingMeals = database.loggedMealDao().getMealsByDateSync(todayStr)
+            val existingMeal = existingMeals.firstOrNull {
+                com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.mealType) == targetCanonical
             }
+
+            val mealId = existingMeal?.id ?: database.loggedMealDao().insertMeal(
+                LoggedMealEntity(
+                    dateString = todayStr,
+                    mealType = mealType
+                )
+            )
 
             // Create LoggedMealItemEntity
             val newItem = LoggedMealItemEntity(

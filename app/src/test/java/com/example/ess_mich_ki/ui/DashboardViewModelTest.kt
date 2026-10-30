@@ -30,6 +30,7 @@ import kotlinx.coroutines.test.setMain
 import okhttp3.OkHttpClient
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -145,9 +146,40 @@ class DashboardViewModelTest {
         advanceUntilIdle()
 
         val state = viewModel.uiState.first { it.meals.isNotEmpty() }
-        // Distinct meals logic should pick only one Breakfast meal
-        assertEquals(1, state.meals.size)
-        assertEquals(100, state.calorieConsumed)
+        // 4 canonical meals (Breakfast, Lunch, Dinner, Snack) should be returned
+        assertEquals(4, state.meals.size)
+        assertEquals(200, state.calorieConsumed)
+    }
+
+    @Test
+    fun testMergingEnglishAndGermanMealEntitiesWithItems() = runTest {
+        val today = LocalDate.now()
+        val dateString = today.toString()
+
+        // Seeded "Breakfast" (empty)
+        fakeMealDao.insertMeal(
+            LoggedMealEntity(id = 1, dateString = dateString, mealType = "Breakfast", totalCalories = 0.0)
+        )
+
+        // Saved "Frühstück" (has items)
+        val fruehstueckId = fakeMealDao.insertMeal(
+            LoggedMealEntity(id = 2, dateString = dateString, mealType = "Frühstück", totalCalories = 250.0)
+        )
+        fakeItemDao.insertItem(
+            LoggedMealItemEntity(id = 10, mealId = fruehstueckId, name = "Oatmeal", calories = 250.0, isChecked = true)
+        )
+
+        val viewModel = DashboardViewModel(fakeDatabase, settingsDataStore, openRouterApiClient)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.first { it.meals.isNotEmpty() }
+        val breakfastMeal = state.meals.find {
+            com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.meal.mealType) == com.example.ess_mich_ki.util.CanonicalMealType.BREAKFAST
+        }
+        assertNotNull(breakfastMeal)
+        assertEquals(1, breakfastMeal!!.items.size)
+        assertEquals("Oatmeal", breakfastMeal.items.first().name)
+        assertEquals(250, state.calorieConsumed)
     }
 
     @Test
