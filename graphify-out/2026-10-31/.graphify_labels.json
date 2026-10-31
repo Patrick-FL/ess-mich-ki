@@ -1,0 +1,23 @@
+{
+  "1": "FoodItemEntity",
+  "2": "LoggedMealEntity",
+  "3": "UserGoalEntity",
+  "4": "EssmichkiTheme",
+  "5": "NutritionalGoalState",
+  "6": "DashboardViewModel",
+  "7": "FoodDetailViewModel",
+  "8": "LoggedMealItemEntity",
+  "9": "AiFoodLoggingDialog.kt",
+  "10": "SettingsDataStore",
+  "11": "EditLoggedMealItemDialog.kt",
+  "12": "Implementation Steps",
+  "13": "Converters",
+  "14": "gradlew",
+  "15": "ExampleInstrumentedTest",
+  "16": "ExampleUnitTest",
+  "17": "app/build.gradle.kts",
+  "18": "Type.kt",
+  "19": "build.gradle.kts",
+  "20": "settings.gradle.kts",
+  "22": ".calculateMonthlyCalendar"
+}

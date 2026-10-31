@@ -13,3 +13,16 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Keystores & Signing Keys
+*.jks
+*.keystore
+*.p12
+
+# Local secret configurations & environment
+secrets.properties
+*.env
+
+# Logs & Debug Dumps
+*.log
+

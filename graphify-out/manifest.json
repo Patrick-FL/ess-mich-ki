@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/data/local/dao/LoggedMealDao.kt": {
-    "mtime": 1792645500.483,
-    "ast_hash": "faeb98e38503bf555325471702d7638c",
+    "mtime": 1793352678.391,
+    "ast_hash": "98d6dc47826dc17997edb0de32a76b9b",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/data/local/dao/LoggedMealItemDao.kt": {
@@ -95,18 +95,18 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardScreen.kt": {
-    "mtime": 1792810808.895,
-    "ast_hash": "481a4d501cb8f69e77b8f48ca21ccf06",
+    "mtime": 1793352825.226,
+    "ast_hash": "c59b922441015c8ea2898fd385a53dae",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardUiState.kt": {
-    "mtime": 1792732554.289,
-    "ast_hash": "6797cd096900932017f541af27c1df3c",
+    "mtime": 1793352707.259,
+    "ast_hash": "f088d0776ecff5cdd618bd7636105ec9",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardViewModel.kt": {
-    "mtime": 1792811774.808,
-    "ast_hash": "a55d09fcc409c5971f6a751e7d50cb08",
+    "mtime": 1793352750.614,
+    "ast_hash": "33f613f9bad4148e7df4af3577f3dfdd",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt": {
@@ -120,8 +120,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/HeaderBar.kt": {
-    "mtime": 1792811320.629,
-    "ast_hash": "5a29dad4f1b59763c2741478a5bdb5c0",
+    "mtime": 1793352088.597,
+    "ast_hash": "3826fec61ef5ef3147a1978d34a1ba30",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/MealCard.kt": {
@@ -130,8 +130,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/ProfileSettingsSheet.kt": {
-    "mtime": 1792811375.989,
-    "ast_hash": "9ed2035dbef25d8a6b695c567bffacaf",
+    "mtime": 1793352796.06,
+    "ast_hash": "0abed271aa6d4f95260426ebef7efc77",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/detail/FoodDetailScreen.kt": {
@@ -145,8 +145,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/detail/FoodDetailViewModel.kt": {
-    "mtime": 1792731780.694,
-    "ast_hash": "dc24c0eae35abf77dd73327569934e71",
+    "mtime": 1793351615.934,
+    "ast_hash": "ee64987d9d91ac081f06998e4f449857",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/navigation/AppNavigation.kt": {
@@ -155,8 +155,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/progress/ProgressScreen.kt": {
-    "mtime": 1792811471.224,
-    "ast_hash": "5bc35288524a829994705a58b8aee1f4",
+    "mtime": 1793353481.512,
+    "ast_hash": "44b88ee8fb026cc671143aa146d3f69a",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/progress/ProgressUiState.kt": {
@@ -225,8 +225,8 @@
     "semantic_hash": ""
   },
   "app/src/test/java/com/example/ess_mich_ki/ui/DashboardViewModelTest.kt": {
-    "mtime": 1792811813.198,
-    "ast_hash": "b09e1984c7baad30a08774dfb371d2fc",
+    "mtime": 1793352839.162,
+    "ast_hash": "87e64d75c115803aaaefd608e68cc0a4",
     "semantic_hash": ""
   },
   "app/src/test/java/com/example/ess_mich_ki/ui/SettingsViewModelTest.kt": {
@@ -395,8 +395,28 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/progress/components/ManageWeightLogsDialog.kt": {
-    "mtime": 1792811554.611,
-    "ast_hash": "57fc59c075d89f23b109af850120309c",
+    "mtime": 1793353662.142,
+    "ast_hash": "e41ac783a376cc046f83bce6004dc0cf",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/util/CsvExportImportUtil.kt": {
+    "mtime": 1793352854.077,
+    "ast_hash": "22ff04c0eaa73da2899312439034d0de",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/com/example/ess_mich_ki/util/MealTypeUtils.kt": {
+    "mtime": 1793351577.844,
+    "ast_hash": "faae92f7c26f26b01b999eb29843d430",
+    "semantic_hash": ""
+  },
+  "app/src/test/java/com/example/ess_mich_ki/util/CsvExportImportUtilTest.kt": {
+    "mtime": 1793352700.619,
+    "ast_hash": "7187a515f426ef81a650ea8e109aa30f",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1793434475.844,
+    "ast_hash": "0527c83548e24f8676032c108cb4352b",
     "semantic_hash": ""
   }
 }
