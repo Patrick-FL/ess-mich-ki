@@ -2,6 +2,7 @@ package com.example.ess_mich_ki.ui.dashboard.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,13 +19,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -43,16 +44,22 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -377,6 +384,17 @@ private fun ParsedFoodItemRow(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var quantityInputText by remember(item) {
+        mutableStateOf(ServingUnitUtils.formatQuantity(item.quantity))
+    }
+
+    LaunchedEffect(item.quantity) {
+        val currentParsed = quantityInputText.replace(',', '.').toDoubleOrNull()
+        if (currentParsed != item.quantity) {
+            quantityInputText = ServingUnitUtils.formatQuantity(item.quantity)
+        }
+    }
+
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surfaceVariant,
@@ -443,72 +461,50 @@ private fun ParsedFoodItemRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                IconButton(
-                    onClick = {
-                        val newQuantity = (item.quantity - 0.5).coerceAtLeast(0.1)
-                        val factor = newQuantity / item.quantity.coerceAtLeast(0.1)
-                        val updated = item.copy(
-                            quantity = newQuantity,
-                            calories = item.calories * factor,
-                            proteinGrams = item.proteinGrams * factor,
-                            carbsGrams = item.carbsGrams * factor,
-                            fatGrams = item.fatGrams * factor,
-                            sugarsGrams = item.sugarsGrams * factor,
-                            fiberGrams = item.fiberGrams * factor,
-                            saltGrams = item.saltGrams * factor,
-                            satFatGrams = item.satFatGrams * factor
-                        )
-                        onUpdate(updated)
-                    },
+                Box(
                     modifier = Modifier
-                        .size(28.dp)
-                        .clip(CircleShape)
+                        .padding(start = 4.dp)
+                        .width(60.dp)
+                        .height(30.dp)
+                        .clip(RoundedCornerShape(8.dp))
                         .background(MaterialTheme.colorScheme.surface)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outline,
+                            shape = RoundedCornerShape(8.dp)
+                        ),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Remove,
-                        contentDescription = "Verringern",
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(14.dp)
-                    )
-                }
-
-                Text(
-                    text = if (item.quantity % 1.0 == 0.0) "${item.quantity.toInt()}" else "%.1f".format(item.quantity),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(horizontal = 10.dp)
-                )
-
-                IconButton(
-                    onClick = {
-                        val newQuantity = item.quantity + 0.5
-                        val factor = newQuantity / item.quantity.coerceAtLeast(0.1)
-                        val updated = item.copy(
-                            quantity = newQuantity,
-                            calories = item.calories * factor,
-                            proteinGrams = item.proteinGrams * factor,
-                            carbsGrams = item.carbsGrams * factor,
-                            fatGrams = item.fatGrams * factor,
-                            sugarsGrams = item.sugarsGrams * factor,
-                            fiberGrams = item.fiberGrams * factor,
-                            saltGrams = item.saltGrams * factor,
-                            satFatGrams = item.satFatGrams * factor
-                        )
-                        onUpdate(updated)
-                    },
-                    modifier = Modifier
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Erhöhen",
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(14.dp)
+                    BasicTextField(
+                        value = quantityInputText,
+                        onValueChange = { text ->
+                            quantityInputText = text
+                            val parsed = text.replace(',', '.').toDoubleOrNull()
+                            if (parsed != null && parsed > 0.0) {
+                                val factor = parsed / item.quantity.coerceAtLeast(0.1)
+                                val updated = item.copy(
+                                    quantity = parsed,
+                                    calories = item.calories * factor,
+                                    proteinGrams = item.proteinGrams * factor,
+                                    carbsGrams = item.carbsGrams * factor,
+                                    fatGrams = item.fatGrams * factor,
+                                    sugarsGrams = item.sugarsGrams * factor,
+                                    fiberGrams = item.fiberGrams * factor,
+                                    saltGrams = item.saltGrams * factor,
+                                    satFatGrams = item.satFatGrams * factor
+                                )
+                                onUpdate(updated)
+                            }
+                        },
+                        textStyle = MaterialTheme.typography.labelMedium.copy(
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            textAlign = TextAlign.Center
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        singleLine = true,
+                        cursorBrush = SolidColor(NothingRed)
                     )
                 }
             }

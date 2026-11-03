@@ -110,8 +110,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt": {
-    "mtime": 1792811358.103,
-    "ast_hash": "18cd2d12345ccbfa26a61ec587a90b3c",
+    "mtime": 1793682365.211,
+    "ast_hash": "c603c9545ceb10f4553c796eaf10ce64",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/CalorieGaugeCard.kt": {

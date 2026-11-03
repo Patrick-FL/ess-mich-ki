@@ -917,11 +917,11 @@
       "label": "NestedScrollConnection",
       "file_type": "code",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L92",
+      "source_location": "L99",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "id": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l92",
+      "id": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l99",
       "community": 9,
       "community_name": "AiFoodLoggingDialog.kt",
       "norm_label": "nestedscrollconnection"
@@ -3931,7 +3931,7 @@
       "label": "AiFoodLoggingDialog()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L69",
+      "source_location": "L76",
       "_callable": true,
       "_origin": "ast",
       "id": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog",
@@ -3943,10 +3943,10 @@
       "label": ".onPostScroll()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L93",
+      "source_location": "L100",
       "_callable": true,
       "_origin": "ast",
-      "id": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l92_onpostscroll",
+      "id": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l99_onpostscroll",
       "community": 9,
       "community_name": "AiFoodLoggingDialog.kt",
       "norm_label": ".onpostscroll()"
@@ -3955,7 +3955,7 @@
       "label": "AiFoodLoggingDialogPreview()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L519",
+      "source_location": "L515",
       "_callable": true,
       "_origin": "ast",
       "id": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialogpreview",
@@ -3967,7 +3967,7 @@
       "label": "ParsedFoodItemRow()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L373",
+      "source_location": "L380",
       "_callable": true,
       "_origin": "ast",
       "id": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_parsedfooditemrow",
@@ -5979,7 +5979,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L336",
+      "source_location": "L343",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog",
@@ -5991,7 +5991,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L523",
+      "source_location": "L519",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialogpreview",
@@ -6003,7 +6003,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L525",
+      "source_location": "L521",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialogpreview",
@@ -6016,7 +6016,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L537",
+      "source_location": "L533",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialogpreview",
@@ -6027,7 +6027,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L538",
+      "source_location": "L534",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialogpreview",
@@ -8937,7 +8937,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L40",
+      "source_location": "L41",
       "weight": 1.0,
       "metadata": {
         "target_fqn": "androidx.compose.material3.SheetState"
@@ -8982,7 +8982,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L48",
+      "source_location": "L53",
       "weight": 1.0,
       "metadata": {
         "target_fqn": "androidx.compose.ui.Modifier"
@@ -9162,7 +9162,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0,
       "metadata": {
         "target_fqn": "androidx.compose.ui.geometry.Offset"
@@ -9207,7 +9207,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L51",
+      "source_location": "L56",
       "weight": 1.0,
       "metadata": {
         "target_fqn": "androidx.compose.ui.graphics.Color"
@@ -9432,14 +9432,14 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L52",
+      "source_location": "L58",
       "weight": 1.0,
       "metadata": {
         "target_fqn": "androidx.compose.ui.input.nestedscroll.NestedScrollConnection"
       },
       "_origin": "ast",
       "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog",
-      "target": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l92",
+      "target": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l99",
       "confidence_score": 1.0
     },
     {
@@ -9447,7 +9447,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L53",
+      "source_location": "L59",
       "weight": 1.0,
       "metadata": {
         "target_fqn": "androidx.compose.ui.input.nestedscroll.NestedScrollSource"
@@ -10797,7 +10797,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L61",
+      "source_location": "L68",
       "weight": 1.0,
       "metadata": {
         "target_fqn": "com.example.ess_mich_ki.data.network.openrouter.ParsedFoodItem"
@@ -10827,7 +10827,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L62",
+      "source_location": "L69",
       "weight": 1.0,
       "metadata": {
         "target_fqn": "com.example.ess_mich_ki.data.network.openrouter.ParsedMealAiResult"
@@ -11322,7 +11322,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L63",
+      "source_location": "L70",
       "weight": 1.0,
       "metadata": {
         "target_fqn": "com.example.ess_mich_ki.ui.theme.EssmichkiTheme"
@@ -11502,7 +11502,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L66",
+      "source_location": "L73",
       "weight": 1.0,
       "metadata": {
         "target_fqn": "com.example.ess_mich_ki.util.ServingUnitUtils"
@@ -11960,7 +11960,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L69",
+      "source_location": "L76",
       "weight": 1.0,
       "context": "parameter_type",
       "_origin": "ast",
@@ -11972,7 +11972,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L69",
+      "source_location": "L76",
       "weight": 1.0,
       "context": "parameter_type",
       "_origin": "ast",
@@ -11984,7 +11984,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L69",
+      "source_location": "L76",
       "weight": 1.0,
       "context": "parameter_type",
       "_origin": "ast",
@@ -11996,11 +11996,11 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L93",
+      "source_location": "L100",
       "weight": 1.0,
       "context": "parameter_type",
       "_origin": "ast",
-      "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l92_onpostscroll",
+      "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l99_onpostscroll",
       "target": "nestedscrollsource",
       "confidence_score": 1.0
     },
@@ -12008,7 +12008,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L373",
+      "source_location": "L380",
       "weight": 1.0,
       "context": "parameter_type",
       "_origin": "ast",
@@ -12020,7 +12020,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L373",
+      "source_location": "L380",
       "weight": 1.0,
       "context": "parameter_type",
       "_origin": "ast",
@@ -13089,10 +13089,10 @@
       "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L93",
+      "source_location": "L100",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l92_onpostscroll",
+      "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l99_onpostscroll",
       "target": "offset",
       "confidence_score": 1.0
     },
@@ -14014,7 +14014,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L373",
+      "source_location": "L380",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog",
@@ -14025,7 +14025,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L519",
+      "source_location": "L515",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog",
@@ -14036,7 +14036,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L69",
+      "source_location": "L76",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog",
@@ -14047,11 +14047,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L92",
+      "source_location": "L99",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog",
-      "target": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l92",
+      "target": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l99",
       "confidence_score": 1.0
     },
     {
@@ -15169,11 +15169,11 @@
       "relation": "implements",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L92",
+      "source_location": "L99",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l92",
-      "target": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l92",
+      "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l99",
+      "target": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l99",
       "confidence_score": 1.0
     },
     {
@@ -16005,11 +16005,11 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt",
-      "source_location": "L93",
+      "source_location": "L100",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l92",
-      "target": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l92_onpostscroll",
+      "source": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l99",
+      "target": "app_src_main_java_com_example_ess_mich_ki_ui_dashboard_components_aifoodloggingdialog_aifoodloggingdialog_object_nestedscrollconnection_l99_onpostscroll",
       "confidence_score": 1.0
     },
     {
@@ -17911,5 +17911,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "833c64f753eb2333286d91361bc7e0a56457fa9b"
+  "built_at_commit": "634ef7735f4a8c67df7745a817b1bb90b6cbc3f3"
 }

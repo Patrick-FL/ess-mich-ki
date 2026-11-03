@@ -1,7 +1,7 @@
-# Graph Report - food_tracker  (2026-10-31)
+# Graph Report - food_tracker  (2026-11-03)
 
 ## Corpus Check
-- 64 files · ~67,515 words
+- 64 files · ~67,484 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `833c64f7`
+- Built from commit: `634ef773`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
