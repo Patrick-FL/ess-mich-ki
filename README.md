@@ -36,26 +36,12 @@ Anstelle mühsamer manueller Suchen in unübersichtlichen Lebensmittel-Datenbank
 ## 🌟 Highlights & Hauptfunktionen
 
 ### 🤖 Multimodale KI-Mahlzeitenerfassung
-- **Freitext, Sprache & Kamera:** Erfasse dein Essen nach Belieben – schreibe Alltagssprache (*"1 Schüssel Haferflocken mit 200ml Hafermilch und 30g Blaubeeren"*), nimm Audio auf oder fotografiere deinen Teller mit CameraX.
-- **Offenes KI-Ökosystem via OpenRouter:** Wähle dein bevorzugtes LLM flexibel aus:
-  - `google/gemini-2.0-flash-001` *(Empfohlen – rasend schnell, exakt und extrem kostengünstig)*
-  - `openai/gpt-4o-mini`
-  - `deepseek/deepseek-r1`
-  - `anthropic/claude-3.5-haiku`
+- **Freitext & Sprache:** Erfasse dein Essen nach Belieben – schreibe Alltagssprache (*"1 Schüssel Haferflocken mit 200ml Hafermilch und 30g Blaubeeren"*), nimm mit der Speech to Text Funktion deiner Tastatur Audio auf. 
+- **Offenes KI-Ökosystem via OpenRouter:** Wähle dein bevorzugtes LLM flexibel aus
 - **Regionale Router:** Wähle zwischen Standard-, EU- oder US-Endpunkten für optimierten Datenschutz und geringe Latenzen.
 
-### ⬛ Nothing OS 3.0 Designsprache
-- **Retro-Futurismus & Schweizer Minimalismus:** Durchdachte monochrome Farbwelten mit ikonischen Nothing-Red-Akzenten (`#D71921`).
-- **Bento-Grid-Layouts:** Modulare, klare Kachel-Karten für Mahlzeiten (Frühstück, Mittagessen, Abendessen, Snacks) mit 1px High-Contrast-Borders und **Zero-Drop-Shadows**.
-- **Typografie:** Prägnanter Wechsel aus NDot-Matrix, technischer Monospace-Schrift und serifenloser Klarheit.
-- **Dynamisches Theming:** Nahtloser Support für Dark Mode und Light Mode.
-
 ### 📊 Wissenschaftliche BMR- & Nährstoff-Ziele
-- **Evidenzbasierte Grundumsatz-Berechnung (BMR):**
-  - *Mifflin-St. Jeor* (moderner Standard)
-  - *Harris-Benedict* (bewährte Formel)
-  - *Katch-McArdle* (unter Einbezug des Körperfettanteils)
-  - *WHO-Formel*
+- **Evidenzbasierte Grundumsatz-Berechnung (BMR)**
 - **Individuelle Makro-Splits:** Feine Justierung von Protein-, Kohlenhydrat- und Fettanteilen passend zu deiner Ernährungsform (High Protein, Balanced, Low Carb, Keto).
 - **Zieldefinition:** Konfigurierbares Kaloriendefizit oder -überschuss je nach Fitnessziel (Fettabbau, Erhalt, Muskelaufbau).
 
@@ -92,10 +78,6 @@ EssMichKI folgt modernsten Android-Entwicklungsstandards und Best Practices:
 - Ein API-Key von [OpenRouter.ai](https://openrouter.ai/).
 
 ### 2. OpenRouter API-Schlüssel hinterlegen
-
-> [!TIP]
-> Die Nutzung von `google/gemini-2.0-flash-001` über OpenRouter ist extrem preiswert. Mit bereits $1 Startguthaben können tausende Mahlzeiten analysiert werden!
-
 1. Erstelle ein kostenloses Konto bei [OpenRouter.ai](https://openrouter.ai/).
 2. Navigiere zu **Keys** und generiere einen neuen Schlüssel.
 3. Öffne **EssMichKI** auf deinem Android-Gerät.
@@ -150,6 +132,13 @@ EssMichKI folgt modernsten Android-Entwicklungsstandards und Best Practices:
 
 ---
 
+## Zeit ist begrenzt
+Individuelle Weiterentwicklungswünsche werden, wenn diese berücksichtigt werden, stets öffentlich gemacht und sollten auf Spendenbasis beruhen.
+
+
+---
+
 ## 📄 Lizenz
 
 Dieses Projekt ist unter der [MIT Lizenz](LICENSE) lizenziert.
+
