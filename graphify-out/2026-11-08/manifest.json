@@ -1,7 +1,7 @@
 {
   "app/build.gradle.kts": {
-    "mtime": 1792641518.185,
-    "ast_hash": "661e4ab419ed83ed5a2d8261fdc08125",
+    "mtime": 1793682555.995,
+    "ast_hash": "f6976f6f73b29cd83d1c55e89e5662a0",
     "semantic_hash": ""
   },
   "app/src/androidTest/java/com/example/ess_mich_ki/ExampleInstrumentedTest.kt": {
@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/data/local/dao/LoggedMealDao.kt": {
-    "mtime": 1793352678.391,
-    "ast_hash": "98d6dc47826dc17997edb0de32a76b9b",
+    "mtime": 1794111172.775,
+    "ast_hash": "2c3f29f0f9c965c1ceb308f270ef7006",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/data/local/dao/LoggedMealItemDao.kt": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/data/local/database/AppDatabase.kt": {
-    "mtime": 1792730831.458,
-    "ast_hash": "2a1369eb14c6aeddf8669ffe70e07668",
+    "mtime": 1794111161.63,
+    "ast_hash": "bcee996dda6554af14ac7e1063208c1d",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/data/local/database/Converters.kt": {
@@ -60,8 +60,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/data/local/entity/LoggedMealEntity.kt": {
-    "mtime": 1792641752.559,
-    "ast_hash": "213d5fe27cfcfe2cd73f5204edad6d1e",
+    "mtime": 1794111141.681,
+    "ast_hash": "783f55a16e216947d9b7ffb1efa031c9",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/data/local/entity/LoggedMealItemEntity.kt": {
@@ -95,8 +95,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardScreen.kt": {
-    "mtime": 1793352825.226,
-    "ast_hash": "c59b922441015c8ea2898fd385a53dae",
+    "mtime": 1794111307.86,
+    "ast_hash": "72c6aa4be099100d4c7c3f3a4d8e81ea",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardUiState.kt": {
@@ -105,8 +105,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardViewModel.kt": {
-    "mtime": 1793352750.614,
-    "ast_hash": "33f613f9bad4148e7df4af3577f3dfdd",
+    "mtime": 1794111239.005,
+    "ast_hash": "bf8421207e6c18e869ab37e85f79193a",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt": {
@@ -125,13 +125,13 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/MealCard.kt": {
-    "mtime": 1792811334.1,
-    "ast_hash": "35f360594584671099a2d1cdcf11b5ff",
+    "mtime": 1794111281.851,
+    "ast_hash": "b078d3e21e672f6a655591e1fe6dc59a",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/ProfileSettingsSheet.kt": {
-    "mtime": 1793352796.06,
-    "ast_hash": "0abed271aa6d4f95260426ebef7efc77",
+    "mtime": 1794111885.027,
+    "ast_hash": "43edd87b922eab40f2eb430c3415ddfd",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/detail/FoodDetailScreen.kt": {
@@ -155,18 +155,18 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/progress/ProgressScreen.kt": {
-    "mtime": 1793353481.512,
-    "ast_hash": "44b88ee8fb026cc671143aa146d3f69a",
+    "mtime": 1794113910.713,
+    "ast_hash": "f0019d4bfcb76bf637bde9ab755c6956",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/progress/ProgressUiState.kt": {
-    "mtime": 1792771697.708,
-    "ast_hash": "0a923890deeb60a8c241555097a422f4",
+    "mtime": 1794113744.496,
+    "ast_hash": "93cf850eab8749e43c0a348a2a4d04b9",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/progress/ProgressViewModel.kt": {
-    "mtime": 1792771731.899,
-    "ast_hash": "18f03511f6cd61518e27968cca5cad76",
+    "mtime": 1794113778.379,
+    "ast_hash": "b05644729438f5e18c41627f55016a67",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/progress/components/AddWeightDialog.kt": {
@@ -225,8 +225,8 @@
     "semantic_hash": ""
   },
   "app/src/test/java/com/example/ess_mich_ki/ui/DashboardViewModelTest.kt": {
-    "mtime": 1793352839.162,
-    "ast_hash": "87e64d75c115803aaaefd608e68cc0a4",
+    "mtime": 1794111474.964,
+    "ast_hash": "516ef1cff623bbf05193d681dfe52cf8",
     "semantic_hash": ""
   },
   "app/src/test/java/com/example/ess_mich_ki/ui/SettingsViewModelTest.kt": {
@@ -235,8 +235,8 @@
     "semantic_hash": ""
   },
   "app/src/test/java/com/example/ess_mich_ki/ui/Task3ViewModelsTest.kt": {
-    "mtime": 1792770142.038,
-    "ast_hash": "4d18906571a47bc2e7096bfb58031e2b",
+    "mtime": 1794113926.285,
+    "ast_hash": "d554806cf03bc6ba8f234cfb34d2225a",
     "semantic_hash": ""
   },
   "build.gradle.kts": {
@@ -415,8 +415,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1793434475.844,
-    "ast_hash": "0527c83548e24f8676032c108cb4352b",
+    "mtime": 1794120215.396,
+    "ast_hash": "00364b5aabcc99bc4763af881964d616",
     "semantic_hash": ""
   }
 }

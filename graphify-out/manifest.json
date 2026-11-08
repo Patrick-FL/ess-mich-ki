@@ -1,7 +1,7 @@
 {
   "app/build.gradle.kts": {
-    "mtime": 1793682555.995,
-    "ast_hash": "f6976f6f73b29cd83d1c55e89e5662a0",
+    "mtime": 1794121186.867,
+    "ast_hash": "6893a3310d16bb8b8262fa34ad50ddd1",
     "semantic_hash": ""
   },
   "app/src/androidTest/java/com/example/ess_mich_ki/ExampleInstrumentedTest.kt": {
@@ -415,8 +415,43 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1794120215.396,
-    "ast_hash": "00364b5aabcc99bc4763af881964d616",
+    "mtime": 1794121137.586,
+    "ast_hash": "ed247706dfb40210bd9e063c32bc392b",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/01_dashboard.png": {
+    "mtime": 1794120297.2023354,
+    "ast_hash": "2e151e614ead1d483e62a9c901812930",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/02_ai_logging.png": {
+    "mtime": 1794120330.1706743,
+    "ast_hash": "641d8d5fa637c1c605afc2f942c19ab2",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/03_food_detail.png": {
+    "mtime": 1794120359.0828488,
+    "ast_hash": "530d7a5f31e1fd369d9405aae88433ec",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/04_progress_weight.png": {
+    "mtime": 1794120384.3868768,
+    "ast_hash": "b6cb233fa27c8445a3a562f3fa43582c",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/05_goals_bmr.png": {
+    "mtime": 1794120406.8217888,
+    "ast_hash": "ddb37ffe6cda87f78a00018f86522251",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/06_streaks.png": {
+    "mtime": 1794120432.4478304,
+    "ast_hash": "e59919fb6528dfda19ca4f960457c6fc",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/07_settings.png": {
+    "mtime": 1794120459.2469199,
+    "ast_hash": "f9f2f1578f0cd371be887b070b748576",
     "semantic_hash": ""
   }
 }
