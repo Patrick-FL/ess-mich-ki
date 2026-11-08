@@ -7,7 +7,7 @@
   "5": "NutritionalGoalState",
   "6": "DashboardViewModel",
   "7": "FoodDetailViewModel",
-  "8": "DashboardViewModelTest",
+  "8": "LoggedMealItemEntity",
   "9": "AiFoodLoggingDialog.kt",
   "10": "SettingsDataStore",
   "11": "UserGoalEntity",
@@ -22,13 +22,8 @@
   "20": "settings.gradle.kts",
   "21": "ProgressScreen.kt",
   "22": ".calculateMonthlyCalendar",
-  "23": "LoggedMealItemEntity",
   "24": "WeightLogEntity",
-  "25": "FakeLoggedMealDao",
   "26": "CsvExportImportUtil",
-  "27": ".fromString",
-  "28": "FakeAppDatabase",
-  "29": "AppNavigation.kt",
-  "30": "Task3ViewModelsTest.kt",
-  "31": "DashboardViewModelTest.kt"
+  "27": "CanonicalMealType",
+  "30": "ProgressUiState"
 }
