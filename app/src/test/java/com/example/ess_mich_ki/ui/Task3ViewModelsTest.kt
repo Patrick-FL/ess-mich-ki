@@ -67,4 +67,51 @@ class Task3ViewModelsTest {
         // Progress = 1.2 / 5.2 = 0.2307 (23%)
         assertEquals(0.23f, state.progressPercentage, 0.02f)
     }
+
+    @Test
+    fun testProgressUiState_HungerCalculationsAndComparisons() {
+        val today = java.time.LocalDate.now()
+        val day1 = com.example.ess_mich_ki.ui.progress.HungerDayDetail(
+            date = today.minusDays(1),
+            dateString = today.minusDays(1).toString(),
+            dayOfMonth = today.minusDays(1).dayOfMonth,
+            dayLabel = "Mo",
+            maxHunger = 9,
+            avgHunger = 7.5,
+            breakfastHunger = 6,
+            lunchHunger = 9,
+            dinnerHunger = null,
+            snackNotes = "Craving chocolate",
+            totalCalories = 2200
+        )
+        val day2 = com.example.ess_mich_ki.ui.progress.HungerDayDetail(
+            date = today,
+            dateString = today.toString(),
+            dayOfMonth = today.dayOfMonth,
+            dayLabel = "Di",
+            maxHunger = 3,
+            avgHunger = 2.5,
+            breakfastHunger = 2,
+            lunchHunger = 3,
+            dinnerHunger = null,
+            snackNotes = null,
+            totalCalories = 1400
+        )
+
+        val stateMax = ProgressUiState(
+            hunger30Days = listOf(day1, day2),
+            hungerCalcMode = com.example.ess_mich_ki.ui.progress.HungerCalculationMode.MAX
+        )
+
+        assertEquals(9.0, day1.displayScore(com.example.ess_mich_ki.ui.progress.HungerCalculationMode.MAX) ?: 0.0, 0.01)
+        assertEquals(7.5, day1.displayScore(com.example.ess_mich_ki.ui.progress.HungerCalculationMode.AVERAGE) ?: 0.0, 0.01)
+
+        assertEquals(1, stateMax.highHungerDays.size)
+        assertEquals(day1, stateMax.highHungerDays.first())
+        assertEquals(2200, stateMax.avgCaloriesHighHunger)
+
+        assertEquals(1, stateMax.lowHungerDays.size)
+        assertEquals(day2, stateMax.lowHungerDays.first())
+        assertEquals(1400, stateMax.avgCaloriesLowHunger)
+    }
 }

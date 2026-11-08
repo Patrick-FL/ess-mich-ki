@@ -85,6 +85,8 @@ fun DashboardScreen(
         onOpenNutritionalGoalsDialog = viewModel::openNutritionalGoalsDialog,
         onCloseNutritionalGoalsDialog = viewModel::closeNutritionalGoalsDialog,
         onSaveNutritionalGoals = viewModel::updateNutritionalGoals,
+        onHungerLevelChanged = viewModel::updateMealHungerLevel,
+        onNotesChanged = viewModel::updateMealNotes,
         onStreakClick = onStreakClick,
         modifier = modifier
     )
@@ -120,6 +122,8 @@ fun DashboardContent(
     onOpenNutritionalGoalsDialog: () -> Unit = {},
     onCloseNutritionalGoalsDialog: () -> Unit = {},
     onSaveNutritionalGoals: (Int, Int, Int, Int, Boolean) -> Unit = { _, _, _, _, _ -> },
+    onHungerLevelChanged: (String, Int?) -> Unit = { _, _ -> },
+    onNotesChanged: (String, String) -> Unit = { _, _ -> },
     onStreakClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -213,7 +217,9 @@ fun DashboardContent(
                         mealType = mealType,
                         mealWithItems = mealWithItems,
                         onDeleteItem = onDeleteItem,
-                        onEditItem = onOpenEditItemDialog
+                        onEditItem = onOpenEditItemDialog,
+                        onHungerLevelChanged = { newLevel -> onHungerLevelChanged(mealType, newLevel) },
+                        onNotesChanged = { newNotes -> onNotesChanged(mealType, newNotes) }
                     )
                 }
 

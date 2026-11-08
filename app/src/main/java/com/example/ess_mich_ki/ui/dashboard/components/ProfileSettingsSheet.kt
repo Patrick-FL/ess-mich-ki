@@ -21,8 +21,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -112,6 +110,7 @@ fun ProfileSettingsSheet(
     var isBaseUrlExpanded by remember { mutableStateOf(true) }
     var isModelExpanded by remember { mutableStateOf(true) }
     var isCsvExpanded by remember { mutableStateOf(true) }
+    var isHungerScaleExpanded by remember { mutableStateOf(true) }
 
     // Date picker dialog states
     var showStartDatePicker by remember { mutableStateOf(false) }
@@ -165,7 +164,7 @@ fun ProfileSettingsSheet(
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    val allExpanded = isApiKeyExpanded && isBaseUrlExpanded && isModelExpanded && isCsvExpanded
+                    val allExpanded = isApiKeyExpanded && isBaseUrlExpanded && isModelExpanded && isCsvExpanded && isHungerScaleExpanded
                     TextButton(
                         onClick = {
                             val targetState = !allExpanded
@@ -173,6 +172,7 @@ fun ProfileSettingsSheet(
                             isBaseUrlExpanded = targetState
                             isModelExpanded = targetState
                             isCsvExpanded = targetState
+                            isHungerScaleExpanded = targetState
                         }
                     ) {
                         Text(
@@ -303,42 +303,6 @@ fun ProfileSettingsSheet(
                     isExpanded = isModelExpanded,
                     onToggleExpand = { isModelExpanded = !isModelExpanded }
                 ) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    val commonModels = listOf(
-                        "Gemini 2.0" to "google/gemini-2.0-flash-001",
-                        "GPT-4o mini" to "openai/gpt-4o-mini",
-                        "DeepSeek R1" to "deepseek/deepseek-r1",
-                        "Claude 3.5" to "anthropic/claude-3.5-haiku"
-                    )
-
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        items(commonModels) { (label, modelId) ->
-                            val isSelected = (modelInput == modelId)
-                            Surface(
-                                shape = CircleShape,
-                                color = if (isSelected) NothingRed else MaterialTheme.colorScheme.surfaceVariant,
-                                border = BorderStroke(1.dp, if (isSelected) NothingRed else MaterialTheme.colorScheme.outline),
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .clickable {
-                                        modelInput = modelId
-                                        onModelChange(modelId)
-                                    }
-                            ) {
-                                Text(
-                                    text = label.uppercase(),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontFamily = FontFamily.Monospace,
-                                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-                                )
-                            }
-                        }
-                    }
-
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
@@ -627,6 +591,71 @@ fun ProfileSettingsSheet(
                                         modifier = Modifier.size(14.dp)
                                     )
                                 }
+                            }
+                        }
+                    }
+                }
+
+                // SECTION 5: DEFINITION HUNGER-SKALA (1-10) (Foldable)
+                CollapsibleSectionCard(
+                    title = "HUNGER-SKALA (1–10)",
+                    isExpanded = isHungerScaleExpanded,
+                    onToggleExpand = { isHungerScaleExpanded = !isHungerScaleExpanded }
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Skala zur Erfassung des Hungergefühls vor der Mahlzeit:",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    val scaleDefinitions = listOf(
+                        1 to "Kein Hunger (völlig satt)",
+                        2 to "Sehr geringer Hunger / kaum spürbar",
+                        3 to "Leichter Appetit / neutral",
+                        4 to "Beginnender Hunger",
+                        5 to "Moderater Hunger (Essenszeit)",
+                        6 to "Deutlicher Hunger (Magen meldet sich)",
+                        7 to "Starker Hunger (Energie lässt nach)",
+                        8 to "Sehr starker Hunger (Magenknurren, ungeduldig)",
+                        9 to "Großer Heißhunger (Heißhungerattacke droht)",
+                        10 to "Extremer Heißhunger (ausgehungert, zittrig)"
+                    )
+
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        scaleDefinitions.forEach { (level, desc) ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clip(CircleShape)
+                                        .background(
+                                            if (level >= 8) NothingRed else if (level <= 3) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "$level",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontFamily = FontFamily.Monospace,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (level >= 8) Color.White else MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text(
+                                    text = desc,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
                             }
                         }
                     }

@@ -364,6 +364,70 @@ class DashboardViewModelTest {
         assertEquals(700.0, parsedAfter?.totalCalories ?: 0.0, 0.01)
     }
 
+    @Test
+    fun testUpdateMealHungerLevel() = runTest {
+        val viewModel = DashboardViewModel(fakeDatabase, settingsDataStore, openRouterApiClient)
+        advanceUntilIdle()
+
+        val initialState = viewModel.uiState.first { it.meals.isNotEmpty() }
+        val initialBreakfast = initialState.meals.first {
+            com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.meal.mealType) == com.example.ess_mich_ki.util.CanonicalMealType.BREAKFAST
+        }
+        assertEquals(null, initialBreakfast.meal.hungerLevel)
+
+        // Set hunger level on Breakfast to 8
+        viewModel.updateMealHungerLevel("Frühstück", 8)
+        advanceUntilIdle()
+
+        val updatedState = viewModel.uiState.first { state ->
+            state.meals.any {
+                com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.meal.mealType) == com.example.ess_mich_ki.util.CanonicalMealType.BREAKFAST && it.meal.hungerLevel == 8
+            }
+        }
+        val updatedBreakfast = updatedState.meals.first {
+            com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.meal.mealType) == com.example.ess_mich_ki.util.CanonicalMealType.BREAKFAST
+        }
+        assertEquals(8, updatedBreakfast.meal.hungerLevel)
+
+        // Clear hunger level
+        viewModel.updateMealHungerLevel("Frühstück", null)
+        advanceUntilIdle()
+
+        val clearedState = viewModel.uiState.first { state ->
+            state.meals.any {
+                com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.meal.mealType) == com.example.ess_mich_ki.util.CanonicalMealType.BREAKFAST && it.meal.hungerLevel == null
+            }
+        }
+        val clearedBreakfast = clearedState.meals.first {
+            com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.meal.mealType) == com.example.ess_mich_ki.util.CanonicalMealType.BREAKFAST
+        }
+        assertEquals(null, clearedBreakfast.meal.hungerLevel)
+    }
+
+    @Test
+    fun testUpdateMealNotes() = runTest {
+        val viewModel = DashboardViewModel(fakeDatabase, settingsDataStore, openRouterApiClient)
+        advanceUntilIdle()
+
+        // Wait until initialized
+        viewModel.uiState.first { it.meals.isNotEmpty() }
+
+        // Add note on Snack
+        val noteContent = "Lust auf Schokolade am Nachmittag"
+        viewModel.updateMealNotes("Snack", noteContent)
+        advanceUntilIdle()
+
+        val updatedState = viewModel.uiState.first { state ->
+            state.meals.any {
+                com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.meal.mealType) == com.example.ess_mich_ki.util.CanonicalMealType.SNACK && it.meal.notes == noteContent
+            }
+        }
+        val updatedSnack = updatedState.meals.first {
+            com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.meal.mealType) == com.example.ess_mich_ki.util.CanonicalMealType.SNACK
+        }
+        assertEquals(noteContent, updatedSnack.meal.notes)
+    }
+
     private class FakeContext : ContextWrapper(null) {
         private val tempDir: File = Files.createTempDirectory("test_datastore").toFile().apply { deleteOnExit() }
         override fun getFilesDir(): File = tempDir
@@ -450,6 +514,22 @@ class DashboardViewModelTest {
             val index = meals.indexOfFirst { it.id == meal.id }
             if (index >= 0) {
                 meals[index] = meal
+                notifyChanged()
+            }
+        }
+
+        override suspend fun updateHungerLevel(id: Long, hungerLevel: Int?) {
+            val index = meals.indexOfFirst { it.id == id }
+            if (index >= 0) {
+                meals[index] = meals[index].copy(hungerLevel = hungerLevel)
+                notifyChanged()
+            }
+        }
+
+        override suspend fun updateNotes(id: Long, notes: String?) {
+            val index = meals.indexOfFirst { it.id == id }
+            if (index >= 0) {
+                meals[index] = meals[index].copy(notes = notes)
                 notifyChanged()
             }
         }

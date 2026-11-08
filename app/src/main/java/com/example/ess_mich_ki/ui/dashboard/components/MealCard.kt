@@ -22,12 +22,19 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,6 +45,7 @@ import com.example.ess_mich_ki.data.local.entity.LoggedMealItemEntity
 import com.example.ess_mich_ki.data.local.model.MealWithItems
 import com.example.ess_mich_ki.ui.theme.EssmichkiTheme
 import com.example.ess_mich_ki.ui.theme.NothingRed
+import com.example.ess_mich_ki.util.CanonicalMealType
 import com.example.ess_mich_ki.util.ServingUnitUtils
 import kotlin.math.roundToInt
 
@@ -47,9 +55,17 @@ fun MealCard(
     mealWithItems: MealWithItems?,
     onDeleteItem: (LoggedMealItemEntity) -> Unit,
     onEditItem: ((LoggedMealItemEntity) -> Unit)? = null,
+    onHungerLevelChanged: ((Int?) -> Unit)? = null,
+    onNotesChanged: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val items = mealWithItems?.items ?: emptyList()
+    val canonicalType = CanonicalMealType.fromString(mealType)
+    val isSnack = canonicalType == CanonicalMealType.SNACK
+    val currentHunger = mealWithItems?.meal?.hungerLevel
+    val currentNotes = mealWithItems?.meal?.notes ?: ""
+
+    var localNotes by remember(currentNotes) { mutableStateOf(currentNotes) }
 
     val totalKcal = items.sumOf { it.calories }.roundToInt()
     val totalP = items.sumOf { it.protein }.roundToInt()
@@ -96,6 +112,95 @@ fun MealCard(
                     style = MaterialTheme.typography.labelMedium,
                     fontFamily = FontFamily.Monospace,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // Hunger Scale (1-10) for Breakfast, Lunch, Dinner
+            if (!isSnack) {
+                Spacer(modifier = Modifier.height(14.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "HUNGER",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontFamily = FontFamily.Monospace,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        letterSpacing = 1.sp
+                    )
+                    Text(
+                        text = if (currentHunger != null) "$currentHunger/10" else "--/10",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        color = if (currentHunger != null) NothingRed else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    for (i in 1..10) {
+                        val isSelected = currentHunger == i
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(28.dp)
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(
+                                    if (isSelected) NothingRed else MaterialTheme.colorScheme.surfaceVariant
+                                )
+                                .clickable {
+                                    val newLevel = if (isSelected) null else i
+                                    onHungerLevelChanged?.invoke(newLevel)
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "$i",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+                }
+            } else {
+                // Textblock for Snacks (without headline, as requested)
+                Spacer(modifier = Modifier.height(10.dp))
+                OutlinedTextField(
+                    value = localNotes,
+                    onValueChange = {
+                        localNotes = it
+                        onNotesChanged?.invoke(it)
+                    },
+                    placeholder = {
+                        Text(
+                            text = "Notizen...",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    textStyle = MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        focusedBorderColor = MaterialTheme.colorScheme.outline,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        cursorColor = NothingRed
+                    ),
+                    minLines = 2,
+                    maxLines = 4
                 )
             }
 

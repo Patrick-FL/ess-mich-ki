@@ -134,12 +134,17 @@ class DashboardViewModel(
                 totalCarbs = mergedItems.sumOf { it.carbs },
                 totalFat = mergedItems.sumOf { it.fat }
             )
+            val foundHunger = matching.firstNotNullOfOrNull { it.meal.hungerLevel }
+            val foundNotes = matching.firstOrNull { !it.meal.notes.isNullOrBlank() }?.meal?.notes
+
             MealWithItems(
                 meal = representativeMeal.copy(
                     totalCalories = mergedItems.sumOf { it.calories },
                     totalProtein = mergedItems.sumOf { it.protein },
                     totalCarbs = mergedItems.sumOf { it.carbs },
-                    totalFat = mergedItems.sumOf { it.fat }
+                    totalFat = mergedItems.sumOf { it.fat },
+                    hungerLevel = foundHunger ?: representativeMeal.hungerLevel,
+                    notes = foundNotes ?: representativeMeal.notes
                 ),
                 items = mergedItems
             )
@@ -320,6 +325,52 @@ class DashboardViewModel(
         isAiLoadingState.value = false
         aiParsedResultState.value = null
         aiErrorState.value = null
+    }
+
+    fun updateMealHungerLevel(mealType: String, hungerLevel: Int?) {
+        viewModelScope.launch {
+            val dateStr = selectedDateState.value.format(dateFormatter)
+            val canonicalType = com.example.ess_mich_ki.util.CanonicalMealType.fromString(mealType)
+            val allForDay = database.loggedMealDao().getMealsByDateSync(dateStr)
+            val existing = allForDay.firstOrNull {
+                com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.mealType) == canonicalType
+            }
+
+            if (existing != null) {
+                database.loggedMealDao().updateHungerLevel(existing.id, hungerLevel)
+            } else {
+                database.loggedMealDao().insertMeal(
+                    com.example.ess_mich_ki.data.local.entity.LoggedMealEntity(
+                        dateString = dateStr,
+                        mealType = canonicalType.germanName,
+                        hungerLevel = hungerLevel
+                    )
+                )
+            }
+        }
+    }
+
+    fun updateMealNotes(mealType: String, notes: String?) {
+        viewModelScope.launch {
+            val dateStr = selectedDateState.value.format(dateFormatter)
+            val canonicalType = com.example.ess_mich_ki.util.CanonicalMealType.fromString(mealType)
+            val allForDay = database.loggedMealDao().getMealsByDateSync(dateStr)
+            val existing = allForDay.firstOrNull {
+                com.example.ess_mich_ki.util.CanonicalMealType.fromString(it.mealType) == canonicalType
+            }
+
+            if (existing != null) {
+                database.loggedMealDao().updateNotes(existing.id, notes)
+            } else {
+                database.loggedMealDao().insertMeal(
+                    com.example.ess_mich_ki.data.local.entity.LoggedMealEntity(
+                        dateString = dateStr,
+                        mealType = canonicalType.germanName,
+                        notes = notes
+                    )
+                )
+            }
+        }
     }
 
     fun openNutritionalGoalsDialog() {

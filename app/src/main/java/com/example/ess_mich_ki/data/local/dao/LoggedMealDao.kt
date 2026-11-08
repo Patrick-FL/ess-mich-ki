@@ -47,6 +47,12 @@ interface LoggedMealDao {
     @Update
     suspend fun updateMeal(meal: LoggedMealEntity)
 
+    @Query("UPDATE logged_meals SET hungerLevel = :hungerLevel WHERE id = :id")
+    suspend fun updateHungerLevel(id: Long, hungerLevel: Int?)
+
+    @Query("UPDATE logged_meals SET notes = :notes WHERE id = :id")
+    suspend fun updateNotes(id: Long, notes: String?)
+
     @Delete
     suspend fun deleteMeal(meal: LoggedMealEntity)
 

@@ -12,5 +12,7 @@ data class LoggedMealEntity(
     val totalCalories: Double = 0.0,
     val totalProtein: Double = 0.0,
     val totalCarbs: Double = 0.0,
-    val totalFat: Double = 0.0
+    val totalFat: Double = 0.0,
+    val hungerLevel: Int? = null,
+    val notes: String? = null
 )

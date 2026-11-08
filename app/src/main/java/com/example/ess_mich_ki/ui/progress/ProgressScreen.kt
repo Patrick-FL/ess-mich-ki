@@ -3,6 +3,7 @@ package com.example.ess_mich_ki.ui.progress
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -90,6 +91,8 @@ fun ProgressScreen(
         onSaveGoal = viewModel::saveGoal,
         onSaveWeight = viewModel::saveWeight,
         onDeleteWeight = viewModel::deleteWeight,
+        onSelectHungerDay = viewModel::selectHungerDay,
+        onChangeHungerCalcMode = viewModel::setHungerCalculationMode,
         modifier = modifier
     )
 }
@@ -107,6 +110,8 @@ fun ProgressContent(
     onSaveGoal: (UserGoalEntity) -> Unit,
     onSaveWeight: (Double, String) -> Unit,
     onDeleteWeight: (WeightLogEntity) -> Unit = {},
+    onSelectHungerDay: (HungerDayDetail) -> Unit = {},
+    onChangeHungerCalcMode: (HungerCalculationMode) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -469,6 +474,21 @@ fun ProgressContent(
                         }
                     }
                 }
+            }
+
+            // Hunger Heatmap (30 Days)
+            item {
+                HungerHeatmapCard(
+                    hunger30Days = uiState.hunger30Days,
+                    selectedDay = uiState.selectedHungerDay,
+                    calcMode = uiState.hungerCalcMode,
+                    highHungerDays = uiState.highHungerDays,
+                    lowHungerDays = uiState.lowHungerDays,
+                    avgCaloriesHighHunger = uiState.avgCaloriesHighHunger,
+                    avgCaloriesLowHunger = uiState.avgCaloriesLowHunger,
+                    onSelectDay = onSelectHungerDay,
+                    onChangeCalcMode = onChangeHungerCalcMode
+                )
             }
 
             // Scale Weight Line Graph Chart Card
@@ -854,6 +874,396 @@ fun ProgressScreenPreview() {
             onCloseAddWeight = {},
             onSaveGoal = {},
             onSaveWeight = { _, _ -> }
+        )
+    }
+}
+
+@Composable
+fun HungerHeatmapCard(
+    hunger30Days: List<HungerDayDetail>,
+    selectedDay: HungerDayDetail?,
+    calcMode: HungerCalculationMode,
+    highHungerDays: List<HungerDayDetail>,
+    lowHungerDays: List<HungerDayDetail>,
+    avgCaloriesHighHunger: Int,
+    avgCaloriesLowHunger: Int,
+    onSelectDay: (HungerDayDetail) -> Unit,
+    onChangeCalcMode: (HungerCalculationMode) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        shape = RoundedCornerShape(28.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            // Header Row: Title & Toggle for Calculation Mode (MAX vs Ø)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .background(NothingRed, CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "HUNGER (30 TAGE)",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        letterSpacing = 1.sp
+                    )
+                }
+
+                // Toggle Pill
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                ) {
+                    Row(modifier = Modifier.padding(2.dp)) {
+                        val isMax = calcMode == HungerCalculationMode.MAX
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(if (isMax) NothingRed else Color.Transparent)
+                                .clickable { onChangeCalcMode(HungerCalculationMode.MAX) }
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "MAX",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = if (isMax) FontWeight.Bold else FontWeight.Normal,
+                                color = if (isMax) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 10.sp
+                            )
+                        }
+
+                        val isAvg = calcMode == HungerCalculationMode.AVERAGE
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(if (isAvg) NothingRed else Color.Transparent)
+                                .clickable { onChangeCalcMode(HungerCalculationMode.AVERAGE) }
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Ø SCHNITT",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = if (isAvg) FontWeight.Bold else FontWeight.Normal,
+                                color = if (isAvg) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 10.sp
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = if (calcMode == HungerCalculationMode.MAX) "Anzeige: Maximalwert des Tages (Peak)" else "Anzeige: Tagesdurchschnitt aller Mahlzeiten",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // 30 Days Grid: 5 rows x 6 columns
+            val rows = hunger30Days.chunked(6)
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                rows.forEach { rowDays ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        rowDays.forEach { dayDetail ->
+                            val score = dayDetail.displayScore(calcMode)
+                            val isSelected = selectedDay?.dateString == dayDetail.dateString
+
+                            val (bgColor, borderColor, isPeak) = when {
+                                score == null -> Triple(
+                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                                    MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                                    false
+                                )
+                                score < 3.5 -> Triple(
+                                    NothingSage.copy(alpha = 0.25f),
+                                    NothingSage.copy(alpha = 0.6f),
+                                    false
+                                )
+                                score < 6.5 -> Triple(
+                                    NothingYellow.copy(alpha = 0.3f),
+                                    NothingYellow.copy(alpha = 0.7f),
+                                    false
+                                )
+                                score < 8.0 -> Triple(
+                                    NothingRed.copy(alpha = 0.45f),
+                                    NothingRed.copy(alpha = 0.8f),
+                                    false
+                                )
+                                else -> Triple(
+                                    NothingRed,
+                                    NothingRed,
+                                    true
+                                )
+                            }
+
+                            val cellBorder = if (isSelected) {
+                                BorderStroke(2.dp, MaterialTheme.colorScheme.onSurface)
+                            } else {
+                                BorderStroke(1.dp, borderColor)
+                            }
+
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = bgColor,
+                                border = cellBorder,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(44.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .clickable { onSelectDay(dayDetail) }
+                            ) {
+                                Column(
+                                    modifier = Modifier.fillMaxSize(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "${dayDetail.dayOfMonth}",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontFamily = FontFamily.Monospace,
+                                        fontSize = 9.sp,
+                                        color = if (isPeak) Color.White.copy(alpha = 0.85f) else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = when {
+                                            score == null -> "-"
+                                            calcMode == HungerCalculationMode.MAX -> "${score.toInt()}"
+                                            else -> "%.1f".format(score)
+                                        },
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontFamily = FontFamily.Monospace,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 11.sp,
+                                        color = if (isPeak) Color.White else MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Legend
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                LegendItem(color = NothingSage, label = "1–3 Gering")
+                LegendItem(color = NothingYellow, label = "4–6 Mäßig")
+                LegendItem(color = NothingRed.copy(alpha = 0.6f), label = "7–8 Stark")
+                LegendItem(color = NothingRed, label = "9–10 Peak")
+            }
+
+            // Detail Card when a day is tapped
+            if (selectedDay != null) {
+                Spacer(modifier = Modifier.height(14.dp))
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "${selectedDay.dayLabel}, ${selectedDay.dateString}",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "${selectedDay.totalCalories} KCAL",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                                color = NothingRed
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            MealHungerBadge("FRÜHSTÜCK", selectedDay.breakfastHunger, Modifier.weight(1f))
+                            MealHungerBadge("MITTAG", selectedDay.lunchHunger, Modifier.weight(1f))
+                            MealHungerBadge("ABEND", selectedDay.dinnerHunger, Modifier.weight(1f))
+                        }
+                        if (!selectedDay.snackNotes.isNullOrBlank()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "NOTIZ: ${selectedDay.snackNotes}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontFamily = FontFamily.Monospace
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Comparison Metrics: High Hunger (>=7) vs Low Hunger (<=4)
+            Spacer(modifier = Modifier.height(14.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = NothingRed.copy(alpha = 0.08f),
+                    border = BorderStroke(1.dp, NothingRed.copy(alpha = 0.35f)),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            text = "STARKE TAGE (≥7)",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            color = NothingRed,
+                            fontSize = 10.sp
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "${highHungerDays.size} TAGE",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = if (avgCaloriesHighHunger > 0) "Ø $avgCaloriesHighHunger kcal" else "Keine Daten",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FontFamily.Monospace,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = NothingSage.copy(alpha = 0.08f),
+                    border = BorderStroke(1.dp, NothingSage.copy(alpha = 0.35f)),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            text = "GERINGE TAGE (≤4)",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            color = NothingSage,
+                            fontSize = 10.sp
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "${lowHungerDays.size} TAGE",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = if (avgCaloriesLowHunger > 0) "Ø $avgCaloriesLowHunger kcal" else "Keine Daten",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FontFamily.Monospace,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MealHungerBadge(
+    title: String,
+    score: Int?,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelSmall,
+                fontFamily = FontFamily.Monospace,
+                fontSize = 9.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = if (score != null) "$score/10" else "-",
+                style = MaterialTheme.typography.labelMedium,
+                fontFamily = FontFamily.Monospace,
+                fontWeight = FontWeight.Bold,
+                color = if (score != null && score >= 7) NothingRed else MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
+}
+
+@Composable
+private fun LegendItem(color: Color, label: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .size(7.dp)
+                .clip(CircleShape)
+                .background(color)
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            fontFamily = FontFamily.Monospace,
+            fontSize = 9.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
