@@ -1,7 +1,7 @@
-# Graph Report - food_tracker  (2026-11-08)
+# Graph Report - food_tracker  (2026-11-10)
 
 ## Corpus Check
-- 64 files · ~103,378 words
+- 64 files · ~103,669 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `757670a9`
+- Built from commit: `9aa17e87`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -52,6 +52,8 @@
 10. `FoodItemEntity` - 19 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `ProgressScreenPreview()` --calls--> `DailyCalorieStat`  [INFERRED]
+  app/src/main/java/com/example/ess_mich_ki/ui/progress/ProgressScreen.kt → app/src/main/java/com/example/ess_mich_ki/ui/progress/ProgressUiState.kt
 - `ProgressViewModel` --calls--> `DailyCalorieStat`  [INFERRED]
   app/src/main/java/com/example/ess_mich_ki/ui/progress/ProgressViewModel.kt → app/src/main/java/com/example/ess_mich_ki/ui/progress/ProgressUiState.kt
 - `NutritionalGoalsDialog()` --calls--> `NutritionalGoalState`  [INFERRED]
@@ -60,8 +62,6 @@
   app/src/main/java/com/example/ess_mich_ki/MainActivity.kt → app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardViewModel.kt
 - `DashboardViewModelTest` --references--> `SettingsDataStore`  [EXTRACTED]
   app/src/test/java/com/example/ess_mich_ki/ui/DashboardViewModelTest.kt → app/src/main/java/com/example/ess_mich_ki/data/datastore/SettingsDataStore.kt
-- `DashboardViewModelTest` --references--> `AppDatabase`  [EXTRACTED]
-  app/src/test/java/com/example/ess_mich_ki/ui/DashboardViewModelTest.kt → app/src/main/java/com/example/ess_mich_ki/data/local/database/AppDatabase.kt
 
 ## Import Cycles
 - None detected.
@@ -81,7 +81,7 @@ Cohesion: 0.06
 Nodes (9): Flow, LoggedMealDao, LoggedMealEntity, MealWithItems, DashboardUiState, DashboardStateTest, FakeLoggedMealDao, Flow (+1 more)
 
 ### Community 3 - "ProgressViewModel"
-Cohesion: 0.13
+Cohesion: 0.14
 Nodes (6): Factory, StateFlow, T, ViewModel, ViewModelProvider, ProgressViewModel
 
 ### Community 4 - "EssmichkiTheme"
@@ -125,8 +125,8 @@ Cohesion: 0.83
 Nodes (3): gradlew script, die(), warn()
 
 ### Community 21 - "ProgressScreen.kt"
-Cohesion: 0.44
-Nodes (9): AddWeightDialog(), formatWeightDate(), HungerHeatmapCard(), Color, Modifier, LegendItem(), MealHungerBadge(), ProgressContent() (+1 more)
+Cohesion: 0.40
+Nodes (10): AddWeightDialog(), formatWeightDate(), HungerHeatmapCard(), Color, Modifier, LegendItem(), MealHungerBadge(), ProgressContent() (+2 more)
 
 ### Community 22 - ".calculateMonthlyCalendar"
 Cohesion: 0.13
@@ -141,8 +141,8 @@ Cohesion: 0.33
 Nodes (5): CanonicalMealType, BREAKFAST, DINNER, LUNCH, SNACK
 
 ### Community 30 - "ProgressUiState"
-Cohesion: 0.20
-Nodes (8): ProgressScreenPreview(), DailyCalorieStat, HungerCalculationMode, AVERAGE, MAX, HungerDayDetail, ProgressUiState, Task3ViewModelsTest
+Cohesion: 0.19
+Nodes (7): DailyCalorieStat, HungerCalculationMode, AVERAGE, MAX, HungerDayDetail, ProgressUiState, Task3ViewModelsTest
 
 ## Knowledge Gaps
 - **36 isolated node(s):** `OpenRouterChoice`, `OpenRouterResponse`, `OpenRouterError`, `PLAN`, `PROGRESS` (+31 more)
@@ -156,7 +156,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.200) - this node is a cross-community bridge._
 - **Why does `LoggedMealItemEntity` connect `LoggedMealItemEntity` to `FoodItemEntity`, `LoggedMealEntity`, `EssmichkiTheme`, `DashboardViewModel`, `FoodDetailViewModel`?**
   _High betweenness centrality (0.131) - this node is a cross-community bridge._
-- **Why does `EssmichkiTheme()` connect `EssmichkiTheme` to `FoodDetailViewModel`, `AiFoodLoggingDialog.kt`, `ProgressScreen.kt`, `.calculateMonthlyCalendar`, `ProgressUiState`?**
+- **Why does `EssmichkiTheme()` connect `EssmichkiTheme` to `AiFoodLoggingDialog.kt`, `ProgressScreen.kt`, `.calculateMonthlyCalendar`, `FoodDetailViewModel`?**
   _High betweenness centrality (0.117) - this node is a cross-community bridge._
 - **What connects `OpenRouterChoice`, `OpenRouterResponse`, `OpenRouterError` to the rest of the system?**
   _36 weakly-connected nodes found - possible documentation gaps or missing edges._

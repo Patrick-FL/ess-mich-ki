@@ -95,8 +95,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardScreen.kt": {
-    "mtime": 1794111307.86,
-    "ast_hash": "72c6aa4be099100d4c7c3f3a4d8e81ea",
+    "mtime": 1794283382.741,
+    "ast_hash": "14ffafa13a56ac4f195880faad44ee22",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardUiState.kt": {
@@ -125,8 +125,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/MealCard.kt": {
-    "mtime": 1794111281.851,
-    "ast_hash": "b078d3e21e672f6a655591e1fe6dc59a",
+    "mtime": 1794284999.609,
+    "ast_hash": "8282fcc64625f9047e0b2e63bcb26542",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/ProfileSettingsSheet.kt": {

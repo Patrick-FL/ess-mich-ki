@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.Card
@@ -27,12 +28,16 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import kotlinx.coroutines.delay
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -65,7 +70,29 @@ fun MealCard(
     val currentHunger = mealWithItems?.meal?.hungerLevel
     val currentNotes = mealWithItems?.meal?.notes ?: ""
 
-    var localNotes by remember(currentNotes) { mutableStateOf(currentNotes) }
+    var localNotes by remember { mutableStateOf(currentNotes) }
+    var lastSyncedNotes by remember { mutableStateOf(currentNotes) }
+
+    val mealKey = "${mealType}_${mealWithItems?.meal?.id}_${mealWithItems?.meal?.dateString}"
+    LaunchedEffect(mealKey) {
+        localNotes = currentNotes
+        lastSyncedNotes = currentNotes
+    }
+
+    LaunchedEffect(currentNotes) {
+        if (currentNotes != lastSyncedNotes) {
+            localNotes = currentNotes
+            lastSyncedNotes = currentNotes
+        }
+    }
+
+    LaunchedEffect(localNotes) {
+        if (localNotes != lastSyncedNotes) {
+            delay(500L)
+            lastSyncedNotes = localNotes
+            onNotesChanged?.invoke(localNotes)
+        }
+    }
 
     val totalKcal = items.sumOf { it.calories }.roundToInt()
     val totalP = items.sumOf { it.protein }.roundToInt()
@@ -176,10 +203,7 @@ fun MealCard(
                 Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
                     value = localNotes,
-                    onValueChange = {
-                        localNotes = it
-                        onNotesChanged?.invoke(it)
-                    },
+                    onValueChange = { localNotes = it },
                     placeholder = {
                         Text(
                             text = "Notizen...",
@@ -187,10 +211,21 @@ fun MealCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                         )
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged { focusState ->
+                            if (!focusState.isFocused && localNotes != lastSyncedNotes) {
+                                lastSyncedNotes = localNotes
+                                onNotesChanged?.invoke(localNotes)
+                            }
+                        },
                     shape = RoundedCornerShape(14.dp),
                     textStyle = MaterialTheme.typography.bodySmall.copy(
                         color = MaterialTheme.colorScheme.onSurface
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        autoCorrectEnabled = false
                     ),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
