@@ -117,7 +117,7 @@ fun DashboardContent(
     onCloseAiDialog: () -> Unit,
     onInputTextChanged: (String) -> Unit,
     onMealTypeSelected: (String) -> Unit,
-    onAnalyzeClick: () -> Unit,
+    onAnalyzeClick: (String) -> Unit,
     onUpdateParsedItem: (Int, com.example.ess_mich_ki.data.network.openrouter.ParsedFoodItem) -> Unit,
     onDeleteParsedItem: (Int) -> Unit,
     onSaveToMealClick: () -> Unit,

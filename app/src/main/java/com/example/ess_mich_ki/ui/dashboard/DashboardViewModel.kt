@@ -75,7 +75,6 @@ class DashboardViewModel(
         isDayEndedState,
         isAiDialogShowingState,
         aiSelectedMealTypeState,
-        aiInputTextState,
         isAiLoadingState,
         aiParsedResultState,
         aiErrorState,
@@ -97,20 +96,19 @@ class DashboardViewModel(
         val isDayEnded = arrayOfValues[4] as Boolean
         val isAiDialogShowing = arrayOfValues[5] as Boolean
         val aiSelectedMealType = arrayOfValues[6] as String
-        val aiInputText = arrayOfValues[7] as String
-        val isAiLoading = arrayOfValues[8] as Boolean
-        val aiParsedResult = arrayOfValues[9] as ParsedMealAiResult?
-        val aiError = arrayOfValues[10] as String?
-        val editingMealItem = arrayOfValues[11] as LoggedMealItemEntity?
-        val isProfileDrawerOpen = arrayOfValues[12] as Boolean
-        val isApiKeyMissingWarning = arrayOfValues[13] as Boolean
-        val isNutritionalGoalsDialogShowing = arrayOfValues[14] as Boolean
+        val isAiLoading = arrayOfValues[7] as Boolean
+        val aiParsedResult = arrayOfValues[8] as ParsedMealAiResult?
+        val aiError = arrayOfValues[9] as String?
+        val editingMealItem = arrayOfValues[10] as LoggedMealItemEntity?
+        val isProfileDrawerOpen = arrayOfValues[11] as Boolean
+        val isApiKeyMissingWarning = arrayOfValues[12] as Boolean
+        val isNutritionalGoalsDialogShowing = arrayOfValues[13] as Boolean
         @Suppress("UNCHECKED_CAST")
-        val allMeals = arrayOfValues[15] as List<LoggedMealEntity>
-        val csvStartDate = arrayOfValues[16] as LocalDate
-        val csvEndDate = arrayOfValues[17] as LocalDate
-        val csvStatusMessage = arrayOfValues[18] as String?
-        val isCsvLoading = arrayOfValues[19] as Boolean
+        val allMeals = arrayOfValues[14] as List<LoggedMealEntity>
+        val csvStartDate = arrayOfValues[15] as LocalDate
+        val csvEndDate = arrayOfValues[16] as LocalDate
+        val csvStatusMessage = arrayOfValues[17] as String?
+        val isCsvLoading = arrayOfValues[18] as Boolean
 
         val weeklyDays = computeWeeklyDays(selectedDate)
 
@@ -220,7 +218,7 @@ class DashboardViewModel(
             isDayEnded = isDayEnded,
             isAiDialogShowing = isAiDialogShowing,
             aiSelectedMealType = aiSelectedMealType,
-            aiInputText = aiInputText,
+            aiInputText = aiInputTextState.value,
             isAiLoading = isAiLoading,
             aiParsedResult = aiParsedResult,
             aiError = aiError,
@@ -413,8 +411,17 @@ class DashboardViewModel(
         aiSelectedMealTypeState.value = mealType
     }
 
+    fun analyzeFoodText(query: String) {
+        aiInputTextState.value = query
+        executeFoodAnalysis(query)
+    }
+
     fun analyzeFoodText() {
-        val text = aiInputTextState.value.trim()
+        executeFoodAnalysis(aiInputTextState.value)
+    }
+
+    private fun executeFoodAnalysis(rawQuery: String) {
+        val text = rawQuery.trim()
         val apiKey = uiState.value.apiKey
         val baseUrl = uiState.value.baseUrl
         val model = uiState.value.model

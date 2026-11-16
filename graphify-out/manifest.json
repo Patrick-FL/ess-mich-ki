@@ -95,8 +95,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardScreen.kt": {
-    "mtime": 1794283382.741,
-    "ast_hash": "14ffafa13a56ac4f195880faad44ee22",
+    "mtime": 1794800664.166,
+    "ast_hash": "e2c1367b33ae46feec096398dbce4a78",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardUiState.kt": {
@@ -105,13 +105,13 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardViewModel.kt": {
-    "mtime": 1794111239.005,
-    "ast_hash": "bf8421207e6c18e869ab37e85f79193a",
+    "mtime": 1794800692.864,
+    "ast_hash": "cfa88ce777f66b85c482bccb412218a4",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/AiFoodLoggingDialog.kt": {
-    "mtime": 1793682365.211,
-    "ast_hash": "c603c9545ceb10f4553c796eaf10ce64",
+    "mtime": 1794801065.773,
+    "ast_hash": "d714bdc1ae7224daa62ff47debc71d5b",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/CalorieGaugeCard.kt": {
@@ -125,8 +125,8 @@
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/MealCard.kt": {
-    "mtime": 1794284999.609,
-    "ast_hash": "8282fcc64625f9047e0b2e63bcb26542",
+    "mtime": 1794799705.524,
+    "ast_hash": "1559d7b1dbbbaac64dc04bb23be73fa9",
     "semantic_hash": ""
   },
   "app/src/main/java/com/example/ess_mich_ki/ui/dashboard/components/ProfileSettingsSheet.kt": {

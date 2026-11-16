@@ -48,6 +48,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,8 +59,10 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -84,7 +87,7 @@ fun AiFoodLoggingDialog(
     isApiKeyMissing: Boolean,
     onMealTypeSelected: (String) -> Unit,
     onInputTextChanged: (String) -> Unit,
-    onAnalyzeClick: () -> Unit,
+    onAnalyzeClick: (String) -> Unit,
     onUpdateParsedItem: (Int, ParsedFoodItem) -> Unit,
     onDeleteParsedItem: (Int) -> Unit,
     onSaveToMealClick: () -> Unit,
@@ -93,6 +96,9 @@ fun AiFoodLoggingDialog(
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
+    var textFieldValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(inputText, TextRange(inputText.length)))
+    }
     val mealTypes = listOf("Frühstück", "Mittagessen", "Abendessen", "Snack")
 
     val noDismissNestedScrollConnection = remember(sheetState.currentValue) {
@@ -256,8 +262,11 @@ fun AiFoodLoggingDialog(
             } else {
                 // Free text input
                 OutlinedTextField(
-                    value = inputText,
-                    onValueChange = onInputTextChanged,
+                    value = textFieldValue,
+                    onValueChange = {
+                        textFieldValue = it
+                        onInputTextChanged(it.text)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(110.dp),
@@ -280,8 +289,8 @@ fun AiFoodLoggingDialog(
 
                 // Analyze Button
                 Button(
-                    onClick = onAnalyzeClick,
-                    enabled = inputText.isNotBlank() && !isLoading,
+                    onClick = { onAnalyzeClick(textFieldValue.text) },
+                    enabled = textFieldValue.text.isNotBlank() && !isLoading,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),

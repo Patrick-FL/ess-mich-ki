@@ -1,16 +1,16 @@
-# Graph Report - food_tracker  (2026-11-10)
+# Graph Report - food_tracker  (2026-11-16)
 
 ## Corpus Check
-- 64 files · ~103,669 words
+- 64 files · ~103,698 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 518 nodes · 1033 edges · 27 communities (23 shown, 4 thin omitted)
+- 519 nodes · 1035 edges · 25 communities (20 shown, 5 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 16 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9aa17e87`
+- Built from commit: `24087e14`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -18,29 +18,27 @@
 - 🥗 EssMichKI – Smarter KI-Mahlzeiten- & Nährstofftracker
 - FoodItemEntity
 - LoggedMealEntity
-- ProgressViewModel
+- UserGoalEntity
 - EssmichkiTheme
 - NutritionalGoalState
 - DashboardViewModel
 - FoodDetailViewModel
 - LoggedMealItemEntity
 - AiFoodLoggingDialog.kt
-- SettingsDataStore
-- UserGoalEntity
+- DashboardViewModelTest
+- DayItem
 - Implementation Steps
 - Converters
 - gradlew
 - ExampleInstrumentedTest
 - ExampleUnitTest
-- ProgressScreen.kt
+- ServingUnitUtils
 - .calculateMonthlyCalendar
-- WeightLogEntity
 - CsvExportImportUtil
 - CanonicalMealType
-- ProgressUiState
 
 ## God Nodes (most connected - your core abstractions)
-1. `DashboardViewModel` - 60 edges
+1. `DashboardViewModel` - 61 edges
 2. `LoggedMealItemEntity` - 46 edges
 3. `LoggedMealEntity` - 36 edges
 4. `UserGoalEntity` - 24 edges
@@ -60,61 +58,61 @@
   app/src/main/java/com/example/ess_mich_ki/ui/progress/components/NutritionalGoalsDialog.kt → app/src/main/java/com/example/ess_mich_ki/util/NutritionalGoalMath.kt
 - `MainActivity` --references--> `DashboardViewModel`  [EXTRACTED]
   app/src/main/java/com/example/ess_mich_ki/MainActivity.kt → app/src/main/java/com/example/ess_mich_ki/ui/dashboard/DashboardViewModel.kt
-- `DashboardViewModelTest` --references--> `SettingsDataStore`  [EXTRACTED]
-  app/src/test/java/com/example/ess_mich_ki/ui/DashboardViewModelTest.kt → app/src/main/java/com/example/ess_mich_ki/data/datastore/SettingsDataStore.kt
+- `DashboardViewModelTest` --references--> `AppDatabase`  [EXTRACTED]
+  app/src/test/java/com/example/ess_mich_ki/ui/DashboardViewModelTest.kt → app/src/main/java/com/example/ess_mich_ki/data/local/database/AppDatabase.kt
 
 ## Import Cycles
 - None detected.
 
-## Communities (27 total, 4 thin omitted)
+## Communities (25 total, 5 thin omitted)
 
 ### Community 0 - "🥗 EssMichKI – Smarter KI-Mahlzeiten- & Nährstofftracker"
 Cohesion: 0.10
 Nodes (20): 🔒 100 % Privacy First & Datensouveränität, 1. Voraussetzungen, 2. OpenRouter API-Schlüssel hinterlegen, 🏗️ Architektur & Technologie-Stack, Bauen & Ausführen, 📖 Bedienungsanleitung, 💾 Daten exportieren, 🥗 EssMichKI – Smarter KI-Mahlzeiten- & Nährstofftracker (+12 more)
 
 ### Community 1 - "FoodItemEntity"
-Cohesion: 0.11
+Cohesion: 0.12
 Nodes (10): FoodItemDao, Flow, AppDatabase, AppDatabaseCallback, Context, FoodItemEntity, SampleDataTest, Callback (+2 more)
 
 ### Community 2 - "LoggedMealEntity"
-Cohesion: 0.06
-Nodes (9): Flow, LoggedMealDao, LoggedMealEntity, MealWithItems, DashboardUiState, DashboardStateTest, FakeLoggedMealDao, Flow (+1 more)
+Cohesion: 0.07
+Nodes (7): Flow, LoggedMealDao, LoggedMealEntity, MealWithItems, FakeLoggedMealDao, Flow, CsvExportImportUtilTest
 
-### Community 3 - "ProgressViewModel"
-Cohesion: 0.14
-Nodes (6): Factory, StateFlow, T, ViewModel, ViewModelProvider, ProgressViewModel
+### Community 3 - "UserGoalEntity"
+Cohesion: 0.05
+Nodes (31): Flow, UserGoalDao, Flow, WeightLogDao, UserGoalEntity, WeightLogEntity, AddWeightDialog(), EditGoalDialog() (+23 more)
 
 ### Community 4 - "EssmichkiTheme"
-Cohesion: 0.11
-Nodes (29): EditLoggedMealItemDialog(), Modifier, SheetState, PureUnitOption, HeaderBar(), HeaderBarPreview(), Modifier, FoodItemRow() (+21 more)
+Cohesion: 0.09
+Nodes (35): MainActivity, CalorieGaugeCard(), CalorieGaugeCardPreview(), Color, Modifier, MacroProgressRow(), FoodItemRow(), getEmojiForFood() (+27 more)
 
 ### Community 5 - "NutritionalGoalState"
 Cohesion: 0.14
 Nodes (7): MacroType, CARBS, FAT, PROTEIN, NutritionalGoalMath, NutritionalGoalState, NutritionalGoalMathTest
 
 ### Community 6 - "DashboardViewModel"
-Cohesion: 0.06
-Nodes (9): android, DashboardViewModel, Factory, Context, StateFlow, T, ViewModel, ViewModelProvider (+1 more)
+Cohesion: 0.07
+Nodes (8): android, DashboardViewModel, Factory, Context, StateFlow, T, ViewModel, ViewModelProvider
 
 ### Community 7 - "FoodDetailViewModel"
 Cohesion: 0.09
-Nodes (24): MainActivity, AccordionCard(), FoodDetailContent(), FoodDetailScreen(), FoodDetailScreenPreview(), Color, Modifier, MacroStatCard() (+16 more)
+Nodes (22): EditLoggedMealItemDialog(), Modifier, SheetState, PureUnitOption, AccordionCard(), FoodDetailContent(), FoodDetailScreen(), FoodDetailScreenPreview() (+14 more)
 
 ### Community 8 - "LoggedMealItemEntity"
-Cohesion: 0.07
-Nodes (12): Flow, LoggedMealItemDao, LoggedMealItemEntity, DashboardViewModelTest, OpenRouterApiClient, FakeAppDatabase, FakeContext, FakeLoggedMealItemDao (+4 more)
+Cohesion: 0.15
+Nodes (4): Flow, LoggedMealItemDao, LoggedMealItemEntity, FakeLoggedMealItemDao
 
 ### Community 9 - "AiFoodLoggingDialog.kt"
-Cohesion: 0.09
-Nodes (26): Result, OpenRouterApiClient, OpenRouterChoice, OpenRouterError, OpenRouterMessage, OpenRouterRequest, OpenRouterResponse, OpenRouterResponseFormat (+18 more)
+Cohesion: 0.11
+Nodes (20): Result, OpenRouterApiClient, OpenRouterChoice, OpenRouterError, OpenRouterMessage, OpenRouterRequest, OpenRouterResponse, OpenRouterResponseFormat (+12 more)
 
-### Community 10 - "SettingsDataStore"
-Cohesion: 0.13
-Nodes (10): Flow, SettingsDataStore, UserSettings, Factory, StateFlow, T, ViewModel, ViewModelProvider (+2 more)
+### Community 10 - "DashboardViewModelTest"
+Cohesion: 0.06
+Nodes (18): Flow, SettingsDataStore, UserSettings, Factory, StateFlow, T, ViewModel, ViewModelProvider (+10 more)
 
-### Community 11 - "UserGoalEntity"
-Cohesion: 0.18
-Nodes (5): Flow, UserGoalDao, UserGoalEntity, EditGoalDialog(), FakeUserGoalDao
+### Community 11 - "DayItem"
+Cohesion: 0.22
+Nodes (6): HeaderBar(), HeaderBarPreview(), Modifier, DashboardUiState, DayItem, DashboardStateTest
 
 ### Community 12 - "Implementation Steps"
 Cohesion: 0.18
@@ -124,45 +122,33 @@ Nodes (10): Features, High-Level Tech Stack, Implementation Steps, Project Brief
 Cohesion: 0.83
 Nodes (3): gradlew script, die(), warn()
 
-### Community 21 - "ProgressScreen.kt"
-Cohesion: 0.40
-Nodes (10): AddWeightDialog(), formatWeightDate(), HungerHeatmapCard(), Color, Modifier, LegendItem(), MealHungerBadge(), ProgressContent() (+2 more)
-
 ### Community 22 - ".calculateMonthlyCalendar"
 Cohesion: 0.13
 Nodes (13): Color, Modifier, StreaksScreen(), StreaksScreenPreview(), StreakStatCard(), CalendarWeekInfo, MonthDayInfo, MonthlyCalendarData (+5 more)
-
-### Community 24 - "WeightLogEntity"
-Cohesion: 0.22
-Nodes (5): Flow, WeightLogDao, WeightLogEntity, formatWeightDialogDate(), ManageWeightLogsDialog()
 
 ### Community 27 - "CanonicalMealType"
 Cohesion: 0.33
 Nodes (5): CanonicalMealType, BREAKFAST, DINNER, LUNCH, SNACK
 
-### Community 30 - "ProgressUiState"
-Cohesion: 0.19
-Nodes (7): DailyCalorieStat, HungerCalculationMode, AVERAGE, MAX, HungerDayDetail, ProgressUiState, Task3ViewModelsTest
-
 ## Knowledge Gaps
 - **36 isolated node(s):** `OpenRouterChoice`, `OpenRouterResponse`, `OpenRouterError`, `PLAN`, `PROGRESS` (+31 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `DashboardViewModel` connect `DashboardViewModel` to `LoggedMealEntity`, `EssmichkiTheme`, `FoodDetailViewModel`, `LoggedMealItemEntity`, `AiFoodLoggingDialog.kt`, `.calculateMonthlyCalendar`?**
-  _High betweenness centrality (0.200) - this node is a cross-community bridge._
-- **Why does `LoggedMealItemEntity` connect `LoggedMealItemEntity` to `FoodItemEntity`, `LoggedMealEntity`, `EssmichkiTheme`, `DashboardViewModel`, `FoodDetailViewModel`?**
+- **Why does `DashboardViewModel` connect `DashboardViewModel` to `LoggedMealEntity`, `EssmichkiTheme`, `LoggedMealItemEntity`, `AiFoodLoggingDialog.kt`, `DashboardViewModelTest`, `DayItem`, `.calculateMonthlyCalendar`?**
+  _High betweenness centrality (0.203) - this node is a cross-community bridge._
+- **Why does `LoggedMealItemEntity` connect `LoggedMealItemEntity` to `FoodItemEntity`, `LoggedMealEntity`, `EssmichkiTheme`, `DashboardViewModel`, `FoodDetailViewModel`, `DashboardViewModelTest`, `DayItem`?**
   _High betweenness centrality (0.131) - this node is a cross-community bridge._
-- **Why does `EssmichkiTheme()` connect `EssmichkiTheme` to `AiFoodLoggingDialog.kt`, `ProgressScreen.kt`, `.calculateMonthlyCalendar`, `FoodDetailViewModel`?**
+- **Why does `EssmichkiTheme()` connect `EssmichkiTheme` to `UserGoalEntity`, `FoodDetailViewModel`, `AiFoodLoggingDialog.kt`, `DayItem`, `.calculateMonthlyCalendar`?**
   _High betweenness centrality (0.117) - this node is a cross-community bridge._
 - **What connects `OpenRouterChoice`, `OpenRouterResponse`, `OpenRouterError` to the rest of the system?**
   _36 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `🥗 EssMichKI – Smarter KI-Mahlzeiten- & Nährstofftracker` be split into smaller, more focused modules?**
   _Cohesion score 0.09523809523809523 - nodes in this community are weakly interconnected._
 - **Should `FoodItemEntity` be split into smaller, more focused modules?**
-  _Cohesion score 0.11494252873563218 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1206896551724138 - nodes in this community are weakly interconnected._
 - **Should `LoggedMealEntity` be split into smaller, more focused modules?**
-  _Cohesion score 0.06352087114337568 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07013574660633484 - nodes in this community are weakly interconnected._

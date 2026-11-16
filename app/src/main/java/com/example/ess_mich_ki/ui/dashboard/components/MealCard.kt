@@ -326,14 +326,12 @@ private fun FoodItemRow(
             // Delete button
             IconButton(
                 onClick = onDelete,
-                modifier = Modifier
-                    .size(30.dp)
-                    .background(NothingRed.copy(alpha = 0.15f), CircleShape)
+                modifier = Modifier.size(28.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.DeleteOutline,
                     contentDescription = "Eintrag löschen",
-                    tint = NothingRed,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                     modifier = Modifier.size(16.dp)
                 )
             }
